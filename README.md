@@ -37,4 +37,4 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 
 ## Admin Page
 
-The admin page is protected by a passcode. The passcode is "972024". If the passcode is correct, the user will be redirected to the admin page. If the passcode is incorrect, the user will be redirected to the home page.
+The admin page is protected by a passcode. The passcode is "972024". If the passcode is correct, the user will be redirected to the admin page. If the passcode is incorrect, the user will be redirected to the home page.lfbfb
