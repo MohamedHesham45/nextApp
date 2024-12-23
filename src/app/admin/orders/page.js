@@ -35,6 +35,7 @@ export default function OrdersPage() {
     const authorizedEmails = [
       "aliellool202020@gmail.com",
       "sitaramall97@gmail.com",
+      "mohmedadm733@gmail.com",
     ];
     return authorizedEmails.includes(
       user?.primaryEmailAddress?.emailAddress
