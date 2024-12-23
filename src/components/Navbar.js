@@ -27,6 +27,7 @@ export default function Navbar() {
       "aliellool202020@gmail.com",
       "sitaramall97@gmail.com",
       "mohmedadm733@gmail.com",
+      "muhammedreda6@gmail.com"
     ];
     return authorizedEmails.includes(
       user.primaryEmailAddress?.emailAddress
@@ -469,7 +470,7 @@ export default function Navbar() {
 // //               تواصل معنا
 // //             </Link>
 // //             <SignedIn>
-// //               {isAuthorized(user) && (
+// //               {orized(user) && (
 // //                 <Link
 // //                   href="/verify-passcode"
 // //                   className="block py-2 text-gray-800 hover:text-gray-600 transition duration-300"
