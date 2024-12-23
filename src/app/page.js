@@ -12,7 +12,7 @@ import MapLocation from "@/components/MapLocation";
 
 export default function LandingPage() {
   const [showScrollTop, setShowScrollTop] =
-    useState(false);
+    useState(false);//
 
   useEffect(() => {
     const handleScroll = () => {
