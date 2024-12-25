@@ -27,6 +27,7 @@ export default function Navbar() {
       "aliellool202020@gmail.com",
       "sitaramall97@gmail.com",
       "mohmedadm733@gmail.com",
+      "mohmedhesham2024@gmail.com",
       "muhammedreda6@gmail.com"
     ];
     return authorizedEmails.includes(
