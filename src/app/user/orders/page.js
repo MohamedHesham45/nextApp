@@ -26,7 +26,7 @@ export default function UserOrdersPage() {
       try {
         setLoading(true);
         const response = await fetch(
-          `/api/user/orders?userId=${user.id}`
+          `/api/user/orders?userId=${user.emailAddresses[0].emailAddress}`
         );
         if (!response.ok) {
           throw new Error(
