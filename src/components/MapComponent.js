@@ -49,7 +49,7 @@ export default function MapComponent() {
   return (
     <div
       id="map"
-      className="h-96 rounded-lg shadow-md"
+      className="h-96 rounded-lg shadow-md z-40"
     ></div>
   );
 }

@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ClientLayout from "./ClientLayout";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import { AuthProvider } from "./context/AuthContext";
 // import "leaflet/dist/leaflet.css";
 
 const geistSans = localFont({
@@ -54,6 +55,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
+    <AuthProvider>
     <ClerkProvider>
       <html lang="en">
         <body
@@ -75,5 +77,6 @@ export default function RootLayout({ children }) {
         </body>
       </html>
     </ClerkProvider>
+    </AuthProvider>
   );
 }
