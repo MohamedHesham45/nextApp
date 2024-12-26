@@ -48,15 +48,15 @@ export default function UserOrdersPage() {
       }
     }, [user]);
 
-  useEffect(() => {
-    if (isLoaded) {
-      if (!user) {
-        router.push("/sign-in");
-      } else {
-        fetchUserOrders();
-      }
-    }
-  }, [isLoaded, user, router, fetchUserOrders]);
+  // useEffect(() => {
+  //   if (isLoaded) {
+  //     if (!user) {
+  //       router.push("/sign-in");
+  //     } else {
+  //       fetchUserOrders();
+  //     }
+  //   }
+  // }, [isLoaded, user, router, fetchUserOrders]);
 
   const handleViewDetails = (order) => {
     setSelectedOrder(order);

@@ -1,5 +1,134 @@
-import { SignIn } from "@clerk/nextjs";
+"use client";
+import { useState } from "react";
+import LoadingSpinner from "@/components/LoadingSpinner";
+import { useAuth } from "@/app/context/AuthContext";
 
-export default function Page() {
-  return <SignIn />;
+export default function SignInModal({ isOpen, onClose, setModalType }) {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState("");
+  const [validationError, setValidationError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { login } = useAuth();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setValidationError("");
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const { error } = await response.json();
+        throw new Error(error || "Sign-In failed");
+      }
+
+      const data = await response.json();
+
+      const { token, profile } = data;
+      login(token, profile);
+      
+      console.log("Sign-In Successful:", data);
+      // alert("Sign-In Successful!");
+      onClose();
+    } catch (err) {
+      setValidationError("Username or password is incorrect.");
+      console.error(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleBackdropClick = (e) => {
+    if (e.target.id === "modal-backdrop") {
+      onClose();
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div
+      id="modal-backdrop"
+      onClick={handleBackdropClick}
+      className="fixed inset-0 backdrop-blur-lg flex items-center justify-center z-50 px-5 backdrop-brightness-75"
+    >
+      <div
+        className="bg-white p-6 rounded-md shadow-2xl w-96"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2 className="text-2xl font-bold mb-4">Sign In</h2>
+        {validationError && <p className="text-red-500 mb-4">{validationError}</p>}
+
+        {isLoading ? (
+          <LoadingSpinner />
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium mb-1">
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border rounded-md"
+              />
+            </div>
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium mb-1">
+                Password
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border rounded-md"
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-blue-500 rounded-full text-white py-2 hover:bg-blue-600"
+            >
+              Sign In
+            </button>
+          </form>
+        )}
+        <div className="mt-4 text-sm text-center">
+          Don’t have an account?{" "}
+          <button
+            onClick={() => setModalType('sign-up')}
+            className="text-blue-500 hover:underline"
+          >
+            Sign Up
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
+
