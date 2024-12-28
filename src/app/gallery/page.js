@@ -9,6 +9,7 @@ import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { useUser } from "@clerk/nextjs";
 import ShoppingCart from "@/components/ShoppingCart";
+import { useAuth } from "../context/AuthContext";
 
 export default function Gallery() {
   const [products, setProducts] = useState([]);
@@ -20,6 +21,7 @@ export default function Gallery() {
   const [isCartVisible, setIsCartVisible] =
     useState(false);
   const { user } = useUser();
+  const { email, userId } = useAuth();
   const [viewMode, setViewMode] =
     useState("carousel");
   const [selectedImages, setSelectedImages] =
@@ -383,7 +385,8 @@ export default function Gallery() {
         onUpdateItem={handleUpdateCartItem}
         onRemoveItem={handleRemoveFromCart}
         userEmail={
-          user?.primaryEmailAddress?.emailAddress
+          // user?.primaryEmailAddress?.emailAddress
+          email
         }
       />
       <button

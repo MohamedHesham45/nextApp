@@ -1,51 +1,51 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { Edit } from "lucide-react";
+
 
 const ProfileModal = ({ isOpen, onRequestClose }) => {
   const [formData, setFormData] = useState({
-    name: "",
+    centerArea: "",
     email: "",
-    password: "",
-    city: "",
     governorate: "",
+    name: "",
     neighborhood: "",
     phone: "",
-    centerArea: "",
   });
   const [isEditing, setIsEditing] = useState(false);
+  const [userProfile, setUserProfile] = useState(null);
 
   useEffect(() => {
-    /*
+    if (typeof window !== "undefined") {
+      const storedProfile = localStorage.getItem("userProfile");
+      setUserProfile(storedProfile);
+    }
+  }, []);
+
+  useEffect(() => {
     const fetchUserData = async () => {
-      const userId = JSON.parse(localStorage.getItem("userProfile")).userId;
+      if (!userProfile) {
+        console.log("User is not logged in");
+        return;
+      }
+
+      const userId = JSON.parse(userProfile).userId;
       try {
-        const response = await fetch(`api/user/profile/${userId}`);
+        const response = await fetch(`/api/user/profile/${userId}`);
         if (!response.ok) {
           throw new Error(`Error fetching user data: ${response.statusText}`);
         }
         const data = await response.json();
-        setFormData(data);
+        setFormData(data.profile);
+
+
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
     };
-    fetchUserData();
-    */
 
-    const userData = JSON.parse(localStorage.getItem("userProfile"));
-    if (userData) {
-      setFormData({
-        ...formData,
-        name: userData.name || "",
-        email: userData.email || "",
-        city: userData.city || "",
-        governorate: userData.governorate || "",
-        neighborhood: userData.neighborhood || "",
-        phone: userData.phone || "",
-        centerArea: userData.centerArea || "",
-      });
-    }
-  }, []);
+    fetchUserData();
+  }, [userProfile]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -57,25 +57,36 @@ const ProfileModal = ({ isOpen, onRequestClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    /*
+    const filteredData = {
+      centerArea: formData.centerArea,
+      email: formData.email,
+      governorate: formData.governorate,
+      name: formData.name,
+      neighborhood: formData.neighborhood,
+      phone: formData.phone,
+    };
     const userId = JSON.parse(localStorage.getItem("userProfile")).userId;
     try {
-      const response = await fetch(`api/user/profile/${userId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        `/api/user/profile/${userId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(filteredData),
+        }
+      );
       if (!response.ok) {
         throw new Error(`Error updating profile: ${response.statusText}`);
       }
       const data = await response.json();
       console.log("Profile updated successfully:", data);
+      setIsEditing(false);
     } catch (error) {
       console.error("Error updating profile:", error);
     }
-    */
+    console.log(formData); 
   };
 
   if (!isOpen) return null;
@@ -86,74 +97,153 @@ const ProfileModal = ({ isOpen, onRequestClose }) => {
       onClick={(e) => {
         if (e.target.id === "modal-backdrop") onRequestClose();
       }}
-      className="fixed inset-0 backdrop-blur-lg flex items-center justify-center z-50 px-5 backdrop-brightness-75"
+      className="direction-rtl fixed inset-0 backdrop-blur-lg flex items-center justify-center z-50 px-5 backdrop-brightness-75"
     >
       <div
         className="bg-white p-6 rounded-md shadow-2xl w-96"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-2xl font-bold mb-4">Profile</h2>
+        <div className="flex content-between justify-between">
+          <h2 className="text-2xl font-bold mb-4">الملف الشخصي</h2>
+          {!isEditing && (<div
+            className="cursor-pointer"
+            onClick={() => setIsEditing(true)}
+          >
+            <Edit size={24} className="text-blue-500 hover:text-blue-600" />
+          </div>)}
+        </div>
         {isEditing ? (
           <form onSubmit={handleSubmit} className="space-y-4">
-            {[
-              { label: "Name", id: "name" },
-              { label: "Email", id: "email" },
-              { label: "Password", id: "password" },
-              { label: "City", id: "city" },
-              { label: "Governorate", id: "governorate" },
-              { label: "Neighborhood", id: "neighborhood" },
-              { label: "Phone", id: "phone" },
-              { label: "Center Area", id: "centerArea" },
-            ].map(({ label, id }) => (
-              <div key={id}>
-                <label htmlFor={id} className="block text-sm font-medium mb-1">
-                  {label}
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium mb-1">
+                الاسم
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border rounded-md"
+              />
+            </div>
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium mb-1">
+                البريد الإلكتروني
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border rounded-md"
+              />
+            </div>
+            <div className="flex gap-2">
+              <div className="w-1/2">
+                <label htmlFor="centerArea" className="block text-sm font-medium mb-1">
+                  المدينة
                 </label>
                 <input
-                  type={id === "password" ? "password" : "text"}
-                  id={id}
-                  name={id}
-                  value={formData[id]}
+                  type="text"
+                  id="centerArea"
+                  name="centerArea"
+                  value={formData.centerArea}
                   onChange={handleChange}
-                  required={id !== "password"}
+                  required
                   className="w-full px-3 py-2 border rounded-md"
                 />
               </div>
-            ))}
+              <div className="w-1/2">
+                <label htmlFor="neighborhood" className="block text-sm font-medium mb-1">
+                  الحي
+                </label>
+                <input
+                  type="text"
+                  id="neighborhood"
+                  name="neighborhood"
+                  value={formData.neighborhood}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-3 py-2 border rounded-md"
+                />
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <div className="w-1/2">
+                <label
+                  htmlFor="governorate"
+                  className="block text-sm font-medium mb-1"
+                >
+                  المحافظة
+                </label>
+                <input
+                  type="text"
+                  id="governorate"
+                  name="governorate"
+                  value={formData.governorate}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-3 py-2 border rounded-md"
+                />
+              </div>
+              <div className="w-1/2">
+                <label
+                  htmlFor="phone"
+                  className="block text-sm font-medium mb-1"
+                >
+                  رقم الهاتف
+                </label>
+                <input
+                  type="text"
+                  id="phone"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-3 py-2 border rounded-md"
+                />
+              </div>
+            </div>
             <button
               type="submit"
               className="w-full bg-blue-500 text-white py-2 rounded-full hover:bg-blue-600"
             >
-              Save
+              حفظ
             </button>
           </form>
         ) : (
-          <div className="space-y-2">
-            {Object.entries(formData).map(
-              ([key, value]) =>
-                key !== "password" && (
-                  <p key={key}>
-                    <strong>
-                      {key.charAt(0).toUpperCase() + key.slice(1)}:
-                    </strong>{" "}
-                    {value}
-                  </p>
-                )
-            )}
-            <button
-              onClick={() => setIsEditing(true)}
-              className="w-full bg-blue-500 text-white py-2 rounded-full hover:bg-blue-600"
-            >
-              Edit
-            </button>
+          <div className="space-y-2 direction-rtl">
+            <p>
+              <strong>الاسم:</strong> {formData.name}
+            </p>
+            <p>
+              <strong>البريد الإلكتروني:</strong> {formData.email}
+            </p>
+            <p>
+              <strong>المدينة:</strong> {formData.centerArea}
+            </p>
+            <p>
+              <strong>الحي:</strong> {formData.neighborhood}
+            </p>
+            <p>
+              <strong>المحافظة:</strong> {formData.governorate}
+            </p>
+            <p>
+              <strong>رقم الهاتف:</strong> {formData.phone}
+            </p>
           </div>
+
         )}
-        <button
+        {/* <button
           onClick={onRequestClose}
           className="mt-4 w-full bg-gray-500 text-white py-2 rounded-full hover:bg-gray-600"
         >
           Close
-        </button>
+        </button> */}
       </div>
     </div>
   );

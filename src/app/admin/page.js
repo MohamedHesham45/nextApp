@@ -11,9 +11,11 @@ import ProductList from "@/components/ProductList";
 import ProductForm from "@/components/ProductForm";
 import CategoryManager from "@/components/CategoryManager";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { useAuth } from "../context/AuthContext";
 
 export default function AdminPage() {
-  const { user, isLoaded } = useUser();
+  // const { user, isLoaded } = useUser();
+  const {email, isLoaded} = useAuth();
   const router = useRouter();
   const [products, setProducts] = useState([]);
   const [editingProduct, setEditingProduct] =
@@ -24,18 +26,18 @@ export default function AdminPage() {
     []
   );
 
-  const isAuthorized = useCallback((user) => {
-    const authorizedEmails = [
-      "aliellool202020@gmail.com",
-      "sitaramall97@gmail.com",
-      "mohmedadm733@gmail.com",
-      "muhammedreda6@gmail.com",
-      "mohmedhesham2024@gmail.com"
-    ];
-    return authorizedEmails.includes(
-      user?.primaryEmailAddress?.emailAddress
-    );
-  }, []);
+  // const isAuthorized = useCallback((user) => {
+  //   const authorizedEmails = [
+  //     "aliellool202020@gmail.com",
+  //     "sitaramall97@gmail.com",
+  //     "mohmedadm733@gmail.com",
+  //     "muhammedreda6@gmail.com",
+  //     "mohmedhesham2024@gmail.com"
+  //   ];
+  //   return authorizedEmails.includes(
+  //     user?.primaryEmailAddress?.emailAddress
+  //   );
+  // }, []);
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -63,16 +65,16 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (isLoaded) {
-      if (!user) {
-        router.push("/sign-in");
-      } else if (!isAuthorized(user)) {
+      if (!email) {
         router.push("/");
-      } else if (
-        !localStorage.getItem(
-          "adminPasscodeVerified"
-        )
-      ) {
-        router.push("/verify-passcode");
+      // } else if (!isAuthorized(user)) {
+      //   router.push("/");
+      // } else if (
+      //   !localStorage.getItem(
+      //     "adminPasscodeVerified"
+      //   )
+      // ) {
+      //   router.push("/verify-passcode");
       } else {
         fetchProducts();
         const storedCategories =
@@ -86,8 +88,7 @@ export default function AdminPage() {
     }
   }, [
     isLoaded,
-    user,
-    isAuthorized,
+    email,
     router,
     fetchProducts,
   ]);
@@ -196,7 +197,7 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 direction-rtl">
       <h1 className="text-3xl font-bold mb-8">
         Product Management
       </h1>

@@ -4,9 +4,12 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function SignUpModal({ isOpen, onClose, setModalType }) {
   const [formData, setFormData] = useState({
-    name: "",
+    centerArea: "",
     email: "",
-    password: "",
+    governorate: "",
+    name: "",
+    neighborhood: "",
+    phone: "",
   });
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -25,7 +28,7 @@ export default function SignUpModal({ isOpen, onClose, setModalType }) {
     setMessage("");
     setError("");
     setIsLoading(true);
-    
+
     try {
       const response = await fetch("/api/auth/signup", {
         method: "POST",
@@ -40,17 +43,17 @@ export default function SignUpModal({ isOpen, onClose, setModalType }) {
         throw new Error(error || "Signup failed");
       }
 
-      if(response.ok){
+      if (response.ok) {
         setModalType("sign-in");
       }
 
       const data = await response.json();
-      
+
       setMessage(data.message);
       setFormData({ name: "", email: "", password: "" });
     } catch (err) {
       setError(err.message);
-    }finally {
+    } finally {
       setIsLoading(false);
     }
   };
@@ -62,28 +65,28 @@ export default function SignUpModal({ isOpen, onClose, setModalType }) {
   };
 
   if (!isOpen) return null;
-  
+
 
   return (
     <div
       id="modal-backdrop"
       onClick={handleBackdropClick}
-      className="fixed inset-0 backdrop-blur-lg flex items-center justify-center z-50 px-5 backdrop-brightness-75"
+      className="direction-rtl fixed inset-0 backdrop-blur-lg flex items-center justify-center z-50 px-5 backdrop-brightness-75"
     >
       <div
         className="bg-white p-6 rounded-md shadow-2xl w-96"
         onClick={(e) => e.stopPropagation()} // Prevent click inside modal from closing it
       >
-        <h2 className="text-2xl font-bold mb-4">Sign Up</h2>
+        <h1 className="text-2xl font-bold mb-4">حساب جديد</h1>
         {message && <p className="text-green-500">{message}</p>}
         {error && <p className="text-red-500">{error}</p>}
-        {isLoading ? ( 
+        {isLoading ? (
           <LoadingSpinner />
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="name" className="block text-sm font-medium mb-1">
-                Name
+                الأسم
               </label>
               <input
                 type="text"
@@ -97,7 +100,7 @@ export default function SignUpModal({ isOpen, onClose, setModalType }) {
             </div>
             <div>
               <label htmlFor="email" className="block text-sm font-medium mb-1">
-                Email
+                البريد الإلكتروني
               </label>
               <input
                 type="email"
@@ -111,7 +114,7 @@ export default function SignUpModal({ isOpen, onClose, setModalType }) {
             </div>
             <div>
               <label htmlFor="password" className="block text-sm font-medium mb-1">
-                Password
+                كلمة السر
               </label>
               <input
                 type="password"
@@ -123,21 +126,86 @@ export default function SignUpModal({ isOpen, onClose, setModalType }) {
                 className="w-full px-3 py-2 border rounded-md"
               />
             </div>
+
+            {/* Central Area and Governorate in one line */}
+            <div className="flex gap-2">
+              <div className="w-1/2">
+                <label htmlFor="centerArea" className="block text-sm font-medium mb-1">
+                  المنطقة المركزية
+                </label>
+                <input
+                  type="text"
+                  id="centerArea"
+                  name="centerArea"
+                  value={formData.centerArea}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-3 py-2 border rounded-md"
+                />
+              </div>
+              <div className="w-1/2">
+                <label htmlFor="governorate" className="block text-sm font-medium mb-1">
+                  المحافظة
+                </label>
+                <input
+                  type="text"
+                  id="governorate"
+                  name="governorate"
+                  value={formData.governorate}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-3 py-2 border rounded-md"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <div className="w-1/2">
+                <label htmlFor="neighborhood" className="block text-sm font-medium mb-1">
+                  الحي
+                </label>
+                <input
+                  type="text"
+                  id="neighborhood"
+                  name="neighborhood"
+                  value={formData.neighborhood}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-3 py-2 border rounded-md"
+                />
+              </div>
+              <div className="w-1/2">
+                <label htmlFor="phone" className="block text-sm font-medium mb-1">
+                  رقم الهاتف
+                </label>
+                <input
+                  type="text"
+                  id="phone"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-3 py-2 border rounded-md"
+                />
+              </div>
+            </div>
+
             <button
               type="submit"
               className="w-full bg-blue-500 text-white py-2 rounded-full hover:bg-blue-600"
             >
-              Sign Up
+              إنشاء حساب
             </button>
           </form>
+
         )}
         <div className="mt-4 text-sm text-center">
-          Already have an account?{" "}
+          هل لديك حساب بالفعل؟{" "}
           <button
             onClick={() => setModalType('sign-in')}
             className="text-blue-500 hover:underline"
           >
-            Sign In
+            تسجيل الدخول
           </button>
         </div>
       </div>

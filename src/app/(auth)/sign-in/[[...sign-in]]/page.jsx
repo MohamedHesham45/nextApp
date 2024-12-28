@@ -45,12 +45,12 @@ export default function SignInModal({ isOpen, onClose, setModalType }) {
 
       const { token, profile } = data;
       login(token, profile);
-      
+
       console.log("Sign-In Successful:", data);
       // alert("Sign-In Successful!");
       onClose();
     } catch (err) {
-      setValidationError("Username or password is incorrect.");
+      setValidationError("اسم المستخدم أو كلمة المرور غير صحيحة.");
       console.error(err.message);
     } finally {
       setIsLoading(false);
@@ -69,13 +69,13 @@ export default function SignInModal({ isOpen, onClose, setModalType }) {
     <div
       id="modal-backdrop"
       onClick={handleBackdropClick}
-      className="fixed inset-0 backdrop-blur-lg flex items-center justify-center z-50 px-5 backdrop-brightness-75"
+      className="direction-rtl fixed inset-0 backdrop-blur-lg flex items-center justify-center z-50 px-5 backdrop-brightness-75"
     >
       <div
         className="bg-white p-6 rounded-md shadow-2xl w-96"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-2xl font-bold mb-4">Sign In</h2>
+        <h1 className="text-2xl font-bold mb-4">تسجيل الدخول</h1>
         {validationError && <p className="text-red-500 mb-4">{validationError}</p>}
 
         {isLoading ? (
@@ -84,7 +84,7 @@ export default function SignInModal({ isOpen, onClose, setModalType }) {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium mb-1">
-                Email
+                البريد الإلكتروني
               </label>
               <input
                 type="email"
@@ -98,7 +98,7 @@ export default function SignInModal({ isOpen, onClose, setModalType }) {
             </div>
             <div>
               <label htmlFor="password" className="block text-sm font-medium mb-1">
-                Password
+                كلمة السر
               </label>
               <input
                 type="password"
@@ -114,17 +114,17 @@ export default function SignInModal({ isOpen, onClose, setModalType }) {
               type="submit"
               className="w-full bg-blue-500 rounded-full text-white py-2 hover:bg-blue-600"
             >
-              Sign In
+              تسجيل الدخول
             </button>
           </form>
         )}
         <div className="mt-4 text-sm text-center">
-          Don’t have an account?{" "}
+          لا تمتلك حساب؟{" "}
           <button
             onClick={() => setModalType('sign-up')}
             className="text-blue-500 hover:underline"
           >
-            Sign Up
+            إنشاء حساب
           </button>
         </div>
       </div>

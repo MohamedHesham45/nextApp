@@ -8,12 +8,16 @@ import React, {
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useAuth } from "@/app/context/AuthContext";
 
 export default function UserOrdersPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { user, isLoaded } = useUser();
+  // const { user, isLoaded } = useUser();
+  const { userId, isLoaded } = useAuth();
+  console.log(userId);
+  
   const router = useRouter();
   const [selectedOrder, setSelectedOrder] =
     useState(null);
@@ -22,11 +26,11 @@ export default function UserOrdersPage() {
 
   const fetchUserOrders =
     useCallback(async () => {
-      if (!user) return;
+      if (!userId) return;
       try {
         setLoading(true);
         const response = await fetch(
-          `/api/user/orders?userId=${user.emailAddresses[0].emailAddress}`
+          `/api/user/orders?userId=${userId}`
         );
         if (!response.ok) {
           throw new Error(
@@ -35,6 +39,8 @@ export default function UserOrdersPage() {
         }
         const data = await response.json();
         setOrders(data);
+        console.log(orders);
+        
       } catch (err) {
         console.error(
           "Error fetching orders:",
@@ -46,17 +52,17 @@ export default function UserOrdersPage() {
       } finally {
         setLoading(false);
       }
-    }, [user]);
+    }, [userId]);
 
-  // useEffect(() => {
-  //   if (isLoaded) {
-  //     if (!user) {
-  //       router.push("/sign-in");
-  //     } else {
-  //       fetchUserOrders();
-  //     }
-  //   }
-  // }, [isLoaded, user, router, fetchUserOrders]);
+  useEffect(() => {
+    if (isLoaded) {
+      if (!userId) {
+        router.push("/");
+      } else {
+        fetchUserOrders();
+      }
+    }
+  }, [isLoaded, userId, router, fetchUserOrders]);
 
   const handleViewDetails = (order) => {
     setSelectedOrder(order);

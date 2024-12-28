@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+.direction-rtl {
+  direction: rtl;
+  text-align: right;
+}
+
 /* :root {
   --background: #ffffff;
   --foreground: #171717;
