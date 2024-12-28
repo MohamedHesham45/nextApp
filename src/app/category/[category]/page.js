@@ -85,7 +85,7 @@ export default function CategoryPage() {
       (item) =>
         item._id === product._id &&
         JSON.stringify(item.selectedImages) ===
-          JSON.stringify(itemToAdd.selectedImages)
+        JSON.stringify(itemToAdd.selectedImages)
     );
 
     if (existingItemIndex !== -1) {
@@ -108,7 +108,7 @@ export default function CategoryPage() {
       cart
         .map((item) =>
           item._id === productId &&
-          JSON.stringify(item.selectedImages) ===
+            JSON.stringify(item.selectedImages) ===
             JSON.stringify(selectedImages)
             ? { ...item, quantity: newQuantity }
             : item
@@ -145,8 +145,8 @@ export default function CategoryPage() {
     setSelectedImages((prevSelected) =>
       prevSelected.includes(image)
         ? prevSelected.filter(
-            (img) => img !== image
-          )
+          (img) => img !== image
+        )
         : [...prevSelected, image]
     );
   };
@@ -243,9 +243,8 @@ export default function CategoryPage() {
                     <div key={index}>
                       <Image
                         src={image}
-                        alt={`${
-                          selectedProduct.title
-                        } - Image ${index + 1}`}
+                        alt={`${selectedProduct.title
+                          } - Image ${index + 1}`}
                         width={500}
                         height={500}
                         className="w-full h-full object-cover rounded-lg"
@@ -264,18 +263,16 @@ export default function CategoryPage() {
                     >
                       <Image
                         src={image}
-                        alt={`${
-                          selectedProduct.title
-                        } - Image ${index + 1}`}
+                        alt={`${selectedProduct.title
+                          } - Image ${index + 1}`}
                         width={200}
                         height={200}
-                        className={`w-full h-full object-cover rounded-lg ${
-                          selectedImages.includes(
-                            image
-                          )
+                        className={`w-full h-full object-cover rounded-lg ${selectedImages.includes(
+                          image
+                        )
                             ? "border-4 border-blue-500"
                             : ""
-                        }`}
+                          }`}
                         onClick={() =>
                           toggleImageSelection(
                             image

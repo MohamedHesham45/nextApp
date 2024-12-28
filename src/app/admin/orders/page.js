@@ -7,12 +7,14 @@ import React, {
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useAuth } from "@/app/context/AuthContext";
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { user, isLoaded } = useUser();
+  const {email} = useAuth();
   const router = useRouter();
   const [selectedOrder, setSelectedOrder] =
     useState(null);
@@ -21,28 +23,26 @@ export default function OrdersPage() {
 
   useEffect(() => {
     if (isLoaded) {
-      if (!user) {
-        router.push("/sign-in");
-      } else if (!isAuthorized(user)) {
+      if (!email) {
         router.push("/");
-      } else {
+      }  else {
         fetchOrders();
       }
     }
-  }, [isLoaded, user, router]);
+  }, [isLoaded, email, router]);
 
-  const isAuthorized = (user) => {
-    const authorizedEmails = [
-      "aliellool202020@gmail.com",
-      "sitaramall97@gmail.com",
-      "mohmedadm733@gmail.com",
-      "mohmedhesham2024@gmail.com",
-      "muhammedreda6@gmail.com"
-    ];
-    return authorizedEmails.includes(
-      user?.primaryEmailAddress?.emailAddress
-    );
-  };
+  // const isAuthorized = (user) => {
+  //   const authorizedEmails = [
+  //     "aliellool202020@gmail.com",
+  //     "sitaramall97@gmail.com",
+  //     "mohmedadm733@gmail.com",
+  //     "mohmedhesham2024@gmail.com",
+  //     "muhammedreda6@gmail.com"
+  //   ];
+  //   return authorizedEmails.includes(
+  //     user?.primaryEmailAddress?.emailAddress
+  //   );
+  // };
 
   const fetchOrders = async () => {
     try {
