@@ -20,7 +20,7 @@ export default function ShippingTypes() {
     const [errors, setErrors] = useState({
         name: '',
         description: ''
-    });    
+    });
 
     const { isLoggedIn, isLoaded } = useAuth();
     const router = useRouter();
@@ -51,46 +51,46 @@ export default function ShippingTypes() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-    
+
         // Reset errors
         setErrors({
             name: '',
             description: ''
         });
-    
+
         let hasError = false;
-    
+
         // Basic validation
         if (!formData.name || formData.name.trim() === "") {
             setErrors((prevErrors) => ({ ...prevErrors, name: "الاسم مطلوب" }));
             hasError = true;
         }
-    
+
         if (!formData.description || formData.description.trim() === "") {
             setErrors((prevErrors) => ({ ...prevErrors, description: "الوصف مطلوب" }));
             hasError = true;
         }
-    
+
         if (hasError) {
             setLoading(false);
             return;
         }
-    
+
         try {
-            const url = modalMode === 'add' 
+            const url = modalMode === 'add'
                 ? '/api/shippingType'
                 : `/api/shippingType/${selectedType._id}`;
-            
+
             const method = modalMode === 'add' ? 'POST' : 'PUT';
-    
+
             const response = await fetch(url, {
                 method,
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData)
             });
-    
+
             if (!response.ok) throw new Error("Operation failed");
-    
+
             await fetchShippingTypes();
             closeModal();
         } catch (error) {
@@ -99,7 +99,7 @@ export default function ShippingTypes() {
             setLoading(false);
         }
     };
-    
+
     const handleDelete = async (id) => {
         setSelectedType(shippingTypes.find(type => type._id === id));
         setModalMode('delete');
@@ -140,44 +140,44 @@ export default function ShippingTypes() {
     if (!isLoggedIn) return null;
 
     return (
-        <div className="container mx-auto px-4 py-8 rtl text-right">
+        <div className="container mx-auto px-4 py-8 rtl text-right ">
             <div className="flex justify-between mb-4">
+                <h1 className="text-3xl font-bold mr-0">أنواع الشحن</h1>
                 <button
                     onClick={() => openModal('add')}
                     className="bg-blue-600 text-white px-4 py-2 rounded flex items-center gap-2"
                 >
                     <Plus size={20} /> إضافة جديد
                 </button>
-                <h1 className="text-3xl font-bold mr-0">أنواع الشحن</h1>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {shippingTypes.map((type) => (
-                   <div key={type._id} className="border p-4 rounded shadow-lg hover:bg-gray-50" onClick={() => openModal('view', type)}>
-                   <div className="flex justify-between items-center mb-2">
-                       <div className="flex gap-2">
-                           <Trash2
-                               className="hover:cursor-pointer hover:text-red-700"
-                               onClick={(e) => {
-                                   e.stopPropagation(); 
-                                   handleDelete(type._id); 
-                                }}
-                           />
-                           <Edit
-                               className="hover:cursor-pointer hover:text-blue-700"
-                               onClick={(e) => {
-                                   e.stopPropagation(); 
-                                   openModal('edit', type); 
-                                }}
-                           />
-                       </div>
-                       <h3 className="text-xl font-semibold text-right">{type.name}</h3>
-                   </div>
-                   <h3 className="overflow-hidden text-ellipsis whitespace-nowrap text-gray-600 text-right">
-                       {type.description}
-                   </h3>
-               </div>
-               
+                    <div key={type._id} className="border p-4 rounded shadow-lg hover:bg-gray-50" onClick={() => openModal('view', type)}>
+                        <div className="flex justify-between items-center mb-2">
+                            <h3 className="text-xl font-semibold text-right">{type.name}</h3>
+                            <div className="flex gap-2">
+                                <Edit
+                                    className="hover:cursor-pointer hover:text-blue-700"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        openModal('edit', type);
+                                    }}
+                                />
+                                <Trash2
+                                    className="hover:cursor-pointer hover:text-red-700"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDelete(type._id);
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        <h3 className="overflow-hidden text-ellipsis whitespace-nowrap text-gray-600 text-right">
+                            {type.description}
+                        </h3>
+                    </div>
+
                 ))}
             </div>
 
@@ -203,7 +203,7 @@ export default function ShippingTypes() {
                                     </button>
                                 </div>
                             </div>
-                        ) :modalMode==='view'?(
+                        ) : modalMode === 'view' ? (
                             <div>
                                 <h2 className="text-xl font-semibold mb-4 text-right">
                                     عرض تفاصيل الشحن
@@ -222,7 +222,7 @@ export default function ShippingTypes() {
                                     </button>
                                 </div>
                             </div>
-                        ): (
+                        ) : (
                             <div>
                                 <h2 className="text-xl font-semibold mb-4 text-right">
                                     {modalMode === 'add' ? 'إضافة نوع شحن جديد' : 'تعديل نوع الشحن'}
@@ -234,8 +234,8 @@ export default function ShippingTypes() {
                                             type="text"
                                             value={formData.name}
                                             onChange={(e) => {
-                                                setFormData({...formData, name: e.target.value});
-                                                setErrors({...errors, name: ''});
+                                                setFormData({ ...formData, name: e.target.value });
+                                                setErrors({ ...errors, name: '' });
                                             }}
                                             className="w-full p-2 border rounded text-right"
                                         />
@@ -247,8 +247,8 @@ export default function ShippingTypes() {
                                         <textarea
                                             value={formData.description}
                                             onChange={(e) => {
-                                                setFormData({...formData, description: e.target.value});
-                                                setErrors({...errors, description: ''});
+                                                setFormData({ ...formData, description: e.target.value });
+                                                setErrors({ ...errors, description: '' });
                                             }}
                                             className="w-full p-2 border rounded text-right"
                                             rows="3"
