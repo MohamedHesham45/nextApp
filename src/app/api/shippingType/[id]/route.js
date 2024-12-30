@@ -18,8 +18,9 @@ export async function PUT(request, { params }) {
         const updateData = await request.json();
         const client = await clientPromise;
         const db = client.db("address");
+        delete updateData._id;
         if(updateData.name){
-            const existingShippingType = await db.collection("shippingType").findOne({ name: updateData.name });
+            const existingShippingType = await db.collection("shippingType").findOne({$and:[{name:updateData.name},{_id:{$ne:new ObjectId(params.id)}}] });
             if(existingShippingType){
                 return NextResponse.json({ error: "Shipping type already exists" }, { status: 400 });
             }
@@ -41,6 +42,7 @@ export async function DELETE(request, { params }) {
         if(shippingType.deletedCount===0){
             return NextResponse.json({ error: "Shipping type not found" }, { status: 404 });
         }
+        await db.collection("governorate").updateMany({},{ $pull: { shippingPrices: { shippingTypeId: params.id } } });
         return NextResponse.json({message:"Shipping type deleted successfully"});
     }catch(error){
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });

@@ -23,6 +23,7 @@ export async function POST(request) {
         }
         let shippingType = await db.collection("shippingType").insertOne({ name, description });
         shippingType=await db.collection("shippingType").findOne({ _id: shippingType.insertedId });
+        await db.collection("governorate").updateMany({},{ $push: { shippingPrices: { shippingTypeId: shippingType._id.toString(), price: 0 } } });
         return NextResponse.json(shippingType);
     }catch(error){
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
