@@ -1,89 +1,219 @@
-import React, {
-  useState,
-  useEffect,
-} from "react";
+import React, { useState, useEffect } from "react";
+import LoadingSpinner from "./LoadingSpinner";
+import { Trash2 } from "lucide-react";
 
-const CategoryManager = ({
-  onCategoryChange,
-  onDeleteCategory,
-}) => {
-  const [categories, setCategories] = useState(
-    []
-  );
-  const [newCategory, setNewCategory] =
-    useState("");
+const CategoryManager = ({ onCategoryChange, onDeleteCategory }) => {
+  const [categories, setCategories] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [newCategory, setNewCategory] = useState("");
+  const [minCount, setMinCount] = useState(1);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [categoryToDelete, setCategoryToDelete] = useState(null);
 
   useEffect(() => {
-    const storedCategories =
-      localStorage.getItem("categories");
-    if (storedCategories) {
-      setCategories(JSON.parse(storedCategories));
-    }
+    const fetchCategories = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch("/api/category");
+        if (response.ok) {
+          const data = await response.json();
+          setCategories(data.categories);
+        } else {
+          console.error("Failed to fetch categories");
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCategories();
   }, []);
 
-  const addCategory = () => {
-    if (
-      newCategory &&
-      !categories.includes(newCategory)
-    ) {
-      const updatedCategories = [
-        ...categories,
-        newCategory,
-      ];
-      setCategories(updatedCategories);
-      localStorage.setItem(
-        "categories",
-        JSON.stringify(updatedCategories)
-      );
-      setNewCategory("");
-      onCategoryChange(updatedCategories);
+  const addCategory = async () => {
+    if (newCategory && !categories.find((cat) => cat.name === newCategory)) {
+      try {
+        setIsLoading(true);
+        const response = await fetch("/api/category", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name: newCategory, minCount }),
+        });
+
+        if (response.ok) {
+          const createdCategory = await response.json();
+          const updatedCategories = [...categories, createdCategory];
+          setCategories(updatedCategories);
+          setNewCategory("");
+          setMinCount(1);
+          onCategoryChange(updatedCategories);
+          setIsModalOpen(false);
+        } else {
+          console.error("Failed to add category");
+        }
+      } catch (error) {
+        console.error("Error adding category:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    } else if (!newCategory) {
+      setErrorMessage("اسم الفئة مطلوب");
+    } else if (categories.find((cat) => cat.name === newCategory)) {
+      setErrorMessage("الفئة موجودة بالفعل");
     }
   };
 
-  const removeCategory = (categoryToRemove) => {
-    onDeleteCategory(categoryToRemove);
+  const handleDeleteCategory = async () => {
+    if (categoryToDelete) {
+      try {
+        setIsLoading(true);
+        const response = await fetch(`/api/category/${categoryToDelete._id}`, {
+          method: "DELETE",
+        });
+
+        if (response.ok) {
+          const updatedCategories = categories.filter(
+            (cat) => cat._id !== categoryToDelete._id
+          );
+          setCategories(updatedCategories);
+          onCategoryChange(updatedCategories);
+          setIsDeleteModalOpen(false);
+        } else {
+          console.error("Failed to delete category");
+        }
+      } catch (error) {
+        console.error("Error deleting category:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
   };
 
   return (
-    <div className="mb-4">
-      <h2 className="text-xl font-bold mb-2">
-        إدارة الفئات
-      </h2>
-      <div className="flex mb-2">
-        <input
-          type="text"
-          value={newCategory}
-          onChange={(e) =>
-            setNewCategory(e.target.value)
-          }
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mr-2"
-          placeholder="New category"
-        />
-        <button
-          onClick={addCategory}
-          className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-        >
-          إضافة
-        </button>
-      </div>
-      <div className="flex flex-wrap">
-        {categories.map((category, index) => (
-          <div
-            key={index}
-            className="bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2"
+    <div className="flex flex-col items-center justify-center p-4 w-full direction-rtl">
+      <div className="bg-gray-100 shadow-xl rounded-lg p-6 w-full">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-3xl font-bold mb-4 text-gray-800">
+            إدارة الفئات
+          </h2>
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mb-6"
           >
-            {category}
-            <button
-              onClick={() =>
-                removeCategory(category)
-              }
-              className="ml-2 text-red-500 font-bold"
-            >
-              ×
-            </button>
-          </div>
-        ))}
+            إضافة فئة جديدة
+          </button>
+        </div>
+        <div>
+          <h3 className="text-xl font-semibold text-gray-700 mb-5 text-center">
+            الفئات الحالية
+          </h3>
+          {isLoading ? (
+            <div className="flex justify-center items-center mt-4">
+              <LoadingSpinner />
+            </div>
+          ) : categories.length === 0 ? (
+            <div className="flex justify-center items-center mt-4 text-gray-600">
+              <p>لايوجد فئات</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {categories.map((category) => (
+                <div
+                  key={category._id}
+                  className="flex justify-between items-center bg-gray-200 p-3 rounded-lg shadow-sm"
+                >
+                  <div>
+                    <p className="text-gray-800 font-semibold">{category.name}</p>
+                    <p className="text-gray-600 text-sm">
+                      الحد الأدنى: {category.minCount}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setCategoryToDelete(category);
+                      setIsDeleteModalOpen(true);
+                    }}
+                    className="hover:text-red-700 font-bold text-lg"
+                  >
+                    <Trash2 />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50 direction-rtl">
+          <div className="bg-white p-6 rounded shadow-lg w-1/3">
+            <h3 className="text-xl font-semibold mb-4">إضافة فئة جديدة</h3>
+            {errorMessage && (
+              <p className="text-red-500 text-sm mb-4">{errorMessage}</p>
+            )}
+            <input
+              type="text"
+              value={newCategory}
+              onChange={(e) => setNewCategory(e.target.value)}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-4"
+              placeholder="اسم الفئة"
+            />
+            <input
+              type="number"
+              value={minCount}
+              onChange={(e) => setMinCount(Number(e.target.value))}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-4"
+              placeholder="الحد الأدنى للعدد"
+              min="1"
+            />
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={addCategory}
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              >
+                إضافة
+              </button>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              >
+                إلغاء
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50 direction-rtl">
+          <div className="bg-white p-6 rounded shadow-lg w-1/3">
+            <h3 className="text-xl font-semibold mb-4">تأكيد الحذف</h3>
+            <p className="text-gray-700 mb-4">
+              هل أنت متأكد أنك تريد حذف الفئة: {categoryToDelete?.name}؟
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={handleDeleteCategory}
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              >
+                حذف
+              </button>
+              <button
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              >
+                إلغاء
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
