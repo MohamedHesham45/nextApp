@@ -8,6 +8,9 @@ import AdminPage from "../admin/page";
 import AllUsers from "../all-users/page";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import CategoryManager from "@/components/CategoryManager";
+import ShippingTypes from "../shipping-type/page";
+import Governorates from "../governorate/page";
+import CustomizePage from "../customize/page";
 
 export default function AdminDashboard() {
   const [selectedComponent, setSelectedComponent] = useState("dashboard");
@@ -57,7 +60,9 @@ export default function AdminDashboard() {
     },
     adminpage: { component: <AdminPage />, label: "إدارة المنتجات" },
     allusers: { component: <AllUsers />, label: "كل المستخدمين" },
-
+    shippingtype: { component: <ShippingTypes />, label: "نوع الشحن" },
+    governorates: { component: <Governorates />, label: "المحافظات" },
+    customizepage: { component: <CustomizePage />, label: "الحقول المخصصة" },
   };
 
   const renderComponent = () => {
