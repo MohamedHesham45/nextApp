@@ -104,6 +104,7 @@ export async function POST(request) {
       category,
       price,
       priceAfterDiscount,
+      quantity
     } = Object.fromEntries(formData.entries());
     const existingCategory=await db.collection("categories").findOne({_id:new ObjectId(categoryId)})
     if(!existingCategory){
@@ -114,6 +115,7 @@ export async function POST(request) {
     }
     price=parseInt(price)
     priceAfterDiscount=parseInt(priceAfterDiscount)
+    quantity=parseInt(quantity)
     if(priceAfterDiscount>price){
       return NextResponse.json({error:"Price after discount cannot be greater than price"},{status:400})
     }
@@ -122,6 +124,9 @@ export async function POST(request) {
     }
     if(price<0){
       return NextResponse.json({error:"Price cannot be less than 0"},{status:400})
+    }
+    if(quantity<0){
+      return NextResponse.json({error:"Quantity cannot be less than 0"},{status:400})
     }
     const existingProduct=await db.collection("products").findOne({title})
     if(existingProduct){
@@ -153,6 +158,7 @@ export async function POST(request) {
       referenceCode,
       discountPercentage,
       priceAfterDiscount,
+      quantity
     };
 
     const result = await db.collection("products").insertOne(newProduct);

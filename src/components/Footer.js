@@ -1,4 +1,5 @@
-import React from "react";
+'use client'
+import React, { useEffect, useState } from "react";
 import {
   Facebook,
   Phone,
@@ -6,7 +7,23 @@ import {
 } from "lucide-react";
 
 export default function Footer() {
-
+  const [whatsappNumber, setWhatsappNumber] = useState('');
+  const [email, setEmail] = useState('');
+ 
+  const fetchEmail = async () => {
+    const response = await fetch('/api/customize?name=ايميل التواصل');
+    const data = await response.json();
+    setEmail(data[0].value);
+  };
+  const fetchWhatsappNumber = async () => {
+    const response = await fetch('/api/customize?name=رقم الواتس');
+    const data = await response.json();
+    setWhatsappNumber(data[0].value);
+  };
+  useEffect(() => {
+    fetchWhatsappNumber();
+    fetchEmail();
+  }, []);
   return (
     <footer className="bg-gray-800 text-white py-8">
       <div className="container mx-auto px-4">
@@ -25,18 +42,18 @@ export default function Footer() {
               Contact Us
             </h4>
             <a
-              href="tel:+201223821206"
+              href={`tel:${whatsappNumber||'+201223821206'}`}
               className="flex items-center justify-center md:justify-start text-gray-400 hover:text-white transition duration-300"
             >
               <Phone className="mr-2" size={18} />
-              +20 122 382 1206
+              {whatsappNumber||'+20 122 382 1206'}
             </a>
             <a
-              href="mailto:sitaramall97@gmail.com"
+              href={`mailto:${email||'sitaramall97@gmail.com'}`}
               className="flex items-center justify-center md:justify-start text-gray-400 hover:text-white transition duration-300 mt-2"
             >
               <Mail className="mr-2" size={18} />
-              sitaramall97@gmail.com
+              {email||'sitaramall97@gmail.com'}
             </a>
           </div>
           <div className="w-full md:w-1/3 text-center md:text-right">
