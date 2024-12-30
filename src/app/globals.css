@@ -2,10 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  font-family: 'Cairo', sans-serif;
+}
+
+
+
 .direction-rtl {
   direction: rtl;
   text-align: right;
 }
+
+.truncate-lines {
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 
 /* :root {
   --background: #ffffff;

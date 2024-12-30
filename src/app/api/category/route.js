@@ -29,8 +29,14 @@ export async function POST(request) {
     if(!minCount){
         minCount = 1;
     }
-    await db.collection("categories").insertOne({ name , minCount });
-    return NextResponse.json({ message: "Category created successfully" });
+    const result = await db.collection("categories").insertOne({ name , minCount });
+    const newCategory = {
+      _id: result.insertedId, // MongoDB ObjectId
+      name,
+      minCount,
+    };
+    return NextResponse.json(newCategory, { status: 200 });
+    // return NextResponse.json({ message: "Category created successfully" });
   }catch(error){
     console.error("Error creating category:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

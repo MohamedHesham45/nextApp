@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import ProductCard from "./ProductCard";
+import { Edit, Trash2 } from "lucide-react";
 
 const ProductList = ({
   products,
@@ -19,18 +20,18 @@ const ProductList = ({
     selectedCategory === "All"
       ? products
       : products.filter(
-          (product) =>
-            product.category === selectedCategory
-        );
+        (product) =>
+          product.category === selectedCategory
+      );
 
   return (
-    <div>
+    <div className="">
       <div className="mb-4">
         <label
           htmlFor="category-filter"
           className="mr-2"
         >
-          Filter by category:
+          تصفية حسب الفئة: 
         </label>
         <select
           id="category-filter"
@@ -38,7 +39,7 @@ const ProductList = ({
           onChange={(e) =>
             setSelectedCategory(e.target.value)
           }
-          className="border rounded py-2 px-3"
+          className="border rounded "
         >
           {categories.map((category, index) => (
             <option key={index} value={category}>
@@ -47,7 +48,10 @@ const ProductList = ({
           ))}
         </select>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <h3 className="text-xl font-semibold text-gray-700 mb-5 text-center">
+        المنتجات الحالية
+      </h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4  direction-rtl">
         {filteredProducts.map((product) => (
           <ProductCard
             key={product._id}

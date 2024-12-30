@@ -5,9 +5,10 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [images, setImages] = useState([]);
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState({});
   const [price, setPrice] = useState("");
   const [priceAfterDiscount, setPriceAfterDiscount] = useState("");
+  const [quantity, setQuantity] = useState("");
 
   useEffect(() => {
     if (initialData) {
@@ -17,13 +18,15 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories }) => {
       setCategory(initialData.category || "");
       setPrice(initialData.price || "");
       setPriceAfterDiscount(initialData.priceAfterDiscount || "");
+      setQuantity(initialData.quantity || "");
     } else {
       setTitle("");
       setDescription("");
       setImages([]);
-      setCategory("");
+      setCategory({});
       setPrice("");
       setPriceAfterDiscount("");
+      setQuantity("");
     }
   }, [initialData]);
 
@@ -31,13 +34,14 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories }) => {
     e.preventDefault();
 
     const formData = new FormData();
-    
+
     formData.append("title", title);
     formData.append("description", description);
-    formData.append("category", category);//= test
+    formData.append("category", category.name);
     formData.append("price", parseFloat(price));
     formData.append("priceAfterDiscount", parseFloat(priceAfterDiscount));
-    formData.append("categoryId", "676d34016aec71b5fe591e86");
+    formData.append("categoryId", category._id);
+    formData.append("quantity", parseInt(quantity, 10));
     images.forEach((image) => {
       formData.append(`images`, image);
     });
@@ -55,9 +59,9 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mb-8 bg-white shadow-md rounded px-8 pt-6 pb-8 ">
-      <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="title">
+    <form onSubmit={handleSubmit} className="direction-rtl">
+      <div className="mb-4 ">
+        <label className="block text-gray-700 text-sm font-bold mb-2 " htmlFor="title">
           العنوان
         </label>
         <input
@@ -81,51 +85,67 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories }) => {
           required
         />
       </div>
-      <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="category">
-          الفئه
-        </label>
-        <select
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          id="category"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          required
-        >
-          <option value="">حدد الفئة</option>
-          {categories.map((cat, index) => (
-            <option key={index} value={cat}>
-              {cat}
-            </option>
-          ))}
-        </select>
+      <div className="flex justify-between gap-2">
+        <div className="mb-4 w-full">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="category">
+            الفئه
+          </label>
+          <select
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="category"
+            onChange={(e) => setCategory(JSON.parse(e.target.value))}
+            required
+          >
+            <option value="">حدد الفئة</option>
+            {categories.map((cat, index) => (
+              <option key={index} value={JSON.stringify(cat)}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="mb-4 w-full">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="quantity">
+            الكمية
+          </label>
+          <input
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="quantity"
+            type="number"
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+            required
+          />
+        </div>
       </div>
-      <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="price">
-          السعر
-        </label>
-        <input
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          id="price"
-          type="number"
-          step="0.01"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-          required
-        />
-      </div>
-      <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="priceAfterDiscount">
-          السعر بعد التخفيض
-        </label>
-        <input
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          id="priceAfterDiscount"
-          type="number"
-          step="0.1"
-          value={priceAfterDiscount}
-          onChange={(e) => setPriceAfterDiscount(e.target.value)}
-        />
+      <div className="flex justify-between gap-2">
+        <div className="mb-4 w-full">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="price">
+            السعر
+          </label>
+          <input
+            className="shadow appearance-none border rounded w-full py-2 text-gray-700 focus:outline-none focus:shadow-outline"
+            id="price"
+            type="number"
+            step="0.01"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            required
+          />
+        </div>
+        <div className="mb-4 w-full">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="priceAfterDiscount">
+            السعر بعد التخفيض
+          </label>
+          <input
+            className="shadow appearance-none border rounded w-full py-2 text-gray-700 focus:outline-none focus:shadow-outline"
+            id="priceAfterDiscount"
+            type="number"
+            step="0.1"
+            value={priceAfterDiscount}
+            onChange={(e) => setPriceAfterDiscount(e.target.value)}
+          />
+        </div>
       </div>
       <div className="mb-4">
         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="images">
@@ -158,14 +178,14 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories }) => {
           </div>
         </div>
       )}
-      <div className="flex items-center justify-between">
+      <div className="flex justify-end gap-2">
         <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           type="submit"
         >
           {initialData ? "تحديث المنتج" : "إضافة المنتج"}
         </button>
-        {initialData && (
+        
           <button
             className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             type="button"
@@ -173,7 +193,7 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories }) => {
           >
             إلغاء
           </button>
-        )}
+        
       </div>
     </form>
   );

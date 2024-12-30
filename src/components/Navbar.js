@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Menu, ChevronDown, LogOut, User } from "lucide-react";
 import SignInModal from "@/app/(auth)/sign-in/[[...sign-in]]/page";
@@ -17,6 +17,18 @@ export default function Navbar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const dropdownRef = useRef(null); 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -45,8 +57,6 @@ export default function Navbar() {
     ? role === "admin"
       ? [
         { href: "/admin-dashboard", label: "لوحة التحكم" },
-        // { href: "/admin/orders", label: "إدارة الطلبات" },
-        // { href: "/admin", label: "إدارة المحتوى" },
       ]
       : [{ href: "/user/orders", label: "إدارة الطلبات" }]
     : [];
@@ -83,7 +93,7 @@ export default function Navbar() {
 
             {/* Logged In Check Start */}
             {isLoggedIn && (
-              <div className="relative">
+              <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={toggleDropdown}
                   className="flex items-center space-x-2 hover:rounded-md hover:bg-gray-200"

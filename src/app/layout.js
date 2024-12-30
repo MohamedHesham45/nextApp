@@ -6,18 +6,22 @@ import Footer from "@/components/Footer";
 import ClientLayout from "./ClientLayout";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { AuthProvider } from "./context/AuthContext";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import 'swiper/swiper-bundle.css';
 // import "leaflet/dist/leaflet.css";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+// const geistSans = localFont({
+//   src: "./fonts/GeistVF.woff",
+//   variable: "--font-geist-sans",
+//   weight: "100 900",
+// });
+// const geistMono = localFont({
+//   src: "./fonts/GeistMonoVF.woff",
+//   variable: "--font-geist-mono",
+//   weight: "100 900",
+// });
 
 // export const metadata = {
 //   title: "Create Next App",
@@ -56,27 +60,35 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <AuthProvider>
-    <ClerkProvider>
-      <html lang="en">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          <ClientLayout>
-            <Navbar />
-            <main className="pt-12">
-              {" "}
-              {/* Add padding-top to account for fixed navbar */}
-              {children}
-              <WhatsAppButton
-                phoneNumber="201223821206" // Replace with your actual WhatsApp number
-                message="Hello! I have a question about your products." // Customize this message
-              />
-            </main>
-            <Footer />
-          </ClientLayout>
-        </body>
-      </html>
-    </ClerkProvider>
+      <ClerkProvider>
+        <html lang="en">
+          <head>
+            <link rel="preconnect" href="https://fonts.googleapis.com" />
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+            <link
+              href="https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&display=swap"
+              rel="stylesheet"
+            />
+          </head>
+          <body
+          // className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          >
+            <ClientLayout>
+              <Navbar />
+              <main className="pt-12">
+                {" "}
+                {/* Add padding-top to account for fixed navbar */}
+                {children}
+                <WhatsAppButton
+                  phoneNumber="201223821206" // Replace with your actual WhatsApp number
+                  message="Hello! I have a question about your products." // Customize this message
+                />
+              </main>
+              <Footer />
+            </ClientLayout>
+          </body>
+        </html>
+      </ClerkProvider>
     </AuthProvider>
   );
 }

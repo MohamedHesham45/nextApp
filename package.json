@@ -26,7 +26,8 @@
     "react-dom": "^18",
     "react-responsive-carousel": "^3.2.23",
     "sharp": "^0.31.3",
-    "svix": "^1.37.0"
+    "svix": "^1.37.0",
+    "swiper": "^11.1.15"
   },
   "devDependencies": {
     "@types/react": "19.0.2",

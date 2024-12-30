@@ -3,21 +3,16 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
 import UserOrdersPage from "../user/orders/page";
-import CategoryPage from "../category/[category]/page";
 import OrdersPage from "../admin/orders/page";
 import AdminPage from "../admin/page";
 import AllUsers from "../all-users/page";
 import LoadingSpinner from "@/components/LoadingSpinner";
-
-const DashboardContent = () => (
-  <div>
-    <p>test</p>
-  </div>
-);
+import CategoryManager from "@/components/CategoryManager";
 
 export default function AdminDashboard() {
   const [selectedComponent, setSelectedComponent] = useState("dashboard");
   const { isLoggedIn, isLoaded } = useAuth();
+  const [categories, setCategories] = useState([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -27,21 +22,46 @@ export default function AdminDashboard() {
     }
   }, [isLoaded, isLoggedIn, router]);
 
+  const handleCategoryChange = (
+    newCategories
+  ) => {
+    setCategories(newCategories);
+    localStorage.setItem(
+      "categories",
+      JSON.stringify(newCategories)
+    );
+  };
+
+  const handleDeleteCategory = (
+    categoryToDelete
+  ) => {
+    const updatedCategories = categories.filter(
+      (category) => category !== categoryToDelete
+    );
+    setCategories(updatedCategories);
+    localStorage.setItem(
+      "categories",
+      JSON.stringify(updatedCategories)
+    );
+  };
+
+  const componentsMap = {
+    // userorders: { component: <UserOrdersPage />, label: "طلبات المستخدم" },
+    orders: { component: <OrdersPage />, label: "الطلبات" },
+    category: {
+      component: <CategoryManager
+        categories={categories}
+        onCategoryChange={handleCategoryChange}
+        onDeleteCategory={handleDeleteCategory}
+      />, label: "إدارة الفئات"
+    },
+    adminpage: { component: <AdminPage />, label: "إدارة المنتجات" },
+    allusers: { component: <AllUsers />, label: "كل المستخدمين" },
+
+  };
+
   const renderComponent = () => {
-    switch (selectedComponent) {
-      case "userorders":
-        return <UserOrdersPage />;
-      case "category":
-        return <CategoryPage />;
-      case "orders":
-        return <OrdersPage />;
-      case "adminpage":
-        return <AdminPage />;
-      case "allusers":
-        return <AllUsers />;
-      default:
-        return <DashboardContent />;
-    }
+    return componentsMap[selectedComponent]?.component || <OrdersPage />;
   };
 
   if (!isLoaded) {
@@ -52,46 +72,24 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col md:flex-row">
+    <div className="flex min-h-screen flex-col md:flex-row direction-rtl">
+      <div className="w-full md:w-64 bg-gray-100 p-5 border-l border-gray-300">
+        <ul className="list-none p-0">
+          {Object.entries(componentsMap).map(([key, { label }]) => (
+            <li
+              key={key}
+              className={`my-2 cursor-pointer hover:text-blue-500 hover:bg-gray-200 p-2 rounded ${selectedComponent === key ? "bg-blue-500 text-white" : ""
+                }`}
+              onClick={() => setSelectedComponent(key)}
+            >
+              {label}
+            </li>
+          ))}
+        </ul>
+      </div>
 
       <div className="flex-1 p-5">
         {renderComponent()}
-      </div>
-
-
-      <div className="w-full md:w-64 bg-gray-100 p-5 border-l border-gray-300 direction-rtl">
-        <ul className="list-none p-0">
-          <li
-            className={`my-2 cursor-pointer hover:text-blue-500 hover:bg-gray-200 p-2 rounded ${selectedComponent === "userorders" ? "bg-blue-500 text-white" : ""}`}
-            onClick={() => setSelectedComponent("userorders")}
-          >
-            طلبات المستخدم
-          </li>
-          <li
-            className={`my-2 cursor-pointer hover:text-blue-500 hover:bg-gray-200 p-2 rounded ${selectedComponent === "category" ? "bg-blue-500 text-white" : ""}`}
-            onClick={() => setSelectedComponent("category")}
-          >
-            الفئة
-          </li>
-          <li
-            className={`my-2 cursor-pointer hover:text-blue-500 hover:bg-gray-200 p-2 rounded ${selectedComponent === "orders" ? "bg-blue-500 text-white" : ""}`}
-            onClick={() => setSelectedComponent("orders")}
-          >
-            الطلبات
-          </li>
-          <li
-            className={`my-2 cursor-pointer hover:text-blue-500 hover:bg-gray-200 p-2 rounded ${selectedComponent === "adminpage" ? "bg-blue-500 text-white" : ""}`}
-            onClick={() => setSelectedComponent("adminpage")}
-          >
-            صفحة المدير
-          </li>
-          <li
-            className={`my-2 cursor-pointer hover:text-blue-500 hover:bg-gray-200 p-2 rounded ${selectedComponent === "allusers" ? "bg-blue-500 text-white" : ""}`}
-            onClick={() => setSelectedComponent("allusers")}
-          >
-            كل المستخدمين
-          </li>
-        </ul>
       </div>
     </div>
   );
