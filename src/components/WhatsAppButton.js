@@ -1,16 +1,26 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-const WhatsAppButton = ({
-  phoneNumber,
-  message,
-}) => {
+const WhatsAppButton = () => {
+  const [whatsappNumber, setWhatsappNumber] = useState("");
+useEffect(()=>{
+  fetchCustomFields();
+},[])
+const fetchCustomFields = async () => {
+  const response = await fetch("/api/customize?name=رقم الواتس");
+  if (!response.ok) throw new Error("Failed to fetch custom fields");
+  const data = await response.json();
+  setWhatsappNumber(data[0].value);
+};
+
+const message = "Hello! I have a question about your products.";
+
   const handleClick = () => {
     const encodedMessage =
       encodeURIComponent(message);
     window.open(
-      `https://wa.me/${phoneNumber}?text=${encodedMessage}`,
+      `https://wa.me/${whatsappNumber||"201223821206"}?text=${encodedMessage}`,
       "_blank"
     );
   };
