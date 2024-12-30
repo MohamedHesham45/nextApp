@@ -11,6 +11,7 @@ export async function GET(request) {
     if (role) {
       query.role = role;
     }
+    query = { $and: [{ role: { $exists: true } }, { role: { $ne: "super-admin" } }] };
     const profiles = await db.collection("profiles").find(query).toArray();
     if (!profiles || profiles.length === 0) {
       return NextResponse.json({ error: "Profile not found" }, { status: 404 });
