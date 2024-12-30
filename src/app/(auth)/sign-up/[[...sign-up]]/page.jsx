@@ -4,12 +4,12 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function SignUpModal({ isOpen, onClose, setModalType }) {
   const [formData, setFormData] = useState({
-    centerArea: "",
-    email: "",
-    governorate: "",
     name: "",
-    neighborhood: "",
-    phone: "",
+    email: "",
+    // centerArea: "",
+    // governorate: "",  
+    // neighborhood: "",
+    // phone: "",
   });
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -128,7 +128,7 @@ export default function SignUpModal({ isOpen, onClose, setModalType }) {
             </div>
 
             {/* Central Area and Governorate in one line */}
-            <div className="flex gap-2">
+            {/* <div className="flex gap-2">
               <div className="w-1/2">
                 <label htmlFor="centerArea" className="block text-sm font-medium mb-1">
                   المنطقة المركزية
@@ -188,7 +188,7 @@ export default function SignUpModal({ isOpen, onClose, setModalType }) {
                   className="w-full px-3 py-2 border rounded-md"
                 />
               </div>
-            </div>
+            </div> */}
 
             <button
               type="submit"
