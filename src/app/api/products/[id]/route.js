@@ -37,7 +37,7 @@ export async function PUT(request, { params }) {
     }
     const title=formData.get("title")
     if(title){
-      const existingProductWithTitle=await db.collection("products").findOne({title})
+      const existingProductWithTitle=await db.collection("products").findOne({$and:[{title},{_id:{$ne:new ObjectId(params.id)}}]})
       if(existingProductWithTitle){
         return NextResponse.json({error:"Product with this title already exists"},{status:400})
       }

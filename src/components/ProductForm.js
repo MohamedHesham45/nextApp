@@ -12,13 +12,15 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories }) => {
 
   useEffect(() => {
     if (initialData) {
+      const category=categories.find(cat=>cat._id===initialData.categoryId)
       setTitle(initialData.title);
       setDescription(initialData.description);
       setImages(initialData.images || []);
-      setCategory(initialData.category || "");
+      setCategory(category||{});
       setPrice(initialData.price || "");
       setPriceAfterDiscount(initialData.priceAfterDiscount || "");
       setQuantity(initialData.quantity || "");
+      
     } else {
       setTitle("");
       setDescription("");
@@ -93,6 +95,7 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories }) => {
           <select
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="category"
+            value={JSON.stringify(category)}
             onChange={(e) => setCategory(JSON.parse(e.target.value))}
             required
           >
