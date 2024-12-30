@@ -144,19 +144,20 @@ export default function CustomizePage() {
     return (
         <div className="container mx-auto px-4 py-8 rtl text-right">
             <div className="flex justify-between mb-4">
+                <h1 className="text-3xl font-bold mr-0">إدارة الحقول المخصصة</h1>
                 <button
                     onClick={() => openModal("add")}
                     className="bg-blue-600 text-white px-4 py-2 rounded flex items-center gap-2"
                 >
                     <Plus size={20} /> إضافة جديد
                 </button>
-                <h1 className="text-3xl font-bold mr-0">إدارة الحقول المخصصة</h1>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {customFields.map((field) => (
                     <div key={field._id} className="border p-4 rounded shadow-lg hover:bg-gray-50">
                         <div className="flex justify-between items-center mb-2">
+                                <h3 className="text-xl font-semibold text-right">{field.name}</h3>
                             <div className="flex gap-2">
                                 
                                 <Edit
@@ -164,7 +165,6 @@ export default function CustomizePage() {
                                     onClick={() => openModal("edit", field)}
                                 />
                             </div>
-                            <h3 className="text-xl font-semibold text-right">{field.name}</h3>
                         </div>
                         <p className="overflow-hidden text-ellipsis whitespace-nowrap text-gray-600 text-right">{field.value}</p>
                     </div>

@@ -167,31 +167,44 @@ export default function Governorates() {
   return (
     <div className="container mx-auto px-4 py-8 rtl">
       <div className="flex justify-between mb-4">
+        <h1 className="text-3xl font-bold">المحافظات</h1>
         <button
           onClick={() => openModal("add")}
           className="bg-blue-600 text-white px-4 py-2 rounded flex items-center gap-2"
         >
           <Plus size={20} /> إضافة محافظة
         </button>
-        <h1 className="text-3xl font-bold">المحافظات</h1>
       </div>
 
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border">
           <thead>
-            <tr className="bg-gray-100">
-              <th className="border p-2">الإجراءات</th>
+            <tr className="bg-gray-100 text-center">
+              <th className="border p-2">المحافظة</th>
               {shippingTypes.map((type) => (
                 <th key={type._id} className="border p-2">
                   {type.name}
                 </th>
               ))}
-              <th className="border p-2">المحافظة</th>
+              <th className="border p-2">الإجراءات</th>
             </tr>
           </thead>
           <tbody>
             {governorates.map((governorate) => (
               <tr key={governorate._id}>
+                <td className="border p-2 text-center">{governorate.nameAr}</td>
+                {shippingTypes.map((type) => {
+                  const price = governorate.shippingPrices.find(
+                    (sp) => sp.shippingTypeId === type._id
+                  )?.price;
+                  return (
+                    <td key={type._id} className="border p-2 text-center">
+                      {price !== undefined && price !== null
+                        ? price.toLocaleString()
+                        : "-"}
+                    </td>
+                  );
+                })}
                 <td className="border p-2">
                   <div className="flex justify-center gap-2">
                     <button
@@ -214,19 +227,6 @@ export default function Governorates() {
                     </button>
                   </div>
                 </td>
-                {shippingTypes.map((type) => {
-                  const price = governorate.shippingPrices.find(
-                    (sp) => sp.shippingTypeId === type._id
-                  )?.price;
-                  return (
-                    <td key={type._id} className="border p-2 text-center">
-                      {price !== undefined && price !== null
-                        ? price.toLocaleString()
-                        : "-"}
-                    </td>
-                  );
-                })}
-                <td className="border p-2 text-center">{governorate.nameAr}</td>
               </tr>
             ))}
           </tbody>
