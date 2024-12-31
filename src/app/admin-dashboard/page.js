@@ -11,6 +11,7 @@ import CategoryManager from "@/components/CategoryManager";
 import ShippingTypes from "../shipping-type/page";
 import Governorates from "../governorate/page";
 import CustomizePage from "../customize/page";
+import Neighborhoods from "../neighborhood/page";
 
 export default function AdminDashboard() {
   const [selectedComponent, setSelectedComponent] = useState("dashboard");
@@ -19,9 +20,10 @@ export default function AdminDashboard() {
   const router = useRouter();
 
   useEffect(() => {
-    if (isLoaded && !isLoggedIn) {
-      alert("You are not logged in. Redirecting to the home page.");
-      router.push("/");
+    if (isLoaded) {
+      if (!isLoggedIn) {
+        router.push("/");
+      }
     }
   }, [isLoaded, isLoggedIn, router]);
 
@@ -62,6 +64,7 @@ export default function AdminDashboard() {
     allusers: { component: <AllUsers />, label: "كل المستخدمين" },
     shippingtype: { component: <ShippingTypes />, label: "نوع الشحن" },
     governorates: { component: <Governorates />, label: "المحافظات" },
+    neighborhoods: { component: <Neighborhoods />, label: "المناطق" },
     customizepage: { component: <CustomizePage />, label: "الحقول المخصصة" },
   };
 

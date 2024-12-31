@@ -37,10 +37,10 @@ const ProductCard = ({
             className="object-cover w-full h-full"
           />
         )}
-        {product.quantity == 0 && <span className="absolute top-2 left-2 bg-blue-600 text-white text-sm font-bold px-2 py-1 rounded-md shadow-lg z-50">نفذت الكمية</span>}
-        <span className="absolute top-2 right-2 bg-red-600 text-white text-sm font-bold px-2 py-1 rounded-md shadow-lg z-50">
+        {product.quantity == 0 && <span className="absolute top-2 left-2 bg-blue-600 text-white text-sm font-bold px-2 py-1 rounded-md shadow-lg z-10">نفذت الكمية</span>}
+        {product.discountPercentage > 0 && <span className="absolute top-2 right-2 bg-red-600 text-white text-sm font-bold px-2 py-1 rounded-md shadow-lg z-10">
           خصم {product.discountPercentage}%
-        </span>
+        </span>}
       </div>
 
       <div className="p-6">
@@ -61,10 +61,14 @@ const ProductCard = ({
 
         <span>الكمية المتاحة: <span className="text-green-600">{product.quantity}</span></span>
 
-        {product.discountPercentage > 0 && (
+        {product.discountPercentage > 0 ? (
           <div className="mt-4 flex justify-between text-sm font-medium text-gray-700">
             <span>قبل الخصم: <span className="text-red-600 line-through">{product.price.toFixed(2)}</span></span>
             <span>بعد الخصم: <span className="text-green-600">{discountedPrice.toFixed(2)}</span></span>
+          </div>
+        ) : (
+          <div className="mt-4 flex justify-between text-sm font-medium text-gray-700">
+            <span>السعر: <span className="text-green-600">{product.price.toFixed(2)}</span></span>
           </div>
         )}
       </div>

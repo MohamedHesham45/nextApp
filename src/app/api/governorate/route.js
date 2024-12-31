@@ -33,7 +33,14 @@ export async function POST(request) {
         if(existingGovernorate){
             return NextResponse.json({ error: "Governorate already exists" }, { status: 400 });
         }
-        let governorate = await db.collection("governorate").insertOne({ nameAr, nameEn, shippingPrices: [] });
+        const shippingTypes=await db.collection("shippingType").find({}).toArray();
+        const shippingPrices = shippingTypes.map(shippingType=>{
+            return {
+                shippingTypeId: shippingType._id,
+                price: 0
+            }
+        })
+        let governorate = await db.collection("governorate").insertOne({ nameAr, nameEn, shippingPrices });
         governorate=await db.collection("governorate").findOne({ _id: governorate.insertedId });
         return NextResponse.json(governorate);
     }catch(error){

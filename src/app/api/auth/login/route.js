@@ -15,7 +15,7 @@ export async function POST(request) {
   if (!isPasswordValid) {
     return NextResponse.json({ error: "Invalid password" }, { status: 401 });
   }
-  const token = jwt.sign({ userId: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+  const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRATION_TIME });
   const profile = await db.collection("profiles").findOne({ userId: user._id });
   return NextResponse.json({ message: "Login successful", token, profile });
 }
