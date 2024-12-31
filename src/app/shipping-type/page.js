@@ -26,9 +26,10 @@ export default function ShippingTypes() {
     const router = useRouter();
 
     useEffect(() => {
-        if (isLoaded && !isLoggedIn) {
-            alert("You are not logged in. Redirecting to the home page.");
-            router.push("/");
+        if (isLoaded) {
+            if (!isLoggedIn) {
+                router.push("/");
+            }
         }
     }, [isLoaded, isLoggedIn, router]);
 
@@ -140,129 +141,83 @@ export default function ShippingTypes() {
     if (!isLoggedIn) return null;
 
     return (
-        <div className="container mx-auto px-4 py-8 rtl text-right ">
-            <div className="flex justify-between mb-4">
-                <h1 className="text-3xl font-bold mr-0">أنواع الشحن</h1>
-                <button
-                    onClick={() => openModal('add')}
-                    className="bg-blue-600 text-white px-4 py-2 rounded flex items-center gap-2"
-                >
-                    <Plus size={20} /> إضافة جديد
-                </button>
-            </div>
+        <div className="bg-gray-100 shadow-xl rounded-lg p-6 w-full mt-5">
+            <div className="container mx-auto px-4 py-8 rtl text-right ">
+                <div className="flex justify-between mb-4">
+                    <h1 className="text-3xl font-bold mr-0">أنواع الشحن</h1>
+                    <button
+                        onClick={() => openModal('add')}
+                        className="bg-green-600 text-white px-4 py-2 rounded flex items-center gap-2"
+                    >
+                        إضافة نوع شحن جديد <Plus size={20} />
+                    </button>
+                </div>
+                <h3 className="text-xl font-semibold text-gray-700 mb-5 text-center">
+                    انوع الشحن الحالية
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {shippingTypes.map((type) => (
-                    <div key={type._id} className="border p-4 rounded shadow-lg hover:bg-gray-50" onClick={() => openModal('view', type)}>
-                        <div className="flex justify-between items-center mb-2">
-                            <h3 className="text-xl font-semibold text-right">{type.name}</h3>
-                            <div className="flex gap-2">
-                                <Edit
-                                    className="hover:cursor-pointer hover:text-blue-700"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        openModal('edit', type);
-                                    }}
-                                />
-                                <Trash2
-                                    className="hover:cursor-pointer hover:text-red-700"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleDelete(type._id);
-                                    }}
-                                />
+                    {shippingTypes.map((type) => (
+                        <div key={type._id} className="bg-white border p-4 rounded shadow-lg hover:bg-gray-50" onClick={() => openModal('view', type)}>
+                            <div className="flex justify-between items-center mb-2">
+                                <h3 className="text-xl font-semibold text-right">{type.name}</h3>
+                                <div className="flex gap-2">
+                                    <Edit
+                                        className="text-gray-500 hover:cursor-pointer hover:text-blue-700"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            openModal('edit', type);
+                                        }}
+                                    />
+                                    <Trash2
+                                        className="text-red-500 hover:cursor-pointer hover:text-red-700"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDelete(type._id);
+                                        }}
+                                    />
+                                </div>
                             </div>
+                            <h3 className="overflow-hidden text-ellipsis whitespace-nowrap text-gray-600 text-right">
+                                {type.description}
+                            </h3>
                         </div>
-                        <h3 className="overflow-hidden text-ellipsis whitespace-nowrap text-gray-600 text-right">
-                            {type.description}
-                        </h3>
-                    </div>
 
-                ))}
-            </div>
+                    ))}
+                </div>
 
-            {isModalOpen && (
-                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
-                    <div className="bg-white p-6 rounded shadow-lg w-96">
-                        {modalMode === 'delete' ? (
-                            <div>
-                                <h2 className="text-xl font-semibold mb-4 text-right">تأكيد الحذف</h2>
-                                <p className="text-right mb-4">هل أنت متأكد من حذف نوع الشحن "{selectedType?.name}"؟</p>
-                                <div className="flex justify-start gap-2">
-                                    <button
-                                        onClick={confirmDelete}
-                                        className="px-4 py-2 bg-red-600 text-white rounded"
-                                    >
-                                        حذف
-                                    </button>
-                                    <button
-                                        onClick={closeModal}
-                                        className="px-4 py-2 bg-gray-500 text-white rounded"
-                                    >
-                                        إلغاء
-                                    </button>
-                                </div>
-                            </div>
-                        ) : modalMode === 'view' ? (
-                            <div>
-                                <h2 className="text-xl font-semibold mb-4 text-right">
-                                    عرض تفاصيل الشحن
-                                </h2>
+                {isModalOpen && (
+                    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
+                        <div className="bg-white p-6 rounded shadow-lg w-96">
+                            {modalMode === 'delete' ? (
                                 <div>
-                                    <p><strong>الاسم:</strong> {selectedType?.name}</p>
-                                    <p><strong>الوصف:</strong> {selectedType?.description}</p>
-                                </div>
-                                <div className="flex justify-start gap-2">
-                                    <button
-                                        type="button"
-                                        onClick={closeModal}
-                                        className="px-4 py-2 bg-gray-500 text-white rounded"
-                                    >
-                                        إلغاء
-                                    </button>
-                                </div>
-                            </div>
-                        ) : (
-                            <div>
-                                <h2 className="text-xl font-semibold mb-4 text-right">
-                                    {modalMode === 'add' ? 'إضافة نوع شحن جديد' : 'تعديل نوع الشحن'}
-                                </h2>
-                                <form onSubmit={handleSubmit}>
-                                    <div className="mb-4">
-                                        <label className="block text-gray-700 mb-2 text-right">الاسم</label>
-                                        <input
-                                            type="text"
-                                            value={formData.name}
-                                            onChange={(e) => {
-                                                setFormData({ ...formData, name: e.target.value });
-                                                setErrors({ ...errors, name: '' });
-                                            }}
-                                            className="w-full p-2 border rounded text-right"
-                                        />
-                                        {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
-
-                                    </div>
-                                    <div className="mb-4">
-                                        <label className="block text-gray-700 mb-2 text-right">الوصف</label>
-                                        <textarea
-                                            value={formData.description}
-                                            onChange={(e) => {
-                                                setFormData({ ...formData, description: e.target.value });
-                                                setErrors({ ...errors, description: '' });
-                                            }}
-                                            className="w-full p-2 border rounded text-right"
-                                            rows="3"
-                                        />
-                                        {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
-
-                                    </div>
+                                    <h2 className="text-xl font-semibold mb-4 text-right">تأكيد الحذف</h2>
+                                    <p className="text-right mb-4">هل أنت متأكد من حذف نوع الشحن "{selectedType?.name}"؟</p>
                                     <div className="flex justify-start gap-2">
                                         <button
-                                            type="submit"
-                                            className="px-4 py-2 bg-blue-600 text-white rounded"
+                                            onClick={confirmDelete}
+                                            className="px-4 py-2 bg-red-600 text-white rounded"
                                         >
-                                            {modalMode === 'add' ? 'إضافة' : 'حفظ'}
+                                            حذف
                                         </button>
+                                        <button
+                                            onClick={closeModal}
+                                            className="px-4 py-2 bg-gray-500 text-white rounded"
+                                        >
+                                            إلغاء
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : modalMode === 'view' ? (
+                                <div>
+                                    <h2 className="text-xl font-semibold mb-4 text-right">
+                                        عرض تفاصيل الشحن
+                                    </h2>
+                                    <div>
+                                        <p><strong>الاسم:</strong> {selectedType?.name}</p>
+                                        <p><strong>الوصف:</strong> {selectedType?.description}</p>
+                                    </div>
+                                    <div className="flex justify-start gap-2">
                                         <button
                                             type="button"
                                             onClick={closeModal}
@@ -271,12 +226,63 @@ export default function ShippingTypes() {
                                             إلغاء
                                         </button>
                                     </div>
-                                </form>
-                            </div>
-                        )}
+                                </div>
+                            ) : (
+                                <div>
+                                    <h2 className="text-xl font-semibold mb-4 text-right">
+                                        {modalMode === 'add' ? 'إضافة نوع شحن جديد' : 'تعديل نوع الشحن'}
+                                    </h2>
+                                    <form onSubmit={handleSubmit}>
+                                        <div className="mb-4">
+                                            <label className="block text-gray-700 mb-2 text-right">الاسم</label>
+                                            <input
+                                                type="text"
+                                                value={formData.name}
+                                                onChange={(e) => {
+                                                    setFormData({ ...formData, name: e.target.value });
+                                                    setErrors({ ...errors, name: '' });
+                                                }}
+                                                className="w-full p-2 border rounded text-right"
+                                            />
+                                            {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
+
+                                        </div>
+                                        <div className="mb-4">
+                                            <label className="block text-gray-700 mb-2 text-right">الوصف</label>
+                                            <textarea
+                                                value={formData.description}
+                                                onChange={(e) => {
+                                                    setFormData({ ...formData, description: e.target.value });
+                                                    setErrors({ ...errors, description: '' });
+                                                }}
+                                                className="w-full p-2 border rounded text-right"
+                                                rows="3"
+                                            />
+                                            {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
+
+                                        </div>
+                                        <div className="flex justify-start gap-2">
+                                            <button
+                                                type="submit"
+                                                className="px-4 py-2 bg-blue-600 text-white rounded"
+                                            >
+                                                {modalMode === 'add' ? 'إضافة' : 'حفظ'}
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={closeModal}
+                                                className="px-4 py-2 bg-gray-500 text-white rounded"
+                                            >
+                                                إلغاء
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            )}
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
+            </div>
         </div>
     );
 }

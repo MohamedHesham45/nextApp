@@ -20,7 +20,6 @@ export default function Gallery() {
   const [error, setError] = useState(null);
   const [isCartVisible, setIsCartVisible] =
     useState(false);
-  const { user } = useUser();
   const { email, userId } = useAuth();
   const [viewMode, setViewMode] =
     useState("carousel");

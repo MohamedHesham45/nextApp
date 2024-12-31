@@ -1,5 +1,6 @@
 "use client";
 import { createContext, useState, useContext, useEffect } from "react";
+import { useRouter } from "next/navigation"; // Import useRouter from Next.js
 
 const AuthContext = createContext();
 
@@ -12,13 +13,19 @@ export function AuthProvider({ children }) {
   const [userId, setUserId] = useState(null); // User ID state
   const [isLoaded, setIsLoaded] = useState(false);
   const [role, setRole] = useState(null);
+  const [storedProfile, setStoredProfile] = useState(null);
 
+  const router = useRouter(); // Initialize the router
   useEffect(() => {
     const storedToken = localStorage.getItem("authToken");
-    const storedProfile = localStorage.getItem("userProfile");
-
+    if (storedToken) {
+      verifyToken(storedToken);
+    }
+  }, []);
+  useEffect(() => {
+    const storedToken = localStorage.getItem("authToken");
     if (storedToken && storedProfile) {
-      const parsedProfile = JSON.parse(storedProfile);
+      const parsedProfile = storedProfile;
       setToken(storedToken);
       setProfile(parsedProfile);
       setIsLoggedIn(true);
@@ -28,11 +35,26 @@ export function AuthProvider({ children }) {
       setRole(parsedProfile.role || null);
     }
     setIsLoaded(true); 
-  }, []);
+  }, [storedProfile]);
+  const verifyToken = async (storedToken) => {
+    const response = await fetch("/api/auth/verify-token", {
+      method: "POST",
+      body: JSON.stringify({ token: storedToken }),
+    });
+    if (response.ok) {
+      const data = await response.json();
+      setStoredProfile(data);
+      return data;
+    }else{
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("userProfile");
+      router.push("/");
+      return null;
+    }
+  };
 
   const login = (token, profile) => {
     localStorage.setItem("authToken", token);
-    localStorage.setItem("userProfile", JSON.stringify(profile));
 
     setToken(token);
     setProfile(profile);
@@ -42,8 +64,9 @@ export function AuthProvider({ children }) {
     setUserId(profile.userId || null); // Set userId on login
     setRole(profile.role || null);
   };
-
+  
   const logout = () => {
+    router.push("/"); // Navigate to the root route after logout
     localStorage.removeItem("authToken");
     localStorage.removeItem("userProfile");
 
@@ -54,6 +77,7 @@ export function AuthProvider({ children }) {
     setEmail(null); // Clear email on logout
     setUserId(null); // Clear userId on logout
     setRole(null);
+
   };
 
   return (

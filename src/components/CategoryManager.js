@@ -1,3 +1,4 @@
+"use client"
 import React, { useState, useEffect } from "react";
 import LoadingSpinner from "./LoadingSpinner";
 import { Trash2 } from "lucide-react";
@@ -125,7 +126,7 @@ const CategoryManager = ({ onCategoryChange, onDeleteCategory }) => {
               {categories.map((category) => (
                 <div
                   key={category._id}
-                  className="flex justify-between items-center bg-gray-200 p-3 rounded-lg shadow-sm"
+                  className="flex justify-between items-center bg-white p-3 rounded-lg shadow-sm"
                 >
                   <div>
                     <p className="text-gray-800 font-semibold">{category.name}</p>
@@ -138,7 +139,7 @@ const CategoryManager = ({ onCategoryChange, onDeleteCategory }) => {
                       setCategoryToDelete(category);
                       setIsDeleteModalOpen(true);
                     }}
-                    className="hover:text-red-700 font-bold text-lg"
+                    className="text-red-500 hover:text-red-700 font-bold text-lg"
                   >
                     <Trash2 />
                   </button>

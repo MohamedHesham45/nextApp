@@ -20,9 +20,10 @@ export default function AllUsers() {
     const router = useRouter();
 
     useEffect(() => {
-        if (isLoaded && !isLoggedIn) {
-            alert("You are not logged in. Redirecting to the home page.");
-            router.push("/");
+        if (isLoaded) {
+            if (!isLoggedIn) {
+                router.push("/");
+            }
         }
     }, [isLoaded, isLoggedIn, router]);
 
@@ -133,30 +134,18 @@ export default function AllUsers() {
                 </select>
             </div>
 
-            <div className="space-y-4">
+            <div className="flex flex-col flex-wrap  sm:flex-row gap-4 md:gap-16">
                 {filteredUsers.length > 0 ? (
                     filteredUsers.map((user) => (
                         <div
                             key={user.userId}
-                            className="border p-4 rounded shadow-lg hover:bg-gray-100"
+                            className=" border p-8 rounded shadow-lg hover:bg-gray-100"
                         >
                             <div className="flex justify-between items-center">
                                 <h3 className="text-xl font-semibold">{user.name}</h3>
                                 <div className="flex gap-2">
-                                    <Trash2
-                                        className={`hover:cursor-pointer hover:text-red-700 ${filteredUsers.length === 1 || localStorage.getItem("userProfile") && JSON.parse(localStorage.getItem("userProfile")).userId === user.userId
-                                            ? 'cursor-not-allowed opacity-50'
-                                            : ''
-                                            }`}
-                                        onClick={() => {
-                                            const currentUserId = localStorage.getItem("userProfile") && JSON.parse(localStorage.getItem("userProfile")).userId;
-                                            if (filteredUsers.length === 1 || currentUserId === user.userId) return;
-                                            setUserToDelete(user);
-                                            setIsModalOpen(true);
-                                        }}
-                                    />
                                     <Edit
-                                        className={`hover:cursor-pointer hover:text-blue-700 ${localStorage.getItem("userProfile") &&
+                                        className={`text-gray-500 hover:cursor-pointer hover:text-blue-700 ${localStorage.getItem("userProfile") &&
                                                 JSON.parse(localStorage.getItem("userProfile")).userId === user.userId
                                                 ? "cursor-not-allowed opacity-50"
                                                 : ""
@@ -168,6 +157,18 @@ export default function AllUsers() {
                                             if (currentUserId === user.userId) return;
                                             setEditingUserId(user.userId);
                                             setEditingRole(user.role);
+                                        }}
+                                    />
+                                    <Trash2
+                                        className={`text-red-500 hover:cursor-pointer hover:text-red-700 ${ localStorage.getItem("userProfile") && JSON.parse(localStorage.getItem("userProfile")).userId === user.userId
+                                            ? 'cursor-not-allowed opacity-50'
+                                            : ''
+                                            }`}
+                                        onClick={() => {
+                                            const currentUserId = localStorage.getItem("userProfile") && JSON.parse(localStorage.getItem("userProfile")).userId;
+                                            if (currentUserId === user.userId) return;
+                                            setUserToDelete(user);
+                                            setIsModalOpen(true);
                                         }}
                                     />
 
