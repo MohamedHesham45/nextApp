@@ -1,9 +1,7 @@
 import localFont from "next/font/local";
 import "./globals.css";
-import { ClerkProvider } from "@clerk/nextjs";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ClientLayout from "./ClientLayout";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { AuthProvider } from "./context/AuthContext";
 import "swiper/css";

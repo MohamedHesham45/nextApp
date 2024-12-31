@@ -5,7 +5,6 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useAuth } from "@/app/context/AuthContext";
@@ -14,7 +13,6 @@ export default function UserOrdersPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  // const { user, isLoaded } = useUser();
   const { userId, isLoaded } = useAuth();
   console.log(userId);
   

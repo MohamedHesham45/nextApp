@@ -7,7 +7,6 @@ import React, {
 import Image from "next/image";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-import { useUser } from "@clerk/nextjs";
 import ShoppingCart from "@/components/ShoppingCart";
 import { useAuth } from "../context/AuthContext";
 
