@@ -60,20 +60,19 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <AuthProvider>
-      <ClerkProvider>
         <html lang="en">
           <head>
-            <link rel="preconnect" href="https://fonts.googleapis.com" />
-            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+            {/* <link rel="preconnect" href="https://fonts.googleapis.com" />
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" /> */}
             <link
               href="https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&display=swap"
               rel="stylesheet"
             />
+            
           </head>
           <body
           // className={`${geistSans.variable} ${geistMono.variable} antialiased`}
           >
-            <ClientLayout>
               <Navbar />
               <main className="pt-12">
                 {" "}
@@ -85,10 +84,8 @@ export default function RootLayout({ children }) {
                 />
               </main>
               <Footer />
-            </ClientLayout>
           </body>
         </html>
-      </ClerkProvider>
     </AuthProvider>
   );
 }
