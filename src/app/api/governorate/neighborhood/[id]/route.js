@@ -21,10 +21,11 @@ export async function PUT(request, { params }) {
     try{
         const { id } = params;
         const updateData = await request.json();
+        delete updateData._id;
         const client = await clientPromise;
         const db = client.db("address");
         if(updateData.nameAr || updateData.nameEn){
-            const existingNeighborhoodName = await db.collection("neighborhood").findOne({ $or: [{ nameAr: updateData.nameAr }, { nameEn: updateData.nameEn }] });
+            const existingNeighborhoodName = await db.collection("neighborhood").findOne({$and: [{_id:{$ne:new ObjectId(id)}},{$or: [{ nameAr: updateData.nameAr }, { nameEn: updateData.nameEn }] }] });
             if(existingNeighborhoodName){
                 return NextResponse.json({ error: "Neighborhood name already exists" }, { status: 400 });
             }

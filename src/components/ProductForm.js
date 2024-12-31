@@ -8,7 +8,8 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories }) => {
   const [category, setCategory] = useState({});
   const [price, setPrice] = useState("");
   const [priceAfterDiscount, setPriceAfterDiscount] = useState("");
-  const [quantity, setQuantity] = useState("");
+  const [quantity, setQuantity] = useState(1);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (initialData) {
@@ -28,12 +29,26 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories }) => {
       setCategory({});
       setPrice("");
       setPriceAfterDiscount("");
-      setQuantity("");
+      setQuantity(1);
     }
   }, [initialData]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    setErrors({});
+
+    const newErrors = {};
+    if (!title) newErrors.title = "العنوان مطلوب";
+    if (!description) newErrors.description = "الوصف مطلوب";
+    if (!category._id) newErrors.category = "الفئة مطلوبة";
+    if (!price) newErrors.price = "السعر مطلوب";
+    if (images.length === 0) newErrors.images = "الصور مطلوبة";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
 
     const formData = new FormData();
 
@@ -48,7 +63,11 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories }) => {
       formData.append(`images`, image);
     });
 
-    onSubmit(formData);
+    try {
+      await onSubmit(formData);
+    } catch (error) {
+      setErrors({ backend: error.message });
+    }
   };
 
   const handleImageUpload = (e) => {
@@ -71,9 +90,12 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories }) => {
           id="title"
           type="text"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
+          onChange={(e) =>{
+            setTitle(e.target.value)
+            setErrors({...errors,title:null})
+          }}
+          />
+          {errors.title && <p className="text-red-500">{errors.title}</p>}
       </div>
       <div className="mb-4">
         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="description">
@@ -83,9 +105,12 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories }) => {
           className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           id="description"
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
+          onChange={(e) =>{
+            setDescription(e.target.value)
+            setErrors({...errors,description:null})
+          }}
         />
+        {errors.description && <p className="text-red-500">{errors.description}</p>}
       </div>
       <div className="flex justify-between gap-2">
         <div className="mb-4 w-full">
@@ -96,8 +121,10 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories }) => {
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="category"
             value={JSON.stringify(category)}
-            onChange={(e) => setCategory(JSON.parse(e.target.value))}
-            required
+            onChange={(e) =>{
+              setCategory(JSON.parse(e.target.value))
+              setErrors({...errors,category:null})
+            }}
           >
             <option value="">حدد الفئة</option>
             {categories.map((cat, index) => (
@@ -106,6 +133,7 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories }) => {
               </option>
             ))}
           </select>
+          {errors.category && <p className="text-red-500">{errors.category}</p>}
         </div>
         <div className="mb-4 w-full">
           <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="quantity">
@@ -117,7 +145,6 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories }) => {
             type="number"
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
-            required
           />
         </div>
       </div>
@@ -132,9 +159,12 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories }) => {
             type="number"
             step="0.01"
             value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            required
+            onChange={(e) =>{
+              setPrice(e.target.value)
+              setErrors({...errors,price:null})
+            }}
           />
+          {errors.price && <p className="text-red-500">{errors.price}</p>}
         </div>
         <div className="mb-4 w-full">
           <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="priceAfterDiscount">
@@ -159,8 +189,12 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories }) => {
           id="images"
           type="file"
           multiple
-          onChange={handleImageUpload}
+          onChange={(e)=>{
+            handleImageUpload(e)
+            setErrors({...errors,images:null})
+          }}
         />
+        {errors.images && <p className="text-red-500">{errors.images}</p>}
       </div>
       {images.length > 0 && (
         <div className="mb-4">
@@ -168,7 +202,7 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories }) => {
           <div className="flex flex-wrap">
             {images.map((image, index) => (
               <div key={index} className="relative m-1">
-                <p className="text-gray-700 text-xs">{image.name}</p>
+                <img src={typeof image === 'string' ? image : URL.createObjectURL(image)} alt={`Image ${index}`} className="w-20 h-20 object-cover" />
                 <button
                   type="button"
                   onClick={() => handleDeleteImage(index)}
@@ -198,6 +232,7 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories }) => {
           </button>
         
       </div>
+      {errors.backend && <p className="text-red-500">{errors.backend}</p>}
     </form>
   );
 };
