@@ -1,13 +1,12 @@
 import React, { useState } from "react";
-import Image from "next/image";
 import { Edit, Trash2 } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper";
 
 const ProductCard = ({
   product,
   onEdit,
   onDelete,
+  loadingDelete,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const discountedPrice =
@@ -23,7 +22,7 @@ const ProductCard = ({
             {product.images.map((image, index) => (
               <SwiperSlide key={index}>
                 <img
-                  src={image || "/1.jpg"}
+                  src={"http://93.127.202.37:3001/"+image || "/1.jpg"}
                   alt={`Product Image ${index + 1}`}
                   className="object-cover w-full h-full"
                 />
@@ -93,9 +92,10 @@ const ProductCard = ({
                         <div className="flex justify-end">
                             <button
                                 className="px-4 py-2 bg-red-600 text-white rounded"
-                                onClick={() => onDelete(product._id)}
+                                onClick={() => onDelete(product)}
+                                disabled={loadingDelete}
                             >
-                                تأكيد
+                                {loadingDelete ? "جاري الحذف..." : "تأكيد"}
                             </button>
                             <button
                                 className="px-4 py-2 bg-gray-500 text-white rounded mr-2"

@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
-import multer from "multer";
-import nextConnect from "next-connect";
-import fs from "fs/promises";
-import path from "path";
+
 import { ObjectId } from "mongodb";
 
 export async function GET(request) {
@@ -59,56 +56,14 @@ export async function GET(request) {
     );
   }
 }
-const upload = multer({
-  storage: multer.diskStorage({
-    destination: "./public/uploads/", // Folder to store uploads
-    filename: (req, file, cb) => {
-      cb(null, `${Date.now()}-${file.originalname}`); // Custom filename
-    },
-  }),
-});
 
-const apiRoute = nextConnect({
-  onError: (error, req, res) => {
-    res.status(501).json({ error: `Something went wrong: ${error.message}` });
-  },
-  onNoMatch: (req, res) => {
-    res.status(405).json({ error: `Method ${req.method} Not Allowed` });
-  },
-});
-apiRoute.use(upload.array("images")); // Accept multiple files
-
-async function saveFiles(files) {
-  const filePaths = [];
-  for (const file of files) {
-    const buffer = await file.arrayBuffer();
-    const fileBuffer = Buffer.from(buffer);
-    const filePath = `/uploads/${Date.now()}-${file.name}`;
-    const fullPath = path.join(process.cwd(), "public", filePath);
-
-    await fs.writeFile(fullPath, fileBuffer);
-    filePaths.push(filePath);
-  }
-  return filePaths;
-}
 
 export async function POST(request) {
   try {
-    const formData = await request.formData();
-    const images = formData.getAll("images"); // Retrieve all uploaded images
-    const filePaths = await saveFiles(images); // Save all images
+    let {title,description,categoryId,category,price,priceAfterDiscount,quantity,images}=await request.json();
 
     const client = await clientPromise;
     const db = client.db("productDB");
-    let {
-      title,
-      description,
-      categoryId,
-      category,
-      price,
-      priceAfterDiscount,
-      quantity
-    } = Object.fromEntries(formData.entries());
     const existingCategory=await db.collection("categories").findOne({_id:new ObjectId(categoryId)})
     if(!existingCategory){
       return NextResponse.json({error:"Category not found"},{status:404})
@@ -161,7 +116,7 @@ export async function POST(request) {
     const newProduct = {
       title,
       description,
-      images: filePaths, // Save all file paths
+      images,
       category,
       categoryId,
       price,

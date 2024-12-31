@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { XCircle } from "lucide-react";
 
-const ProductForm = ({ onSubmit, initialData, onCancel, categories }) => {
+const ProductForm = ({ onSubmit, initialData, onCancel, categories,loadingSubmit }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [images, setImages] = useState([]);
@@ -219,8 +219,9 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories }) => {
         <button
           className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           type="submit"
+          disabled={loadingSubmit}
         >
-          {initialData ? "تحديث المنتج" : "إضافة المنتج"}
+         {loadingSubmit ? "جاري التحديث..." : initialData ? "تحديث المنتج" : "إضافة المنتج"}
         </button>
         
           <button

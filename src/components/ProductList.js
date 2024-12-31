@@ -6,6 +6,7 @@ const ProductList = ({
   products,
   onEdit,
   onDelete,
+  loadingDelete,
 }) => {
   const [selectedCategory, setSelectedCategory] =
     useState("All");
@@ -58,6 +59,7 @@ const ProductList = ({
             product={product}
             onEdit={onEdit}
             onDelete={onDelete}
+            loadingDelete={loadingDelete}
           />
         ))}
       </div>

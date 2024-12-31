@@ -23,28 +23,27 @@ export async function PUT(request, { params }) {
   try {
     const client = await clientPromise;
     const db = client.db("productDB");
-    const formData = await request.formData();
-
-    if (!ObjectId.isValid(params.id)) {
-      return NextResponse.json(
-        { error: "Invalid product ID" },
-        { status: 400 }
-      );
+    const updateData = await request.json();
+    if(updateData.price){
+      updateData.price=parseInt(updateData.price)
     }
+    if(updateData.priceAfterDiscount){
+      updateData.priceAfterDiscount=parseInt(updateData.priceAfterDiscount)
+    }
+  
     const existingProduct=await db.collection("products").findOne({_id:new ObjectId(params.id)})
     if(!existingProduct){
       return NextResponse.json({error:"Product not found"},{status:404})
     }
-    const title=formData.get("title")
+    const title=updateData.title
     if(title){
       const existingProductWithTitle=await db.collection("products").findOne({$and:[{title},{_id:{$ne:new ObjectId(params.id)}}]})
       if(existingProductWithTitle){
         return NextResponse.json({error:"Product with this title already exists"},{status:400})
       }
     }
-    const updateData = {};
-    const priceAfterDiscount=formData.get("priceAfterDiscount")
-    const price=formData.get("price")
+    const priceAfterDiscount=updateData.priceAfterDiscount
+    const price=updateData.price
     if(priceAfterDiscount){
       if(price){
         const discountPercentage=((price-priceAfterDiscount)/price)*100
@@ -56,33 +55,6 @@ export async function PUT(request, { params }) {
       }
     }
 
-    // Build the update object dynamically
-    const images = formData.getAll("images");
-
-    for (const [key, value] of formData.entries()) {
-      if (key !== "images") {
-        updateData[key] = isNaN(value) ? value : parseFloat(value); // Parse numbers if applicable
-      }
-    }
-
-    // Handle images update if provided
-    if (images && images.length > 0) {
-      const uploadedImages = await Promise.all(
-        images.map(async (image) => {
-          if (image instanceof File) {
-            const buffer = await image.arrayBuffer();
-            const fileBuffer = Buffer.from(buffer);
-            const filePath = `/uploads/${Date.now()}-${image.name}`;
-            const fullPath = path.join(process.cwd(), "public", filePath);
-
-            await fs.writeFile(fullPath, fileBuffer);
-            return filePath;
-          }
-          return image;
-        })
-      );
-      updateData.images = uploadedImages;
-    }
 
     // Update the product
     const result = await db

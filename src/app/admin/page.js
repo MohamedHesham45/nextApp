@@ -16,15 +16,18 @@ export default function AdminPage() {
   const [error, setError] = useState(null);
   const [categories, setCategories] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [loadingSubmit, setLoadingSubmit] = useState(false)
+  const [loadingDelete, setLoadingDelete] = useState(false)
   const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       const res = await fetch("/api/products");
       const data = await res.json();
-      console.log(data);
       setProducts(data);
     } catch (err) {
+      if (err.status === 502) {
+        fetchProducts();
+      }
       console.error("Error fetching products:", err);
       setError("Failed to load products. Please try again later.");
     } finally {
@@ -65,30 +68,79 @@ export default function AdminPage() {
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (productId) => {
+  const handleDelete = async (product) => {
     try {
-      const res = await fetch(`/api/products/${productId}`, { method: "DELETE" });
+      setLoadingDelete(true)
+      const res = await fetch(`/api/products/${product._id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to delete product");
+      
+      await fetch("http://93.127.202.37:3001/remove-images", {
+        method: "DELETE",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body: JSON.stringify({ filenames: product.images })
+      });
+      
       fetchProducts();
     } catch (err) {
       console.error(err);
       alert("Failed to delete product. Please try again.");
+    } finally {
+      setLoadingDelete(false)
     }
   };
 
   const handleSubmit = async (productData) => {
     try {
+      setLoadingSubmit(true)
+      const imagesProduct=productData.getAll("images")
+      const finalData={}
+      const imagess=[]
+      productData.forEach((value,key)=>{
+        if(key!="images"){
+          finalData[key]=value
+        }else{
+          if(typeof value==="string"){
+            imagess.push(value)
+          }
+        }
+      })
+      if(imagesProduct.length>0){
+        const images=new FormData()
+        imagesProduct.forEach(image=>{
+          images.append("images",image)
+        })
+        
+        const res=await fetch("http://93.127.202.37:3001/upload-images",{
+          method:"POST",
+          body: images
+        })
+        if(!res.ok)throw new Error("Failed to upload images")
+        const data=await res.json()
+        data.files.forEach(file=>{
+          imagess.push(file)
+        })
+        finalData.images=imagess
+      }
       const method = editingProduct ? "PUT" : "POST";
       const url = editingProduct
         ? `/api/products/${editingProduct._id}`
         : "/api/products";
-      const res = await fetch(url, { method, body: productData });
+      const res = await fetch(url, { method
+        ,
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify(finalData) });
       if (!res.ok) throw new Error("Failed to save product");
       fetchProducts();
       setIsModalOpen(false);
     } catch (err) {
       console.error(err);
       alert("Failed to save product. Please try again.");
+    } finally {
+      setLoadingSubmit(false)
     }
   };
 
@@ -126,6 +178,7 @@ export default function AdminPage() {
           products={products}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          loadingDelete={loadingDelete}
         />
         {isModalOpen && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -135,6 +188,7 @@ export default function AdminPage() {
                 initialData={editingProduct}
                 onCancel={() => setIsModalOpen(false)}
                 categories={categories}
+                loadingSubmit={loadingSubmit}
               />
             </div>
           </div>
@@ -143,3 +197,32 @@ export default function AdminPage() {
     </div>
   );
 }
+
+const data = [
+  {
+    category: "كوشن",
+    products: [
+      {
+        name: "كوشن 1",
+        price: 100,
+      },
+      {
+        name: "كوشن 2",
+        price: 200,
+      },
+    ],
+  },
+  {
+    category: "ستاير",
+    products: [
+      {
+        name: "ستاير 1",
+        price: 300,
+      },
+      {
+        name: "ستاير 2",
+        price: 400,
+      },
+    ],
+  },
+];
