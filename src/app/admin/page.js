@@ -21,7 +21,6 @@ export default function AdminPage() {
     try {
       setLoading(true);
       const res = await fetch("/api/products");
-      console.log(await res.json());
       const data = await res.json();
       console.log(data);
       setProducts(data);
