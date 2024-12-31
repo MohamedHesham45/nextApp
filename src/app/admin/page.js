@@ -21,8 +21,10 @@ export default function AdminPage() {
     try {
       setLoading(true);
       const res = await fetch("/api/products");
+      console.log(await res.json());
       if (!res.ok) throw new Error("Failed to fetch products");
       const data = await res.json();
+      console.log(data);
       setProducts(data);
     } catch (err) {
       console.error("Error fetching products:", err);

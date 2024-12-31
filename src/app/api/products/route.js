@@ -5,23 +5,6 @@ import nextConnect from "next-connect";
 import fs from "fs/promises";
 import path from "path";
 import { ObjectId } from "mongodb";
-const upload = multer({
-  storage: multer.diskStorage({
-    destination: "./public/uploads/", // Folder to store uploads
-    filename: (req, file, cb) => {
-      cb(null, `${Date.now()}-${file.originalname}`); // Custom filename
-    },
-  }),
-});
-
-const apiRoute = nextConnect({
-  onError: (error, req, res) => {
-    res.status(501).json({ error: `Something went wrong: ${error.message}` });
-  },
-  onNoMatch: (req, res) => {
-    res.status(405).json({ error: `Method ${req.method} Not Allowed` });
-  },
-});
 
 export async function GET(request) {
   try {
@@ -53,15 +36,15 @@ export async function GET(request) {
         ...product,
         price: product.price ?? 0,
         category:
-          product.category || "Uncategorized",
+        product.category || "Uncategorized",
         discountPercentage:
-          product.discountPercentage ?? 0,
+        product.discountPercentage ?? 0,
         priceAfterDiscount:
-          product.priceAfterDiscount ?? 0,
+        product.priceAfterDiscount ?? 0,
         quantity: product.quantity ?? 0,
       })
     );
-
+    
     return NextResponse.json(
       productsWithDefaults
     );
@@ -76,6 +59,23 @@ export async function GET(request) {
     );
   }
 }
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: "./public/uploads/", // Folder to store uploads
+    filename: (req, file, cb) => {
+      cb(null, `${Date.now()}-${file.originalname}`); // Custom filename
+    },
+  }),
+});
+
+const apiRoute = nextConnect({
+  onError: (error, req, res) => {
+    res.status(501).json({ error: `Something went wrong: ${error.message}` });
+  },
+  onNoMatch: (req, res) => {
+    res.status(405).json({ error: `Method ${req.method} Not Allowed` });
+  },
+});
 apiRoute.use(upload.array("images")); // Accept multiple files
 
 async function saveFiles(files) {
