@@ -250,7 +250,7 @@ export default function ShoppingCart({
                               key={index}
                               className="relative"
                             >
-                              <Image
+                              <img
                                 src={image}
                                 alt={`${item.title
                                   } - Image ${index + 1
@@ -278,7 +278,7 @@ export default function ShoppingCart({
                           onClick={handleSaveEdit}
                           className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition duration-300"
                         >
-                          Save
+                          حفظ
                         </button>
                         <button
                           onClick={
@@ -286,14 +286,14 @@ export default function ShoppingCart({
                           }
                           className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition duration-300"
                         >
-                          Cancel
+                          الغاء
                         </button>
                       </div>
                     </div>
                   ) : (
                     <div className="flex items-center space-x-4">
                       <div className="flex-shrink-0">
-                        <Image
+                        <img
                           src={
                             item.selectedImages[0]
                           }
@@ -307,10 +307,10 @@ export default function ShoppingCart({
                         <h3 className="font-semibold">
                           {item.title}
                         </h3>
-                        <p className="text-sm text-gray-500 line-through">
+                        <p className={`text-sm text-gray-500  ${item.discountPercentage>0?"line-through":" text-green-600 font-bold"}`}>
                           ${item.price.toFixed(2)}
                         </p>
-                        <p className="text-sm font-bold text-green-600">
+                        {item.discountPercentage>0 && <p className="text-sm font-bold text-green-600">
                           $
                           {calculateDiscountedPrice(
                             item
@@ -318,18 +318,12 @@ export default function ShoppingCart({
                           <span className="text-red-500 ml-2">
                             (-
                             {
-                              item.discountPercentage
+                              item.discountPercentage.toFixed(1)
                             }
                             %)
                           </span>
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          {
-                            item.selectedImages
-                              .length
-                          }{" "}
-                          image(s) selected
-                        </p>
+                        </p>}
+                        
                       </div>
                       <div className="flex items-center space-x-2">
                         <span>
@@ -342,7 +336,7 @@ export default function ShoppingCart({
                         }
                         className="text-blue-500 hover:text-blue-700 transition duration-300"
                       >
-                        Edit
+                        تعديل
                       </button>
                       <button
                         onClick={() =>
@@ -353,7 +347,7 @@ export default function ShoppingCart({
                         }
                         className="text-red-500 hover:text-red-700 transition duration-300"
                       >
-                        Remove
+                        حذف
                       </button>
                     </div>
                   )}

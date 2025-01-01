@@ -15,17 +15,24 @@ import Neighborhoods from "../neighborhood/page";
 
 export default function AdminDashboard() {
   const [selectedComponent, setSelectedComponent] = useState("dashboard");
-  const { isLoggedIn, isLoaded } = useAuth();
+  const {token, isLoggedIn, isLoaded,role } = useAuth();
+  const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
   const router = useRouter();
 
-  useEffect(() => {
-    if (isLoaded) {
-      if (!isLoggedIn) {
-        router.push("/");
+  useEffect(()=>{
+    if(token){
+      if(isLoaded){
+        if(isLoggedIn && role === 'user'){
+          router.push("/");
+        }else{
+          setLoading(false)
+        }
       }
+    }else{
+      router.push("/");
     }
-  }, [isLoaded, isLoggedIn, router]);
+    }, [isLoaded, role, router,token])
 
   const handleCategoryChange = (
     newCategories
@@ -72,12 +79,10 @@ export default function AdminDashboard() {
     return componentsMap[selectedComponent]?.component || <OrdersPage />;
   };
 
-  if (!isLoaded) {
+  if (loading) {
     return <LoadingSpinner />;
   }
-  if (!isLoggedIn) {
-    return null;
-  }
+ 
 
   return (
     <div className="flex min-h-screen flex-col md:flex-row direction-rtl">

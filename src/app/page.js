@@ -5,7 +5,6 @@ import React, {
   useEffect,
 } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { ChevronUp } from "lucide-react";
 import FeaturedProducts from "@/components/FeaturedProducts";
 import MapLocation from "@/components/MapLocation";
@@ -42,12 +41,11 @@ export default function LandingPage() {
       <main>
         <section className="relative h-screen flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0 z-0">
-            <Image
+            <img
               src="/123.jpg"
               alt="Hero Background"
-              layout="fill"
-              objectFit="cover"
               quality={100}
+              className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-black opacity-50"></div>
           </div>

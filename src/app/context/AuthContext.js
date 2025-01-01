@@ -18,15 +18,14 @@ export function AuthProvider({ children }) {
   const router = useRouter(); // Initialize the router
   useEffect(() => {
     const storedToken = localStorage.getItem("authToken");
+    setToken(storedToken);
     if (storedToken) {
       verifyToken(storedToken);
     }
   }, []);
   useEffect(() => {
-    const storedToken = localStorage.getItem("authToken");
-    if (storedToken && storedProfile) {
+    if (storedProfile) {
       const parsedProfile = storedProfile;
-      setToken(storedToken);
       setProfile(parsedProfile);
       setIsLoggedIn(true);
       setUserName(parsedProfile.name || "User");
@@ -34,27 +33,32 @@ export function AuthProvider({ children }) {
       setUserId(parsedProfile.userId || null); // Set userId from the profile
       setRole(parsedProfile.role || null);
     }
-    setIsLoaded(true); 
   }, [storedProfile]);
   const verifyToken = async (storedToken) => {
-    const response = await fetch("/api/auth/verify-token", {
-      method: "POST",
-      body: JSON.stringify({ token: storedToken }),
-    });
-    if (response.ok) {
-      const data = await response.json();
-      setStoredProfile(data);
-      return data;
-    }else{
-      localStorage.removeItem("authToken");
-      localStorage.removeItem("userProfile");
-      router.push("/");
-      return null;
+    try {
+      const response = await fetch("/api/auth/verify-token", {
+        method: "POST",
+        body: JSON.stringify({ token: storedToken }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setStoredProfile(data);
+        return data;
+      }else{
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("userProfile");
+      }
+    } catch (error) {
+      console.error("Error verifying token:", error);
+    }finally{
+      setIsLoaded(true);
     }
   };
 
   const login = (token, profile) => {
     localStorage.setItem("authToken", token);
+    console.log(profile);
+    console.log(token);
 
     setToken(token);
     setProfile(profile);

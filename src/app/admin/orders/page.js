@@ -13,35 +13,28 @@ export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const {email,isLoaded} = useAuth();
+  const {token,isLoaded,isLoggedIn,role} = useAuth();
   const router = useRouter();
   const [selectedOrder, setSelectedOrder] =
     useState(null);
   const [isModalOpen, setIsModalOpen] =
     useState(false);
 
-  useEffect(() => {
-    if (isLoaded) {
-      if (!email) {
-        router.push("/");
-      } else {
-        fetchOrders();
-      }
-    }
-  }, [isLoaded, email, router]);
+ 
 
-  // const isAuthorized = (user) => {
-  //   const authorizedEmails = [
-  //     "aliellool202020@gmail.com",
-  //     "sitaramall97@gmail.com",
-  //     "mohmedadm733@gmail.com",
-  //     "mohmedhesham2024@gmail.com",
-  //     "muhammedreda6@gmail.com"
-  //   ];
-  //   return authorizedEmails.includes(
-  //     user?.primaryEmailAddress?.emailAddress
-  //   );
-  // };
+  useEffect(()=>{
+    if(token){
+      if(isLoaded){
+        if(isLoggedIn && role === 'user'){
+          router.push("/");
+        }else{
+          fetchOrders();
+        }
+      }
+    }else{
+      router.push("/");
+    }
+    }, [isLoaded, role, router,token])
 
   const fetchOrders = async () => {
     try {
@@ -152,33 +145,6 @@ export default function OrdersPage() {
     navigator.clipboard.writeText(details);
     alert("تم نسخ تفاصيل الطلب إلى الحافظة!");
   };
-  // const copyOrderDetails = (order) => {
-  //   const details = `
-  //     رقم الطلب: ${order._id}
-  //     اسم العميل: ${order.customerDetails.name}
-  //   رقم الهاتف: ${order.customerDetails.phone}
-  //     الحالة: ${order.status}
-  //     السعر الإجمالي: ج.م${order.totalPrice.toFixed(
-  //       2
-  //     )}
-  //     تاريخ الطلب: ${new Date(
-  //       order.orderDate
-  //     ).toLocaleString("ar-EG")}
-  //     العناصر:
-  //     ${order.orderItems
-  //       .map(
-  //         (item) =>
-  //           `- ${item.title} (الكمية: ${
-  //             item.quantity
-  //           }, السعر: ج.م${item.price.toFixed(
-  //             2
-  //           )})`
-  //       )
-  //       .join("\n")}
-  //   `;
-  //   navigator.clipboard.writeText(details);
-  //   alert("تم نسخ تفاصيل الطلب إلى الحافظة!");
-  // };
 
   if (loading) {
     return (
