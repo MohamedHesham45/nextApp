@@ -176,8 +176,8 @@ export default function Gallery() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">
-        Product Gallery
+      <h1 className="text-end text-3xl font-bold mb-8">
+        معرض المنتجات
       </h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {products.map((product) => (
@@ -188,39 +188,60 @@ export default function Gallery() {
               handleProductClick(product)
             }
           >
-            <img
-              src={product.images[0]}
-              alt={product.title}
-              width={300}
-              height={300}
-              className="w-full h-64 object-cover"
-            />
-            <div className="p-4">
+            <div className="relative">
+              <img
+                src={product.images[0]}
+                alt={product.title}
+                width={300}
+                height={300}
+                className="w-full h-64 object-cover"
+              />
+              {product.quantity == 0 && <span className="absolute top-2 left-2 bg-blue-600 text-white text-sm font-bold px-2 py-1 rounded-md shadow-lg z-10">نفذت الكمية</span>}
+              {product.discountPercentage > 0 && <span className="absolute top-2 right-2 bg-red-600 text-white text-sm font-bold px-2 py-1 rounded-md shadow-lg z-10">
+          خصم {product.discountPercentage.toFixed(1)}%
+        </span>}
+            </div>
+            <div className="p-4 text-end ">
               <h2 className="text-lg font-semibold mb-2">
                 {product.title}
               </h2>
               <div className="flex flex-col">
-                <span className="text-gray-500 line-through text-sm">
-                  السعر الأصلي:
+              <span className="block mb-2 text-sm font-medium text-gray-600">
+                   كود مرجعي: <span className="text-blue-600">{product.referenceCode}</span>
+              </span>
+
+                <span className="block mb-1 text-sm font-medium text-gray-600">
+                  فئة المنتج: <span className="text-blue-600">{product.category || "Uncategorized"}</span>
+                </span>
+                <span>الكمية المتاحة: <span className="text-green-600">{product.quantity}</span></span>
+                <p className="block font-sans text-base font-light leading-relaxed text-inherit antialiased truncate-lines">
+                  {product.description}
+                </p>
+                <div className={"flex "+(product.discountPercentage>0?" justify-between":" justify-end")}>
+
+                <span className={` ${product.discountPercentage>0?" line-through text-gray-500 text-sm":"  text-green-600 font-bold text-lg text-end"}`}>
+                  السعر {product.discountPercentage>0?"الأصلي":""}: 
                   {product.price.toFixed(2)}
                 </span>
-                <span className="text-red-500 font-bold">
+                
+                {/* {product.discountPercentage>0 && <span className="text-red-500 font-bold">
                   الخصم:{" "}
-                  {product.discountPercentage}%
-                </span>
-                <span className="text-green-600 font-bold text-lg">
-                  الآن:
+                  {Math.round(product.discountPercentage)}%
+                </span>} */}
+                {product.discountPercentage>0 && <span className="text-green-600 font-bold text-lg">
+                  السعر بعد الخصم :
                   {calculateDiscountedPrice(
                     product
                   ).toFixed(2)}
-                </span>
+                </span>}
+                </div>
               </div>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   handleAddToCart(product, 1);
                 }}
-                className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full w-full transition duration-300 ease-in-out transform hover:scale-105"
+                className=" mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full w-full transition duration-300 ease-in-out transform hover:scale-105"
               >
                 أضف إلى السلة
               </button>

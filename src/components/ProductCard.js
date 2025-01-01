@@ -18,7 +18,12 @@ const ProductCard = ({
     <div className="m-5 relative flex flex-col w-full max-w-sm mx-auto rounded-xl bg-white bg-clip-border text-gray-700 shadow-md direction-rtl">
       <div className="relative mx-4 -mt-6 h-40 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border text-white shadow-lg shadow-blue-gray-500/40 bg-gradient-to-r">
         {product.images && product.images.length > 0 ? (
-          <Swiper>
+          <Swiper
+            autoplay={{
+              delay: 3000,
+              disableOnInteraction: false,
+            }}
+          >
             {product.images.map((image, index) => (
               <SwiperSlide key={index}>
                 <img
@@ -38,7 +43,7 @@ const ProductCard = ({
         )}
         {product.quantity == 0 && <span className="absolute top-2 left-2 bg-blue-600 text-white text-sm font-bold px-2 py-1 rounded-md shadow-lg z-10">نفذت الكمية</span>}
         {product.discountPercentage > 0 && <span className="absolute top-2 right-2 bg-red-600 text-white text-sm font-bold px-2 py-1 rounded-md shadow-lg z-10">
-          خصم {product.discountPercentage}%
+          خصم {product.discountPercentage.toFixed(1)}%
         </span>}
       </div>
 

@@ -82,7 +82,7 @@ export default function FeaturedProducts() {
                   src={product.images[0]}
                   alt={product.title}
                   layout="fill"
-                  objectFit="cover"
+                  // objectFit="cover"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                   <h3 className="text-white text-xl font-bold text-center px-4">

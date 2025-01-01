@@ -8,7 +8,7 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import { useAuth } from "../context/AuthContext";
 
 export default function AdminPage() {
-  const { email, isLoaded } = useAuth();
+  const { token, isLoaded, role, isLoggedIn } = useAuth();
   const router = useRouter();
   const [products, setProducts] = useState([]);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -18,16 +18,17 @@ export default function AdminPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loadingSubmit, setLoadingSubmit] = useState(false)
   const [loadingDelete, setLoadingDelete] = useState(false)
+
   const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       const res = await fetch("/api/products");
+      if(!res.ok){
+        throw new Error("Failed to fetch products");
+      }
       const data = await res.json();
       setProducts(data);
     } catch (err) {
-      if (err.status === 502) {
-        fetchProducts();
-      }
       console.error("Error fetching products:", err);
       setError("Failed to load products. Please try again later.");
     } finally {
@@ -46,17 +47,20 @@ export default function AdminPage() {
       setError("Failed to load categories. Please try again later.");
     }
   }, []);
-
-  useEffect(() => {
-    if (isLoaded) {
-      if (!email) {
+useEffect(()=>{
+  if(token){
+    if(isLoaded){
+      if(isLoggedIn && role === 'user'){
         router.push("/");
-      } else {
+      }else{
         fetchProducts();
         fetchCategories();
       }
     }
-  }, [isLoaded, email, router, fetchProducts, fetchCategories]);
+  }else{
+    router.push("/");
+  }
+  }, [isLoaded, role, router,token])
 
   const handleCreate = () => {
     setEditingProduct(null);
@@ -109,18 +113,21 @@ export default function AdminPage() {
       if(imagesProduct.length>0){
         const images=new FormData()
         imagesProduct.forEach(image=>{
-          images.append("images",image)
+          if(typeof image!=="string"){
+            images.append("images",image)
+          }
         })
-        
-        const res=await fetch("/upload-images",{
-          method:"POST",
-          body: images
-        })
-        if(!res.ok)throw new Error("Failed to upload images")
-        const data=await res.json()
-        data.files.forEach(file=>{
-          imagess.push(file)
-        })
+        if(images.getAll("images").length>0){
+          const res=await fetch("/upload-images",{
+            method:"POST",
+            body: images
+          })
+          if(!res.ok)throw new Error("Failed to upload images")
+          const data=await res.json()
+          data.files.forEach(file=>{
+            imagess.push(file)
+          })
+        }
         finalData.images=imagess
       }
       const method = editingProduct ? "PUT" : "POST";
@@ -144,10 +151,6 @@ export default function AdminPage() {
     }
   };
 
-  if (!isLoaded || loading) {
-    return <LoadingSpinner />;
-  }
-
   if (error) {
     return (
       <div className="container mx-auto px-4 py-8 text-center">
@@ -160,6 +163,9 @@ export default function AdminPage() {
         </button>
       </div>
     );
+  }
+  if(loading){
+    return <LoadingSpinner/>
   }
 
   return (
@@ -197,32 +203,3 @@ export default function AdminPage() {
     </div>
   );
 }
-
-const data = [
-  {
-    category: "كوشن",
-    products: [
-      {
-        name: "كوشن 1",
-        price: 100,
-      },
-      {
-        name: "كوشن 2",
-        price: 200,
-      },
-    ],
-  },
-  {
-    category: "ستاير",
-    products: [
-      {
-        name: "ستاير 1",
-        price: 300,
-      },
-      {
-        name: "ستاير 2",
-        price: 400,
-      },
-    ],
-  },
-];

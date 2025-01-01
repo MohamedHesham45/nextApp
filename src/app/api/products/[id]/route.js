@@ -44,14 +44,17 @@ export async function PUT(request, { params }) {
     }
     const priceAfterDiscount=updateData.priceAfterDiscount
     const price=updateData.price
-    if(priceAfterDiscount){
-      if(price){
-        const discountPercentage=((price-priceAfterDiscount)/price)*100
-        updateData.discountPercentage=discountPercentage
-      }
-      else{
-        const discountPercentage=((existingProduct.price-priceAfterDiscount)/existingProduct.price)*100
-        updateData.discountPercentage=discountPercentage
+    if(priceAfterDiscount>=0){
+      if(priceAfterDiscount==0){
+        updateData.discountPercentage=0
+      }else{
+        if(price){
+          const discountPercentage=((price-priceAfterDiscount)/price)*100
+          updateData.discountPercentage=discountPercentage
+        }else{
+          const discountPercentage=((existingProduct.price-priceAfterDiscount)/existingProduct.price)*100
+          updateData.discountPercentage=discountPercentage
+        }
       }
     }
 
