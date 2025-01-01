@@ -22,7 +22,7 @@ const ProductCard = ({
             {product.images.map((image, index) => (
               <SwiperSlide key={index}>
                 <img
-                  src={"http://93.127.202.37:3001/"+image || "/1.jpg"}
+                  src={"https://93.127.202.37:3001"+image || "/1.jpg"}
                   alt={`Product Image ${index + 1}`}
                   className="object-cover w-full h-full"
                 />
