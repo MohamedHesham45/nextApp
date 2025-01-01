@@ -74,7 +74,7 @@ export default function AdminPage() {
       const res = await fetch(`/api/products/${product._id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to delete product");
       
-      await fetch("http://93.127.202.37:3001/remove-images", {
+      await fetch("https://93.127.202.37:3001/remove-images", {
         method: "DELETE",
         headers:{
           "Content-Type":"application/json"
@@ -112,7 +112,7 @@ export default function AdminPage() {
           images.append("images",image)
         })
         
-        const res=await fetch("http://93.127.202.37:3001/upload-images",{
+        const res=await fetch("https://93.127.202.37:3001/upload-images",{
           method:"POST",
           body: images
         })

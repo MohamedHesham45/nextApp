@@ -188,8 +188,8 @@ export default function Gallery() {
               handleProductClick(product)
             }
           >
-            <Image
-              src={product.images[0]}
+            <img
+              src={"https://93.127.202.37:3001"+product.images[0]}
               alt={product.title}
               width={300}
               height={300}
@@ -260,8 +260,8 @@ export default function Gallery() {
                 {selectedProduct.images.map(
                   (image, index) => (
                     <div key={index}>
-                      <Image
-                        src={image}
+                      <img
+                        src={"https://93.127.202.37:3001"+image}
                         alt={`${
                           selectedProduct.title
                         } - Image ${index + 1}`}
@@ -281,8 +281,8 @@ export default function Gallery() {
                       key={index}
                       className="relative"
                     >
-                      <Image
-                        src={image}
+                      <img
+                        src={"https://93.127.202.37:3001"+image}
                         alt={`${
                           selectedProduct.title
                         } - Image ${index + 1}`}

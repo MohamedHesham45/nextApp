@@ -78,8 +78,8 @@ export default function FeaturedProducts() {
           >
             <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105">
               <div className="relative h-48">
-                <Image
-                  src={product.images[0]}
+                <img
+                  src={"https://93.127.202.37:3001"+product.images[0]}
                   alt={product.title}
                   layout="fill"
                   objectFit="cover"
