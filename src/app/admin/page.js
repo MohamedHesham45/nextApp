@@ -112,7 +112,7 @@ export default function AdminPage() {
           images.append("images",image)
         })
         
-        const res=await fetch("https://93.127.202.37:3001/upload-images",{
+        const res=await fetch("/upload-images",{
           method:"POST",
           body: images
         })

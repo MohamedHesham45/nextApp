@@ -189,7 +189,7 @@ export default function Gallery() {
             }
           >
             <img
-              src={"https://93.127.202.37:3001"+product.images[0]}
+              src={product.images[0]}
               alt={product.title}
               width={300}
               height={300}
