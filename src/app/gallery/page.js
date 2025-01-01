@@ -261,7 +261,7 @@ export default function Gallery() {
                   (image, index) => (
                     <div key={index}>
                       <img
-                        src={"https://93.127.202.37:3001"+image}
+                        src={image}
                         alt={`${
                           selectedProduct.title
                         } - Image ${index + 1}`}
@@ -282,7 +282,7 @@ export default function Gallery() {
                       className="relative"
                     >
                       <img
-                        src={"https://93.127.202.37:3001"+image}
+                        src={image}
                         alt={`${
                           selectedProduct.title
                         } - Image ${index + 1}`}
