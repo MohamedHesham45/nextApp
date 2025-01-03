@@ -6,6 +6,13 @@ import React, {
 } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+
+// Import Swiper styles
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 
 export default function FeaturedProducts() {
   const [products, setProducts] = useState([]);
@@ -66,60 +73,64 @@ export default function FeaturedProducts() {
   };
 
   return (
-    <div>
-      {/* <h2 className="text-2xl font-bold mb-4">
-        Featured Products
-      </h2> */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <div className="px-4">
+      <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-800">
+        <span className="text-amazon-orange">المنتجات</span> المميزة
+      </h2>
+
+      <Swiper
+        modules={[Navigation, Pagination, Autoplay]}
+        spaceBetween={20}
+        slidesPerView={1}
+        navigation
+        pagination={{ clickable: true }}
+        autoplay={{ delay: 3000, disableOnInteraction: false }}
+        breakpoints={{
+          640: {
+            slidesPerView: 2,
+          },
+          768: {
+            slidesPerView: 3,
+          },
+          1024: {
+            slidesPerView: 4,
+          },
+        }}
+        className="featured-products-slider"
+      >
         {products.map((product) => (
-          <Link
-            href={`/category/${product.category}`}
-            key={product._id}
-          >
-            <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105">
-              <div className="relative h-48">
-                <img
-                  src={product.images[0]}
-                  alt={product.title}
-                  layout="fill"
-                  // objectFit="cover"
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                  <h3 className="text-white text-xl font-bold text-center px-4">
-                    شاهد جميع ال{" "}
-                    {product.category}
-                  </h3>
+          <SwiperSlide key={product._id}>
+            <Link
+              href={`/category/${product.category}`}
+              className="block group"
+            >
+              <div className="bg-white shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl rounded-lg">
+                <div className="relative h-64">
+                  <img
+                    src="123.jpg"
+                    alt={product.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent flex items-center justify-center transition-all duration-300">
+                    <div className="text-center transform transition-all duration-300 group-hover:scale-105">
+                      <h3 className="text-white text-xl font-bold text-center px-4 group-hover:text-amazon-yellow">
+                        شاهد جميع ال{" "}{product.category}
+                      </h3>
+                      <span className="inline-block mt-4 px-6 py-2 bg-amazon-yellow text-white text-sm font-bold rounded-full opacity-0 transform translate-y-4 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
+                        اكتشف المزيد
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
-              {/* <div className="p-4">
-                <h4 className="text-lg font-semibold mb-2">
-                  {product.title}
-                </h4>
-                <div className="flex flex-col">
-                  <span className="text-gray-500 line-through text-sm">
-                    Original Price: $
-                    {product.price.toFixed(2)}
-                  </span>
-                  <span className="text-red-500 font-bold">
-                    Discount:{" "}
-                    {product.discountPercentage}%
-                  </span>
-                  <span className="text-green-600 font-bold text-lg">
-                    Now: $
-                    {calculateDiscountedPrice(
-                      product
-                    ).toFixed(2)}
-                  </span>
-                </div>
-              </div> */}
-            </div>
-          </Link>
+            </Link>
+          </SwiperSlide>
         ))}
-      </div>
-      <div className="mt-6 text-center">
+      </Swiper>
+      <div className="mt-10 text-center">
         <Link
           href="/gallery"
-          className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300"
+          className="inline-block bg-gradient-to-r bg-amazon-orange hover:bg-amazon-orange-dark text-white px-8 py-4 rounded-full text-lg font-semibold transition-all hover:scale-105 hover:shadow-lg hover:-translate-y-1"
         >
           عرض جميع المنتجات
         </Link>
