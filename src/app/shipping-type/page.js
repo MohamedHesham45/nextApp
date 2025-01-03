@@ -13,6 +13,7 @@ export default function ShippingTypes() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState('add'); // 'add' or 'edit'
     const [selectedType, setSelectedType] = useState(null);
+    const [submitLoading, setSubmitLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
         description: ''
@@ -22,16 +23,20 @@ export default function ShippingTypes() {
         description: ''
     });
 
-    const { isLoggedIn, isLoaded } = useAuth();
+    const { isLoggedIn, isLoaded,token ,role} = useAuth();
     const router = useRouter();
 
     useEffect(() => {
-        if (isLoaded) {
-            if (!isLoggedIn) {
-                router.push("/");
+        if(token){
+            if (isLoaded) {
+                if (isLoggedIn && role==='user') {
+                    router.push("/");
+                }
             }
+        }else{
+            router.push("/");
         }
-    }, [isLoaded, isLoggedIn, router]);
+    }, [isLoaded, isLoggedIn, router,token]);
 
     useEffect(() => {
         fetchShippingTypes();
@@ -51,7 +56,6 @@ export default function ShippingTypes() {
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
 
         // Reset errors
         setErrors({
@@ -72,12 +76,10 @@ export default function ShippingTypes() {
             hasError = true;
         }
 
-        if (hasError) {
-            setLoading(false);
-            return;
-        }
+      
 
         try {
+            setSubmitLoading(true);
             const url = modalMode === 'add'
                 ? '/api/shippingType'
                 : `/api/shippingType/${selectedType._id}`;
@@ -97,7 +99,7 @@ export default function ShippingTypes() {
         } catch (error) {
             setError("Error: " + error.message);
         } finally {
-            setLoading(false);
+            setSubmitLoading(false);
         }
     };
 
@@ -108,8 +110,8 @@ export default function ShippingTypes() {
     };
 
     const confirmDelete = async () => {
-        setLoading(true);
         try {
+            setSubmitLoading(true);
             const response = await fetch(`/api/shippingType/${selectedType._id}`, {
                 method: "DELETE"
             });
@@ -119,7 +121,7 @@ export default function ShippingTypes() {
         } catch (error) {
             setError("Error deleting: " + error.message);
         } finally {
-            setLoading(false);
+            setSubmitLoading(false);
         }
     };
 
@@ -196,9 +198,10 @@ export default function ShippingTypes() {
                                     <div className="flex justify-start gap-2">
                                         <button
                                             onClick={confirmDelete}
+                                            disabled={submitLoading}
                                             className="px-4 py-2 bg-red-600 text-white rounded"
                                         >
-                                            حذف
+                                            {submitLoading ? "جاري الحذف ..." : 'حذف'}
                                         </button>
                                         <button
                                             onClick={closeModal}
@@ -265,8 +268,9 @@ export default function ShippingTypes() {
                                             <button
                                                 type="submit"
                                                 className="px-4 py-2 bg-blue-600 text-white rounded"
+                                                disabled={submitLoading}
                                             >
-                                                {modalMode === 'add' ? 'إضافة' : 'حفظ'}
+                                                {submitLoading ? "جاري الحفظ ..." : modalMode === 'add' ? 'إضافة' : 'حفظ'}
                                             </button>
                                             <button
                                                 type="button"

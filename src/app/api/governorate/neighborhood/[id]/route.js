@@ -9,11 +9,11 @@ export async function GET(request, { params }) {
         const db = client.db("address");
         const neighborhood = await db.collection("neighborhood").findOne({ _id: new ObjectId(id) });
         if(!neighborhood){
-            return NextResponse.json({ error: "Neighborhood not found" }, { status: 404 });
+            return NextResponse.json({ message: "المنطقة غير موجودة" }, { status: 404 });
         }
         return NextResponse.json(neighborhood);
     }catch(error){
-        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+        return NextResponse.json({ message: "حدث خطأ أثناء جلب المنطقة" }, { status: 500 });
     }
 }
 
@@ -27,16 +27,16 @@ export async function PUT(request, { params }) {
         if(updateData.nameAr || updateData.nameEn){
             const existingNeighborhoodName = await db.collection("neighborhood").findOne({$and: [{_id:{$ne:new ObjectId(id)}},{$or: [{ nameAr: updateData.nameAr }, { nameEn: updateData.nameEn }] }] });
             if(existingNeighborhoodName){
-                return NextResponse.json({ error: "Neighborhood name already exists" }, { status: 400 });
+                return NextResponse.json({ message: "المنطقة بهذا العنوان موجودة بالفعل" }, { status: 400 });
             }
         }
         const neighborhood = await db.collection("neighborhood").updateOne({ _id: new ObjectId(id) }, { $set: updateData });
         if(neighborhood.modifiedCount===0){
-            return NextResponse.json({ error: "Neighborhood not found" }, { status: 404 });
+            return NextResponse.json({ message: "المنطقة غير موجودة" }, { status: 404 });
         }
-        return NextResponse.json({message:"Neighborhood updated successfully"});
+        return NextResponse.json({message:"تم تحديث المنطقة بنجاح"});
     }catch(error){
-        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+        return NextResponse.json({ message: "حدث خطأ أثناء تحديث المنطقة" }, { status: 500 });
     }
 }
 
@@ -49,8 +49,8 @@ export async function DELETE(request, { params }) {
         if(neighborhood.deletedCount===0){
             return NextResponse.json({ error: "Neighborhood not found" }, { status: 404 });
         }
-        return NextResponse.json({message:"Neighborhood deleted successfully"});
+        return NextResponse.json({message:"تم حذف المنطقة بنجاح"});
     }catch(error){
-        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+        return NextResponse.json({ message: "حدث خطأ أثناء حذف المنطقة" }, { status: 500 });
     }
 }

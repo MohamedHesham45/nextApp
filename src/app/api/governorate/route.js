@@ -20,7 +20,7 @@ export async function GET(request) {
         })
         return NextResponse.json(governorates);
     }catch(error){
-        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+        return NextResponse.json({ message: "حدث خطأ أثناء جلب المحافظات" }, { status: 500 });
     }
 }
 
@@ -31,7 +31,7 @@ export async function POST(request) {
         const db = client.db("address");
         const existingGovernorate = await db.collection("governorate").findOne({ nameAr });
         if(existingGovernorate){
-            return NextResponse.json({ error: "Governorate already exists" }, { status: 400 });
+            return NextResponse.json({ message: "المحافظة موجودة بالفعل" }, { status: 400 });
         }
         const shippingTypes=await db.collection("shippingType").find({}).toArray();
         const shippingPrices = shippingTypes.map(shippingType=>{
@@ -44,6 +44,6 @@ export async function POST(request) {
         governorate=await db.collection("governorate").findOne({ _id: governorate.insertedId });
         return NextResponse.json(governorate);
     }catch(error){
-        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+        return NextResponse.json({ message: "حدث خطأ أثناء إضافة المحافظة" }, { status: 500 });
     }
 }

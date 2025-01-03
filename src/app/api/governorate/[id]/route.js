@@ -8,7 +8,7 @@ export async function GET(request, { params }) {
         const db = client.db("address");
         const governorate = await db.collection("governorate").findOne({ _id: new ObjectId(id) });
         if(!governorate){
-            return NextResponse.json({ error: "Governorate not found" }, { status: 404 });
+            return NextResponse.json({ message: "المحافظة غير موجودة" }, { status: 404 });
         }
         const shippingPrices=await Promise.all(governorate.shippingPrices.map(async shippingPrice=>{
             const shippingType=await db.collection("shippingType").findOne({ _id: new ObjectId(shippingPrice.shippingTypeId) });
@@ -22,7 +22,7 @@ export async function GET(request, { params }) {
         governorate.shippingPrices=shippingPrices;
         return NextResponse.json(governorate);
     }catch(error){
-        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+        return NextResponse.json({ message: "حدث خطأ أثناء جلب المحافظة" }, { status: 500 });
     }
 }
 
@@ -35,7 +35,7 @@ export async function PUT(request, { params }) {
 
         const governorate = await db.collection("governorate").findOne({ _id: new ObjectId(id) });
         if (!governorate) {
-            return NextResponse.json({ error: "Governorate not found" }, { status: 404 });
+            return NextResponse.json({ message: "المحافظة غير موجودة" }, { status: 404 });
         }
 
         if (updateData.shippingPrices) {
@@ -60,10 +60,10 @@ export async function PUT(request, { params }) {
             );
         }
 
-        return NextResponse.json({ message: "Governorate updated successfully" }, { status: 200 });
+        return NextResponse.json({ message: "تم تحديث المحافظة بنجاح" }, { status: 200 });
     } catch (error) {
         console.error(error);
-        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+        return NextResponse.json({ message: "حدث خطأ أثناء تحديث المحافظة" }, { status: 500 });
     }
 }
 
@@ -75,11 +75,11 @@ export async function DELETE(request, { params }) {
         const db = client.db("address");
         const governorate = await db.collection("governorate").deleteOne({ _id: new ObjectId(id) });
         if(!governorate){
-            return NextResponse.json({ error: "Governorate not found" }, { status: 404 });
+            return NextResponse.json({ message: "المحافظة غير موجودة" }, { status: 404 });
         }
-        return NextResponse.json({message:"Governorate deleted successfully"});
+        return NextResponse.json({message:"تم حذف المحافظة بنجاح"});
     }catch(error){
-        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+        return NextResponse.json({ message: "حدث خطأ أثناء حذف المحافظة" }, { status: 500 });
     }
 }
 
@@ -92,7 +92,7 @@ export async function POST(request, { params }) {
 
         const shippingType = await db.collection("shippingType").findOne({ _id: new ObjectId(shippingTypeId) });
         if (!shippingType) {
-            return NextResponse.json({ error: "Shipping type not found" }, { status: 404 });
+            return NextResponse.json({ message: "نوع الشحنة غير موجود" }, { status: 404 });
         }
 
         const governorateUpdate = await db.collection("governorate").updateOne(
@@ -106,7 +106,7 @@ export async function POST(request, { params }) {
         );
 
         if (governorateUpdate.matchedCount === 0) {
-            return NextResponse.json({ error: "Shipping type already exists in governorate" }, { status: 400 });
+            return NextResponse.json({ message: "نوع الشحنة بالفعل موجود في المحافظة" }, { status: 400 });
         }
 
         const governorate = await db.collection("governorate").findOne({ _id: new ObjectId(id) });
@@ -114,6 +114,6 @@ export async function POST(request, { params }) {
         return NextResponse.json(governorate);
     } catch (error) {
         console.error(error);
-        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+        return NextResponse.json({ message: "حدث خطأ أثناء إضافة نوع الشحنة" }, { status: 500 });
     }
 }
