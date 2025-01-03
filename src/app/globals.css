@@ -2,11 +2,71 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes scroll {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(20px); opacity: 0; }
+}
+
+.animate-scroll {
+  animation: scroll 1.5s infinite;
+}
+
+@font-face {
+  font-family: 'Cairo';
+  src: url('./fonts/Cairo-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Cairo';
+  src: url('./fonts/Cairo-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Cairo';
+  src: url('./fonts/Cairo-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Cairo';
+  src: url('./fonts/Cairo-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Cairo';
+  src: url('./fonts/Cairo-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Cairo';
+  src: url('./fonts/Cairo-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Cairo';
+  src: url('./fonts/Cairo-ExtraLight.ttf') format('truetype');
+  font-weight: 200;
+  font-style: normal;
+}
+
 body {
   font-family: 'Cairo', sans-serif;
 }
 
-
+.font-cairo {
+  font-family: 'Cairo', sans-serif;
+}
 
 .direction-rtl {
   direction: rtl;
@@ -46,3 +106,46 @@ body {
     text-wrap: balance;
   }
 } */
+
+/* Featured Products Slider Styles */
+.featured-products-slider {
+  padding: 2rem 1rem !important;
+}
+
+.featured-products-slider .swiper-button-next,
+.featured-products-slider .swiper-button-prev {
+  color: #ff9900;
+  background: rgb(255, 255, 255);
+  width: 40px;
+  height: 60px;
+  border-radius: 20%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+.featured-products-slider .swiper-button-next:hover,
+.featured-products-slider .swiper-button-prev:hover {
+  color: white;
+  background: #ff9900;
+  width: 40px;
+  height: 60px;
+  border-radius: 20%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.featured-products-slider .swiper-button-next:after,
+.featured-products-slider .swiper-button-prev:after {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.featured-products-slider .swiper-pagination-bullet {
+  background: #ff9900;
+}
+
+.featured-products-slider .swiper-pagination-bullet-active {
+  background: #ff9900;
+}
+
+/* Add padding to accommodate navigation buttons */
+.featured-products-slider .swiper-wrapper {
+  padding: 1rem 0;
+}
