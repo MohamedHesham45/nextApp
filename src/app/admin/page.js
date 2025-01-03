@@ -18,6 +18,7 @@ export default function AdminPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loadingSubmit, setLoadingSubmit] = useState(false)
   const [loadingDelete, setLoadingDelete] = useState(false)
+  const [errorSubmit, setErrorSubmit] = useState(null)
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -122,9 +123,12 @@ export default function AdminPage() {
             method: "POST",
             body: images
           })
-          if (!res.ok) throw new Error("Failed to upload images")
-          const data = await res.json()
-          data.files.forEach(file => {
+          if(!res.ok) throw new Error("حدث خطأ أثناء رفع الصور حاول مرة أخرى")
+          const data=await res.json()
+        const checkImages=[]
+          data.files.forEach(file=>{
+            checkImages.push(file)
+
             imagess.push(file)
           })
         }
@@ -134,22 +138,37 @@ export default function AdminPage() {
       const url = editingProduct
         ? `/api/products/${editingProduct._id}`
         : "/api/products";
+      
       const res = await fetch(url, {
-        method
-        ,
+        method,
+
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify(finalData)
       });
-      if (!res.ok) throw new Error("Failed to save product");
+      if (!res.ok) {
+        const errorData = await res.json();
+        if(checkImages.length>0){
+          await fetch("/remove-images", {
+            method: "DELETE",
+            headers:{
+            "Content-Type":"application/json"
+          },
+          body: JSON.stringify({ filenames: checkImages })
+        });
+        }
+        throw new Error(errorData.message || "حدث خطأ أثناء إضافة المنتج");
+      }
+
       fetchProducts();
       setIsModalOpen(false);
     } catch (err) {
       console.error(err);
-      alert("Failed to save product. Please try again.");
+      setErrorSubmit(err.message);
+      throw new Error(err.message)
     } finally {
-      setLoadingSubmit(false)
+      setLoadingSubmit(false);
     }
   };
 
@@ -197,6 +216,7 @@ export default function AdminPage() {
                 onCancel={() => setIsModalOpen(false)}
                 categories={categories}
                 loadingSubmit={loadingSubmit}
+                errorSubmit={errorSubmit}
               />
             </div>
           </div>

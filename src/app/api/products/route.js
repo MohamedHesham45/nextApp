@@ -33,7 +33,7 @@ export async function GET(request) {
         ...product,
         price: product.price ?? 0,
         category:
-        product.category || "Uncategorized",
+        product.category || "غير مصنف",
         discountPercentage:
         product.discountPercentage ?? 0,
         priceAfterDiscount:
@@ -51,7 +51,7 @@ export async function GET(request) {
       error
     );
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { message: "اعد المحاولة مرة أخرى" },
       { status: 500 }
     );
   }
@@ -66,14 +66,14 @@ export async function POST(request) {
     const db = client.db("productDB");
     const existingCategory=await db.collection("categories").findOne({_id:new ObjectId(categoryId)})
     if(!existingCategory){
-      return NextResponse.json({error:"Category not found"},{status:404})
+      return NextResponse.json({message:"الفئة غير موجودة"},{status:404})
     }
     if(existingCategory.name!==category){
-      return NextResponse.json({error:"Category name does not match"},{status:400})
+      return NextResponse.json({message:"اسم الفئة لا يتطابق"},{status:400})
     }
     price=parseInt(price)
     if(isNaN(price)){
-      return NextResponse.json({error:"Price is not a number"},{status:400})
+      return NextResponse.json({message:"السعر ليس رقمًا"},{status:400})
     }
     priceAfterDiscount=parseInt(priceAfterDiscount)
    
@@ -82,20 +82,20 @@ export async function POST(request) {
       quantity=0
     }
     if(priceAfterDiscount>price){
-      return NextResponse.json({error:"Price after discount cannot be greater than price"},{status:400})
+      return NextResponse.json({message:"السعر بعد الخصم لا يمكن أن يكون أكبر من السعر"},{status:400})
     }
     if(priceAfterDiscount<0){
-      return NextResponse.json({error:"Price after discount cannot be less than 0"},{status:400})
+      return NextResponse.json({message:"السعر بعد الخصم لا يمكن أن يكون أقل من 0"},{status:400})
     }
     if(price<0){
-      return NextResponse.json({error:"Price cannot be less than 0"},{status:400})
+      return NextResponse.json({message:"السعر لا يمكن أن يكون أقل من 0"},{status:400})
     }
     if(quantity<0){
-      return NextResponse.json({error:"Quantity cannot be less than 0"},{status:400})
+      return NextResponse.json({message:"الكمية لا يمكن أن تكون أقل من 0"},{status:400})
     }
     const existingProduct=await db.collection("products").findOne({title})
     if(existingProduct){
-      return NextResponse.json({error:"Product with this title already exists"},{status:400})
+      return NextResponse.json({message:"منتج بهذا العنوان موجود بالفعل"},{status:400},)
     }
 
     const latestProduct = await db
@@ -135,7 +135,7 @@ export async function POST(request) {
   } catch (error) {
     console.error("Error in POST /api/products:", error);
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { message: "اعد المحاولة مرة أخرى" },
       { status: 500 }
     );
   }

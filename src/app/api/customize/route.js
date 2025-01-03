@@ -7,14 +7,14 @@ export async function POST(req) {
     const db = client.db("customize");
     const existingCustomize = await db.collection("additionalFields").findOne({ name });
     if (existingCustomize) {
-      return NextResponse.json({ error: "Customize already exists" }, { status: 400 });
+      return NextResponse.json({ message: "الحقل موجود بالفعل" }, { status: 400 });
     }
     const result = await db.collection("additionalFields").insertOne({ name, value });
     const customize = await db.collection("additionalFields").findOne({ _id: result.insertedId });
 
-    return NextResponse.json({ message: "Customize added successfully", customize });
+    return NextResponse.json({ message: "تم إضافة الحقل بنجاح", customize });
   }catch(error){
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json({ message: "حدث خطأ أثناء إضافة الحقل" }, { status: 500 });
   }
 }
 
@@ -31,6 +31,6 @@ export async function GET(req) {
     const customize = await db.collection("additionalFields").find(query).toArray();
     return NextResponse.json(customize);
 }catch(error){
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json({ message: "حدث خطأ أثناء جلب الحقول" }, { status: 500 });
   }
 }

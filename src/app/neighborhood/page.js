@@ -14,6 +14,7 @@ export default function Neighborhoods() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState("add"); // 'add', 'edit', 'delete'
     const [selectedNeighborhood, setSelectedNeighborhood] = useState(null);
+    const [submitLoading, setSubmitLoading] = useState(false);
     const [formData, setFormData] = useState({
         nameAr: "",
         nameEn: "",
@@ -22,16 +23,20 @@ export default function Neighborhoods() {
     const [errors, setErrors] = useState([]);
     const [selectedGovernorate, setSelectedGovernorate] = useState("");
 
-    const { isLoggedIn, isLoaded } = useAuth();
+    const { isLoggedIn, isLoaded,token ,role} = useAuth();
     const router = useRouter();
 
     useEffect(() => {
-        if (isLoaded) {
-            if (!isLoggedIn) {
-                router.push("/");
+        if(token){
+            if (isLoaded) {
+                if (isLoggedIn && role==='user') {
+                    router.push("/");
+                }
             }
+        }else{
+            router.push("/");
         }
-    }, [isLoaded, isLoggedIn, router]);
+    }, [isLoaded, isLoggedIn, router,token]);
 
     useEffect(() => {
         fetchData();
@@ -98,7 +103,7 @@ export default function Neighborhoods() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validateForm()) return;
-        setLoading(true);
+        setSubmitLoading(true);
         try {
             let response;
             if (modalMode === "add") {
@@ -125,7 +130,7 @@ export default function Neighborhoods() {
         } catch (error) {
             setError("خطأ: " + error.message);
         } finally {
-            setLoading(false);
+            setSubmitLoading(false);
         }
     };
 
@@ -141,7 +146,7 @@ export default function Neighborhoods() {
     };
 
     const confirmDelete = async () => {
-        setLoading(true);
+        setSubmitLoading(true);
         try {
             const response = await fetch(`/api/governorate/neighborhood/${selectedNeighborhood._id}`, {
                 method: "DELETE",
@@ -152,7 +157,7 @@ export default function Neighborhoods() {
         } catch (error) {
             setError("خطأ في الحذف: " + error.message);
         } finally {
-            setLoading(false);
+            setSubmitLoading(false);
         }
     };
 
@@ -248,8 +253,9 @@ export default function Neighborhoods() {
                                         <button
                                             onClick={confirmDelete}
                                             className="px-4 py-2 bg-red-600 text-white rounded"
+                                            disabled={submitLoading}
                                         >
-                                            حذف
+                                            {submitLoading ? "جاري الحذف ..." : 'حذف'}
                                         </button>
                                         <button
                                             onClick={closeModal}
@@ -311,8 +317,9 @@ export default function Neighborhoods() {
                                             <button
                                                 type="submit"
                                                 className="px-4 py-2 bg-blue-600 text-white rounded"
+                                                disabled={submitLoading}
                                             >
-                                                {modalMode === "add" ? "إضافة" : "حفظ"}
+                                                {submitLoading ? "جاري الحفظ ..." : modalMode === "add" ? "إضافة" : "حفظ"}
                                             </button>
                                             <button
                                                 type="button"

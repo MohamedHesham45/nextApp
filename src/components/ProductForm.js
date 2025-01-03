@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { XCircle } from "lucide-react";
 
-const ProductForm = ({ onSubmit, initialData, onCancel, categories,loadingSubmit }) => {
+const ProductForm = ({ onSubmit, initialData, onCancel, categories,loadingSubmit ,errorSubmit }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [images, setImages] = useState([]);
@@ -66,7 +66,8 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories,loadingSubmit
     try {
       await onSubmit(formData);
     } catch (error) {
-      setErrors({ backend: error.message });
+      setErrors({ backend: errorSubmit });
+      console.log("errorSubmit",errorSubmit)
     }
   };
 
@@ -92,7 +93,7 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories,loadingSubmit
           value={title}
           onChange={(e) =>{
             setTitle(e.target.value)
-            setErrors({...errors,title:null})
+            setErrors({...errors,title:null,backend:null})
           }}
           />
           {errors.title && <p className="text-red-500">{errors.title}</p>}
@@ -107,7 +108,7 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories,loadingSubmit
           value={description}
           onChange={(e) =>{
             setDescription(e.target.value)
-            setErrors({...errors,description:null})
+            setErrors({...errors,description:null,backend:null})
           }}
         />
         {errors.description && <p className="text-red-500">{errors.description}</p>}
@@ -123,7 +124,7 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories,loadingSubmit
             value={JSON.stringify(category)}
             onChange={(e) =>{
               setCategory(JSON.parse(e.target.value))
-              setErrors({...errors,category:null})
+              setErrors({...errors,category:null,backend:null})
             }}
           >
             <option value="">حدد الفئة</option>
@@ -161,7 +162,7 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories,loadingSubmit
             value={price}
             onChange={(e) =>{
               setPrice(e.target.value)
-              setErrors({...errors,price:null})
+              setErrors({...errors,price:null,backend:null})
             }}
           />
           {errors.price && <p className="text-red-500">{errors.price}</p>}
@@ -191,7 +192,7 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories,loadingSubmit
           multiple
           onChange={(e)=>{
             handleImageUpload(e)
-            setErrors({...errors,images:null})
+            setErrors({...errors,images:null,backend:null})
           }}
         />
         {errors.images && <p className="text-red-500">{errors.images}</p>}

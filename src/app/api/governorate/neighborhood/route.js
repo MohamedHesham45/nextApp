@@ -16,7 +16,7 @@ export async function GET(request) {
         }));
         return NextResponse.json(neighborhoods);
     }catch(error){
-        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+        return NextResponse.json({ message: "حدث خطأ أثناء جلب المناطق" }, { status: 500 });
     }
 }
 
@@ -27,12 +27,12 @@ export async function POST(request) {
         const db = client.db("address");
         const existingNeighborhood = await db.collection("neighborhood").findOne({ nameAr });
         if(existingNeighborhood){
-            return NextResponse.json({ error: "Neighborhood already exists" }, { status: 400 });
+            return NextResponse.json({ message: "المنطقة موجودة بالفعل" }, { status: 400 });
         }
         let neighborhood = await db.collection("neighborhood").insertOne({ nameAr, nameEn, governorateID });
         neighborhood=await db.collection("neighborhood").findOne({ _id: neighborhood.insertedId });
         return NextResponse.json(neighborhood);
     }catch(error){
-        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+        return NextResponse.json({ message: "حدث خطأ أثناء إضافة المنطقة" }, { status: 500 });
     }
 }

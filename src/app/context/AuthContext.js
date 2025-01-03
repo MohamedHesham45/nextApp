@@ -67,6 +67,7 @@ export function AuthProvider({ children }) {
     setEmail(profile.email || null); // Set email on login
     setUserId(profile.userId || null); // Set userId on login
     setRole(profile.role || null);
+    setIsLoaded(true);
   };
   
   const logout = () => {

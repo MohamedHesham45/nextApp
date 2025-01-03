@@ -14,6 +14,7 @@ export default function Governorates() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState("add"); // 'add', 'edit', 'addShipping'
   const [selectedGovernorate, setSelectedGovernorate] = useState(null);
+  const [submitLoading, setSubmitLoading] = useState(false);
   const [formData, setFormData] = useState({
     nameAr: "",
     nameEn: "",
@@ -22,16 +23,21 @@ export default function Governorates() {
   });
   const [errors, setErrors] = useState({});
 
-  const { isLoggedIn, isLoaded } = useAuth();
+  const { isLoggedIn, isLoaded,token ,role} = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (isLoaded) {
-      if (!isLoggedIn) {
-        router.push("/");
+    if(token){
+
+      if (isLoaded) {
+        if (isLoggedIn && role==='user') {
+          router.push("/");
+        }
       }
+    }else{
+      router.push("/");
     }
-  }, [isLoaded, isLoggedIn, router]);
+  }, [isLoaded, isLoggedIn, router,token]);
 
   useEffect(() => {
     fetchData();
@@ -79,8 +85,8 @@ export default function Governorates() {
   }
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     if (!validateForm()) return;
+    setSubmitLoading(true);
     try {
       let response;
       if (modalMode === "add") {
@@ -113,7 +119,7 @@ export default function Governorates() {
     } catch (error) {
       setError("Error: " + error.message);
     } finally {
-      setLoading(false);
+      setSubmitLoading(false);
     }
   };
 
@@ -129,7 +135,7 @@ export default function Governorates() {
     setIsModalOpen(true);
   };
   const confirmDelete = async () => {
-    setLoading(true);
+    setSubmitLoading(true);
     try {
       const response = await fetch(
         `/api/governorate/${selectedGovernorate._id}`,
@@ -143,7 +149,7 @@ export default function Governorates() {
     } catch (error) {
       setError("Error deleting: " + error.message);
     } finally {
-      setLoading(false);
+      setSubmitLoading(false);
     }
   };
 
@@ -250,8 +256,9 @@ export default function Governorates() {
                     <button
                       onClick={confirmDelete}
                       className="px-4 py-2 bg-red-600 text-white rounded"
+                      disabled={submitLoading}
                     >
-                      حذف
+                      {submitLoading ? "جاري الحذف ..." : 'حذف'}
                     </button>
                     <button
                       onClick={closeModal}
@@ -386,8 +393,9 @@ export default function Governorates() {
                       <button
                         type="submit"
                         className="px-4 py-2 bg-blue-600 text-white rounded"
+                        disabled={submitLoading}
                       >
-                        {modalMode === "add"
+                        {submitLoading ? "جاري الحفظ ..." : modalMode === "add"
                           ? "إضافة"
                           : modalMode === "addShipping"
                           ? "إضافة السعر"

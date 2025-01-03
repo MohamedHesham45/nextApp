@@ -12,6 +12,7 @@ const CategoryManager = ({ onCategoryChange, onDeleteCategory }) => {
   const [minCount, setMinCount] = useState(1);
   const [errorMessage, setErrorMessage] = useState("");
   const [categoryToDelete, setCategoryToDelete] = useState(null);
+  const [errorSubmit,setErrorSubmit]=useState(false)
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -38,6 +39,7 @@ const CategoryManager = ({ onCategoryChange, onDeleteCategory }) => {
     if (newCategory && !categories.find((cat) => cat.name === newCategory)) {
       try {
         setIsLoading(true);
+        setErrorSubmit(true)
         const response = await fetch("/api/category", {
           method: "POST",
           headers: {
@@ -56,11 +58,16 @@ const CategoryManager = ({ onCategoryChange, onDeleteCategory }) => {
           setIsModalOpen(false);
         } else {
           console.error("Failed to add category");
+          const errorData = await response.json();
+          setErrorMessage(errorData.error || "حدث خطأ أثناء إضافة الفئة");
+
         }
       } catch (error) {
         console.error("Error adding category:", error);
+
       } finally {
         setIsLoading(false);
+        setErrorSubmit(false)
       }
     } else if (!newCategory) {
       setErrorMessage("اسم الفئة مطلوب");
@@ -73,6 +80,7 @@ const CategoryManager = ({ onCategoryChange, onDeleteCategory }) => {
     if (categoryToDelete) {
       try {
         setIsLoading(true);
+        setErrorSubmit(true)
         const response = await fetch(`/api/category/${categoryToDelete._id}`, {
           method: "DELETE",
         });
@@ -86,11 +94,13 @@ const CategoryManager = ({ onCategoryChange, onDeleteCategory }) => {
           setIsDeleteModalOpen(false);
         } else {
           console.error("Failed to delete category");
+
         }
       } catch (error) {
         console.error("Error deleting category:", error);
       } finally {
         setIsLoading(false);
+        setErrorSubmit(false)
       }
     }
   };
@@ -106,7 +116,7 @@ const CategoryManager = ({ onCategoryChange, onDeleteCategory }) => {
             onClick={() => setIsModalOpen(true)}
             className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mb-6"
           >
-            إضافة فئة جديدة
+            إضافة فئة جديدة +
           </button>
         </div>
         <div>
@@ -174,10 +184,11 @@ const CategoryManager = ({ onCategoryChange, onDeleteCategory }) => {
             />
             <div className="flex justify-end gap-2">
               <button
-                onClick={addCategory}
+                onClick={addCategory} 
+                disabled={errorSubmit}
                 className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               >
-                إضافة
+                {errorSubmit ? "جاري الحفظ ..." : "إضافة"}
               </button>
               <button
                 onClick={() => setIsModalOpen(false)}
@@ -185,6 +196,7 @@ const CategoryManager = ({ onCategoryChange, onDeleteCategory }) => {
               >
                 إلغاء
               </button>
+              
             </div>
           </div>
         </div>
@@ -201,9 +213,10 @@ const CategoryManager = ({ onCategoryChange, onDeleteCategory }) => {
             <div className="flex justify-end gap-2">
               <button
                 onClick={handleDeleteCategory}
+                disabled={errorSubmit}
                 className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               >
-                حذف
+                {errorSubmit ? "جاري الحذف ..." : "حذف"}
               </button>
               <button
                 onClick={() => setIsDeleteModalOpen(false)}

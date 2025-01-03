@@ -13,6 +13,7 @@ export default function CustomizePage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState("add"); 
     const [selectedField, setSelectedField] = useState(null);
+    const [submitLoading, setSubmitLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
         value: "",
@@ -22,16 +23,20 @@ export default function CustomizePage() {
         value: "",
     });
 
-    const { isLoggedIn, isLoaded } = useAuth();
+    const { isLoggedIn, isLoaded,token ,role} = useAuth();
     const router = useRouter();
 
     useEffect(() => {
-        if (isLoaded) {
-            if (!isLoggedIn) {
-                router.push("/");
+        if(token){
+            if (isLoaded) {
+                if (isLoggedIn && role==='user') {
+                    router.push("/");
+                }
             }
+        }else{
+            router.push("/");
         }
-    }, [isLoaded, isLoggedIn, router]);
+    }, [isLoaded, isLoggedIn, router,token]);
 
     useEffect(() => {
         fetchCustomFields();
@@ -52,7 +57,7 @@ export default function CustomizePage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
+        setSubmitLoading(true);
 
         // Reset errors
         setErrors({
@@ -74,7 +79,7 @@ export default function CustomizePage() {
         }
 
         if (hasError) {
-            setLoading(false);
+            setSubmitLoading(false);
             return;
         }
 
@@ -99,7 +104,7 @@ export default function CustomizePage() {
         } catch (error) {
             setError("Error: " + error.message);
         } finally {
-            setLoading(false);
+            setSubmitLoading(false);
         }
     };
 
@@ -110,7 +115,7 @@ export default function CustomizePage() {
     };
 
     const confirmDelete = async () => {
-        setLoading(true);
+        setSubmitLoading(true);
         try {
             const response = await fetch(`/api/customize/${selectedField._id}`, {
                 method: "DELETE",
@@ -121,7 +126,7 @@ export default function CustomizePage() {
         } catch (error) {
             setError("Error deleting: " + error.message);
         } finally {
-            setLoading(false);
+            setSubmitLoading(false);
         }
     };
 
@@ -220,8 +225,9 @@ export default function CustomizePage() {
                                             <button
                                                 type="submit"
                                                 className="px-4 py-2 bg-blue-600 text-white rounded"
+                                                disabled={submitLoading}
                                             >
-                                                {modalMode === "add" ? "إضافة" : "حفظ"}
+                                                {submitLoading ? "جاري الحفظ ..." : modalMode === "add" ? "إضافة" : "حفظ"}
                                             </button>
                                             <button
                                                 type="button"

@@ -16,16 +16,21 @@ export default function AllUsers() {
     const [userToDelete, setUserToDelete] = useState(null);
     const [editingUserId, setEditingUserId] = useState(null);
     const [editingRole, setEditingRole] = useState("");
-    const { isLoggedIn, isLoaded } = useAuth();
+    const [errorSubmit,setErrorSubmit]=useState(false)
+    const { isLoggedIn, isLoaded,token } = useAuth();
     const router = useRouter();
 
     useEffect(() => {
-        if (isLoaded) {
-            if (!isLoggedIn) {
-                router.push("/");
+        if(token){
+            if (isLoaded) {
+                if (isLoggedIn && role==='user') {
+                    router.push("/");
+                }
             }
+        }else{
+            router.push("/");
         }
-    }, [isLoaded, isLoggedIn, router]);
+    }, [isLoaded, isLoggedIn, router,token]);
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -79,6 +84,7 @@ export default function AllUsers() {
 
     const updateUserRole = async (userId, newRole) => {
         try {
+            setErrorSubmit(true)
             const response = await fetch(`/api/user/profile/${userId}`, {
                 method: "PUT",
                 headers: {
@@ -99,6 +105,8 @@ export default function AllUsers() {
             setEditingUserId(null);
         } catch (error) {
             setError("Error updating user role: " + error.message);
+        }finally{
+            setErrorSubmit(false)
         }
     };
 
@@ -197,9 +205,10 @@ export default function AllUsers() {
                             {editingUserId === user.userId && (
                                 <button
                                     className="mt-2 px-4 py-2 bg-blue-600 text-white rounded"
+                                    disabled={errorSubmit}
                                     onClick={() => updateUserRole(user.userId, editingRole)}
                                 >
-                                    حفظ
+                                    {errorSubmit ? "جاري الحفظ ..." : "حفظ"}
                                 </button>
                             )}
                         </div>

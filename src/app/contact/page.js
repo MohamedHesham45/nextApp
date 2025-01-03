@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import emailjs from "emailjs-com";
 import {
   Phone,
@@ -14,12 +14,25 @@ export default function Contact() {
     email: "",
     message: "",
   });
+  const [email, setEmail] = useState("sitaramall97@gmail.com");
+  const [whatsappNumber, setWhatsappNumber] = useState("201223821206");
+  const [error, setError] = useState(null);
 
   const [isSubmitting, setIsSubmitting] =
     useState(false);
   const [submitResult, setSubmitResult] =
     useState(null);
-
+useEffect(() => {
+  fetchEmail();
+}, []);
+const fetchEmail = async () => {
+  const response = await fetch('/api/customize?name=ايميل التواصل');
+  const res=await fetch('/api/customize?name=رقم الواتس');
+  const data = await response.json();
+  const data2=await res.json();
+  setEmail(data[0].value);
+  setWhatsappNumber(data2[0].value);
+};
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
@@ -28,71 +41,69 @@ export default function Contact() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    const newErrors={};
+    if(formData.name===""){
+      newErrors.name="الاسم مطلوب";
+    }
+    if(formData.email===""){
+      newErrors.email="الايميل مطلوب";
+    }
+    if(formData.message===""){
+      newErrors.message="الرسالة مطلوبة";
+    }
+    if(Object.keys(newErrors).length>0){
+      setError(newErrors);
+      return;
+    }
     setIsSubmitting(true);
-
-    emailjs
-      .send(
-        "YOUR_SERVICE_ID",
-        "YOUR_TEMPLATE_ID",
-        formData,
-        "YOUR_USER_ID"
-      )
-      .then(
-        (result) => {
-          setSubmitResult({
-            success: true,
-            message: "Message sent successfully!",
-          });
-          setFormData({
-            name: "",
-            email: "",
-            message: "",
-          });
+    try {
+      const response = await fetch('/api/contact-us', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        (error) => {
-          setSubmitResult({
-            success: false,
-            message:
-              "Failed to send message. Please try again.",
-          });
-        }
-      )
-      .finally(() => {
-        setIsSubmitting(false);
+        body: JSON.stringify(formData),
       });
+      const result = await response.json();
+      setSubmitResult({success:true,message:result.message});
+    } catch (error) {
+      setSubmitResult({ success: false, message: 'Error sending message' });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-400 to-purple-500 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-100 shadow-xl rounded-lg py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-lg shadow-xl overflow-hidden mb-8">
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-800 p-8 text-white text-center">
-            <h2 className="text-3xl font-bold mb-4">
+        <div className="bg-gray-200 rounded-lg shadow-xl mb-8">
+          <div className="bg-gray-300 p-8 text-black text-center">
+            <h2 className="text-4xl font-bold mb-4 ">
               Call Us in Person
             </h2>
             <a
-              href="tel:+201223821206"
-              className="text-4xl font-bold hover:text-blue-200 transition duration-300 ease-in-out transform hover:scale-105 inline-block"
+              href={`tel:${whatsappNumber}`}
+              className="text-3xl font-bold hover:text-white transition duration-300 ease-in-out transform hover:scale-105 inline-block"
             >
-              +20 122 382 1206
+              +{whatsappNumber}
             </a>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-xl overflow-hidden">
+        <div className="bg-white rounded-lg shadow-xl ">
           <div className="md:flex">
-            <div className="md:flex-shrink-0 bg-gradient-to-b from-blue-600 to-indigo-800 p-8 text-white">
+            <div className="md:flex-shrink-0 bg-gray-300 p-8 text-black">
               <h2 className="text-3xl font-bold mb-4">
                 Contact Us
               </h2>
               <div className="mb-8">
                 <h3 className="text-xl font-semibold mb-2 flex items-center">
-                  <MapPin className="mr-2" /> Our
+                  <MapPin className="mr-2 text-yellow-500" /> Our
                   Location
                 </h3>
-                <p className="text-lg leading-relaxed">
+                <p className="text-lg leading-relaxed text-gray-800">
                   ستارة مول
                   <br />
                   شارع 100، بعد ديوان حي العرب
@@ -104,14 +115,14 @@ export default function Contact() {
               </div>
               <div>
                 <h3 className="text-xl font-semibold mb-2 flex items-center">
-                  <Mail className="mr-2" /> Email
+                  <Mail className="mr-2 text-yellow-500" /> Email
                   Us
                 </h3>
                 <a
-                  href="mailto:info@ourstore.com"
-                  className="text-lg hover:text-blue-200 transition duration-300"
+                  href={`mailto:${email}`}
+                  className="text-lg hover:text-gray-600 transition duration-300"
                 >
-                  info@ourstore.com
+                  {email}
                 </a>
               </div>
             </div>
@@ -132,10 +143,12 @@ export default function Contact() {
                     id="name"
                     name="name"
                     value={formData.name}
-                    onChange={handleChange}
-                    required
+                    onChange={(e)=>{handleChange(e);setError({...error,name:null});setSubmitResult(null)}}
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                   />
+                  {error && error.name && (
+                    <p className="text-red-500 text-sm mt-1">{error.name}</p>
+                  )}
                 </div>
                 <div>
                   <label
@@ -149,10 +162,12 @@ export default function Contact() {
                     id="email"
                     name="email"
                     value={formData.email}
-                    onChange={handleChange}
-                    required
+                    onChange={(e)=>{handleChange(e);setError({...error,email:null});setSubmitResult(null)}}
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                   />
+                  {error && error.email && (
+                    <p className="text-red-500 text-sm mt-1">{error.email}</p>
+                  )}
                 </div>
                 <div>
                   <label
@@ -165,16 +180,18 @@ export default function Contact() {
                     id="message"
                     name="message"
                     value={formData.message}
-                    onChange={handleChange}
-                    required
+                    onChange={(e)=>{handleChange(e);setError({...error,message:null});setSubmitResult(null)}}
                     rows="4"
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                   ></textarea>
+                  {error && error.message && (
+                    <p className="text-red-500 text-sm mt-1">{error.message}</p>
+                  )}
                 </div>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50"
+                  className="w-full flex justify-center py-3 px-5 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50"
                 >
                   {isSubmitting
                     ? "Sending..."

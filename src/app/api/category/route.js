@@ -9,7 +9,7 @@ export async function GET(request) {
     return NextResponse.json({ message: "Categories fetched successfully", categories });
   }catch(error){
     console.error("Error fetching categories:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ message: "حدث خطأ أثناء جلب الفئات" }, { status: 500 });
   }
 }
 
@@ -21,10 +21,10 @@ export async function POST(request) {
     const db = client.db("productDB");
     const existingCategory = await db.collection("categories").findOne({ name });
     if(existingCategory){
-      return NextResponse.json({ error: "Category already exists" }, { status: 400 });
+      return NextResponse.json({ message: "الفئة موجودة بالفعل" }, { status: 400 });
     }
     if(!name){
-      return NextResponse.json({ error: "Name is required" }, { status: 400 });
+      return NextResponse.json({ message: "العنوان مطلوب" }, { status: 400 });
     }
     if(!minCount){
         minCount = 1;
@@ -39,6 +39,6 @@ export async function POST(request) {
     // return NextResponse.json({ message: "Category created successfully" });
   }catch(error){
     console.error("Error creating category:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ message: "حدث خطأ أثناء إضافة الفئة" }, { status: 500 });
   }
 }

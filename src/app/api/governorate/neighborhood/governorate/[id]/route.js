@@ -17,6 +17,6 @@ export async function GET(request, { params }) {
         }));
         return NextResponse.json(neighborhoods);
     }catch(error){
-        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+        return NextResponse.json({ message: "حدث خطأ أثناء جلب المناطق" }, { status: 500 });
     }
 }
