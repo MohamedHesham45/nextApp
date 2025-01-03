@@ -17,7 +17,7 @@ export default function Navbar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
-  const dropdownRef = useRef(null); 
+  const dropdownRef = useRef(null);
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -64,19 +64,21 @@ export default function Navbar() {
   return (
     <>
       <header
-        className={`bg-white shadow fixed w-full z-50 transition-transform duration-300 ${visible ? "translate-y-0" : "-translate-y-full"
+        className={`bg-amazon shadow fixed w-full z-50 transition-transform duration-300 ${visible ? "translate-y-0" : "-translate-y-full"
           }`}
       >
-        <nav className="container mx-auto px-6 py-3 flex justify-between items-center">
-          <div className="text-xl font-semibold text-gray-700">
+        <nav className="container mx-auto px-6 h-16 flex justify-between items-center">
+          <div className="text-xl font-semibold text-white order-2">
             <Link href="/">ستارة مول</Link>
           </div>
-          <div className="hidden md:flex space-x-6 items-center">
-            <Link href="/gallery" className="text-gray-800 hover:text-gray-600 transition">
-              المعرض
+          <div className="hidden md:flex space-x-6 items-center h-full order-1">
+            <Link href="/gallery" className="relative text-white hover:text-amazon-yellow transition group">
+              <span className="block pb-1">المعرض</span>
+              <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-amazon-yellow group-hover:w-full transition-all duration-300"></span>
             </Link>
-            <Link href="/contact" className="text-gray-800 hover:text-gray-600 transition">
-              تواصل معنا
+            <Link href="/contact" className="relative text-white hover:text-amazon-yellow transition group">
+              <span className="block pb-1">تواصل معنا</span>
+              <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-amazon-yellow group-hover:w-full transition-all duration-300"></span>
             </Link>
 
             {/* Role Check Start */}
@@ -84,9 +86,10 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="block py-2 text-gray-800 hover:text-gray-600 transition duration-300"
+                className="relative text-white hover:text-amazon-yellow transition group"
               >
-                {link.label}
+                <span className="block pb-1">{link.label}</span>
+                <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-amazon-yellow group-hover:w-full transition-all duration-300"></span>
               </Link>
             ))}
             {/* Role Check End */}
@@ -96,34 +99,33 @@ export default function Navbar() {
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={toggleDropdown}
-                  className="flex items-center space-x-2 hover:rounded-md hover:bg-gray-200"
+                  className="flex items-center space-x-2 hover:bg-amazon-blue/20 px-2 rounded-md transition-colors h-10"
                 >
                   <img
                     src="/avatar.png"
                     alt="User Avatar"
-                    className="w-8 h-8 rounded-full border border-gray-300"
+                    className="w-8 h-8 rounded-full border border-amazon-yellow"
                   />
-                  <span className="text-gray-800">{firstName || "User"}</span>
-                  <ChevronDown size={16} />
+                  <span className="text-white">{firstName || "User"}</span>
+                  <ChevronDown size={16} className="text-white" />
                 </button>
                 {isDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg transition-transform transform origin-top-right scale-100">
                     <div className="px-4 py-2">
-                      <p className="text-sm text-gray-500">Logged in as</p>
-                      <p className="text-sm font-medium text-gray-800">{userName || "User"}</p>
+                      <p className="text-sm text-amazon-dark-gray">Logged in as</p>
+                      <p className="text-sm font-medium text-amazon-dark-gray">{userName || "User"}</p>
                     </div>
                     <hr className="my-2" />
                     <button
-                      // href="/profile"
                       onClick={openProfileModal}
-                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
+                      className="flex items-center w-full px-4 py-2 text-sm text-amazon-dark-gray hover:bg-amazon-light-gray transition"
                     >
                       <User size={16} className="mr-2" />
                       الملف الشخصي
                     </button>
                     <button
                       onClick={logout}
-                      className="flex items-center w-full px-4 py-2 text-sm text-red-500 hover:bg-gray-100 transition"
+                      className="flex items-center w-full px-4 py-2 text-sm text-red-500 hover:bg-amazon-light-gray transition"
                     >
                       <LogOut size={16} className="mr-2" />
                       تسجيل خروج
@@ -135,9 +137,10 @@ export default function Navbar() {
             {!isLoggedIn && (
               <button
                 onClick={() => openModal("sign-in")}
-                className="text-gray-800 hover:text-gray-600 transition"
+                className="relative text-white hover:text-amazon-yellow transition group"
               >
-                تسجيل الدخول
+                <span className="block pb-1">تسجيل الدخول</span>
+                <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-amazon-yellow group-hover:w-full transition-all duration-300"></span>
               </button>
             )}
           </div>
@@ -145,23 +148,22 @@ export default function Navbar() {
 
           {/* Mobile Mode Menu Start */}
           <div className="md:hidden">
-            <button onClick={toggleMenu} className="text-gray-800">
+            <button onClick={toggleMenu} className="text-white">
               <Menu size={24} />
             </button>
           </div>
         </nav>
         {isMenuOpen && (
-          <div className="md:hidden mt-4 px-6">
+          <div className="md:hidden mt-4 px-6 bg-amazon text-white">
             {isLoggedIn && (
               <div>
                 <div className="pb-2">
-                  <p className="text-sm text-gray-500">Logged in as</p>
-                  <p className="text-sm font-medium text-gray-800">{userName || "User"}</p>
+                  <p className="text-sm text-amazon-yellow">Logged in as</p>
+                  <p className="text-sm font-medium text-white">{userName || "User"}</p>
                 </div>
                 <button
-                  // href="/profile"
                   onClick={openProfileModal}
-                  className="flex items-center text-gray-800 hover:text-gray-600"
+                  className="flex items-center text-white hover:text-amazon-yellow transition-colors"
                 >
                   <User size={16} className="mr-2" />
                   الملف الشخصي
@@ -172,21 +174,25 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="block py-2 text-gray-800 hover:text-gray-600 transition duration-300"
+                className="block py-2 text-white hover:text-amazon-yellow transition-colors"
               >
                 {link.label}
               </Link>
             ))}
-            <Link href="/gallery" className="block py-2 text-gray-800 hover:text-gray-600">
-              المعرض
+            <Link
+              href="/gallery"
+              className="relative block text-white hover:text-amazon-yellow transition-colors group"
+            >
+              <span className="block py-2 pb-3">المعرض</span>
+              <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-amazon-yellow group-hover:w-full transition-all duration-300"></span>
             </Link>
-            <Link href="/contact" className="block py-2 text-gray-800 hover:text-gray-600">
+            <Link href="/contact" className="block py-2 text-white hover:text-amazon-yellow transition-colors">
               تواصل معنا
             </Link>
             {isLoggedIn && (
               <button
                 onClick={logout}
-                className="flex items-center w-full  py-2 text-sm text-red-500 hover:bg-gray-100 transition"
+                className="flex items-center w-full py-2 text-sm text-red-500 hover:text-red-400 transition-colors"
               >
                 <LogOut size={16} className="mr-2" />
                 تسجيل الخروج
@@ -196,7 +202,7 @@ export default function Navbar() {
             {!isLoggedIn && (
               <button
                 onClick={() => openModal("sign-in")}
-                className="block w-full text-left py-2 text-gray-800 hover:text-gray-600"
+                className="block w-full text-left py-2 text-white hover:text-amazon-yellow transition-colors"
               >
                 تسجيل الدخول
               </button>

@@ -23,7 +23,7 @@ export default function AdminPage() {
     try {
       setLoading(true);
       const res = await fetch("/api/products");
-      if(!res.ok){
+      if (!res.ok) {
         throw new Error("Failed to fetch products");
       }
       const data = await res.json();
@@ -47,20 +47,20 @@ export default function AdminPage() {
       setError("Failed to load categories. Please try again later.");
     }
   }, []);
-useEffect(()=>{
-  if(token){
-    if(isLoaded){
-      if(isLoggedIn && role === 'user'){
-        router.push("/");
-      }else{
-        fetchProducts();
-        fetchCategories();
+  useEffect(() => {
+    if (token) {
+      if (isLoaded) {
+        if (isLoggedIn && role === 'user') {
+          router.push("/");
+        } else {
+          fetchProducts();
+          fetchCategories();
+        }
       }
+    } else {
+      router.push("/");
     }
-  }else{
-    router.push("/");
-  }
-  }, [isLoaded, role, router,token])
+  }, [isLoaded, role, router, token])
 
   const handleCreate = () => {
     setEditingProduct(null);
@@ -77,15 +77,15 @@ useEffect(()=>{
       setLoadingDelete(true)
       const res = await fetch(`/api/products/${product._id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to delete product");
-      
+
       await fetch("/remove-images", {
         method: "DELETE",
-        headers:{
-          "Content-Type":"application/json"
+        headers: {
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({ filenames: product.images })
       });
-      
+
       fetchProducts();
     } catch (err) {
       console.error(err);
@@ -98,48 +98,50 @@ useEffect(()=>{
   const handleSubmit = async (productData) => {
     try {
       setLoadingSubmit(true)
-      const imagesProduct=productData.getAll("images")
-      const finalData={}
-      const imagess=[]
-      productData.forEach((value,key)=>{
-        if(key!="images"){
-          finalData[key]=value
-        }else{
-          if(typeof value==="string"){
+      const imagesProduct = productData.getAll("images")
+      const finalData = {}
+      const imagess = []
+      productData.forEach((value, key) => {
+        if (key != "images") {
+          finalData[key] = value
+        } else {
+          if (typeof value === "string") {
             imagess.push(value)
           }
         }
       })
-      if(imagesProduct.length>0){
-        const images=new FormData()
-        imagesProduct.forEach(image=>{
-          if(typeof image!=="string"){
-            images.append("images",image)
+      if (imagesProduct.length > 0) {
+        const images = new FormData()
+        imagesProduct.forEach(image => {
+          if (typeof image !== "string") {
+            images.append("images", image)
           }
         })
-        if(images.getAll("images").length>0){
-          const res=await fetch("/upload-images",{
-            method:"POST",
+        if (images.getAll("images").length > 0) {
+          const res = await fetch("/upload-images", {
+            method: "POST",
             body: images
           })
-          if(!res.ok)throw new Error("Failed to upload images")
-          const data=await res.json()
-          data.files.forEach(file=>{
+          if (!res.ok) throw new Error("Failed to upload images")
+          const data = await res.json()
+          data.files.forEach(file => {
             imagess.push(file)
           })
         }
-        finalData.images=imagess
+        finalData.images = imagess
       }
       const method = editingProduct ? "PUT" : "POST";
       const url = editingProduct
         ? `/api/products/${editingProduct._id}`
         : "/api/products";
-      const res = await fetch(url, { method
+      const res = await fetch(url, {
+        method
         ,
-        headers:{
-          "Content-Type":"application/json"
+        headers: {
+          "Content-Type": "application/json"
         },
-        body:JSON.stringify(finalData) });
+        body: JSON.stringify(finalData)
+      });
       if (!res.ok) throw new Error("Failed to save product");
       fetchProducts();
       setIsModalOpen(false);
@@ -164,8 +166,8 @@ useEffect(()=>{
       </div>
     );
   }
-  if(loading){
-    return <LoadingSpinner/>
+  if (loading) {
+    return <LoadingSpinner />
   }
 
   return (
