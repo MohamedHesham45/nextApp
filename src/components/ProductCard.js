@@ -56,10 +56,10 @@ const ProductCard = ({
           فئة المنتج: <span className="text-blue-600">{product.category || "Uncategorized"}</span>
         </span>
 
-        <h5 className="mb-2 block font-sans text-xl font-semibold leading-snug tracking-normal text-blue-gray-900 antialiased">
+        <h5 className="mb-2 block text-xl font-semibold leading-snug tracking-normal text-blue-gray-900 antialiased">
           {product.title}
         </h5>
-        <p className="block font-sans text-base font-light leading-relaxed text-inherit antialiased truncate-lines">
+        <p className="block text-base font-light leading-relaxed text-inherit antialiased truncate-lines">
           {product.description}
         </p>
 
