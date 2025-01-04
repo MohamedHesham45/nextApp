@@ -9,12 +9,14 @@ import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import ShoppingCart from "@/components/ShoppingCart";
 import { useAuth } from "../context/AuthContext";
+import { useCartFavorite } from "../context/cartFavoriteContext";
 
 export default function Gallery() {
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] =
     useState(null);
-  const [cart, setCart] = useState([]);
+  // const [cart, setCart] = useState([]);
+  const { cart, setCart } = useCartFavorite();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isCartVisible, setIsCartVisible] =
@@ -75,7 +77,7 @@ export default function Gallery() {
   ) => {
     const itemToAdd = {
       ...product,
-      quantity,
+      quantityCart: quantity,
       selectedImages:
         selectedImages.length > 0
           ? selectedImages
@@ -91,8 +93,11 @@ export default function Gallery() {
 
     if (existingItemIndex !== -1) {
       const updatedCart = [...cart];
-      updatedCart[existingItemIndex].quantity +=
-        quantity;
+      if (!updatedCart[existingItemIndex].quantityCart ) {
+      updatedCart[existingItemIndex].quantityCart = 1;
+      }
+      updatedCart[existingItemIndex].quantityCart +=
+      quantity;
       setCart(updatedCart);
     } else {
       setCart([...cart, itemToAdd]);
@@ -100,40 +105,40 @@ export default function Gallery() {
     setIsCartVisible(true);
   };
 
-  const handleUpdateCartItem = (
-    productId,
-    newQuantity,
-    selectedImages
-  ) => {
-    setCart(
-      cart
-        .map((item) =>
-          item._id === productId &&
-          JSON.stringify(item.selectedImages) ===
-            JSON.stringify(selectedImages)
-            ? { ...item, quantity: newQuantity }
-            : item
-        )
-        .filter((item) => item.quantity > 0)
-    );
-  };
+  // const handleUpdateCartItem = (
+  //   productId,
+  //   newQuantity,
+  //   selectedImages
+  // ) => {
+  //   setCart(
+  //     cart
+  //       .map((item) =>
+  //         item._id === productId &&
+  //         JSON.stringify(item.selectedImages) ===
+  //           JSON.stringify(selectedImages)
+  //           ? { ...item, quantity: newQuantity }
+  //           : item
+  //       )
+  //       .filter((item) => item.quantity > 0)
+  //   );
+  // };
 
-  const handleRemoveFromCart = (
-    productId,
-    selectedImages
-  ) => {
-    setCart(
-      cart.filter(
-        (item) =>
-          !(
-            item._id === productId &&
-            JSON.stringify(
-              item.selectedImages
-            ) === JSON.stringify(selectedImages)
-          )
-      )
-    );
-  };
+  // const handleRemoveFromCart = (
+  //   productId,
+  //   selectedImages
+  // ) => {
+  //   setCart(
+  //     cart.filter(
+  //       (item) =>
+  //         !(
+  //           item._id === productId &&
+  //           JSON.stringify(
+  //             item.selectedImages
+  //           ) === JSON.stringify(selectedImages)
+  //         )
+  //     )
+  //   );
+  // };
 
   const calculateDiscountedPrice = (product) => {
     return (
@@ -397,7 +402,7 @@ export default function Gallery() {
           </div>
         </div>
       )}
-      <ShoppingCart
+      {/* <ShoppingCart
         cart={cart}
         isVisible={isCartVisible}
         setIsVisible={setIsCartVisible}
@@ -407,15 +412,15 @@ export default function Gallery() {
           // user?.primaryEmailAddress?.emailAddress
           email
         }
-      />
-      <button
+      /> */}
+      {/* <button
         onClick={() =>
           setIsCartVisible(!isCartVisible)
         }
         className="fixed bottom-4 right-4 bg-blue-500 text-white p-2 rounded-full shadow-lg z-10 transition duration-300 ease-in-out transform hover:scale-110"
       >
         🛒
-      </button>
+      </button> */}
     </div>
   );
 }
