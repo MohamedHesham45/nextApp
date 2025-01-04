@@ -104,7 +104,7 @@ export default function FeaturedProducts() {
               href={`/category/${product.category}`}
               className="block group"
             >
-              <div className="bg-white shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl rounded-lg">
+              <div className="bg-white shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl">
                 <div className="relative h-64">
                   <img
                     src="123.jpg"
