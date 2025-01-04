@@ -152,7 +152,7 @@ export default function CustomizePage() {
 
             <div className="container mx-auto px-4 py-8 rtl text-right">
                 <div className="flex justify-between mb-4">
-                    <h1 className="text-3xl font-bold mr-0">إدارة الحقول المخصصة</h1>
+                    <h1 className="text-3xl font-bold mr-0 text-gray-800">إدارة الحقول المخصصة</h1>
                     <button
                         onClick={() => openModal("add")}
                         className="bg-green-600 text-white px-4 py-2 rounded flex items-center gap-2"

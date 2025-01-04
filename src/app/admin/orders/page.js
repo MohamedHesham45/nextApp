@@ -177,7 +177,7 @@ export default function OrdersPage() {
         className="container mx-auto px-4 py-8"
         dir="rtl"
       >
-        <h1 className="text-3xl font-bold mb-6">
+        <h1 className="text-3xl font-bold mb-6 text-gray-800">
           إدارة الطلبات
         </h1>
         {statusOrder.map((status) => (
@@ -252,7 +252,7 @@ export default function OrdersPage() {
                                 order
                               )
                             }
-                            className="bg-green-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2"
+                            className="bg-green-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-1"
                           >
                             عرض التفاصيل
                           </button>
@@ -264,7 +264,7 @@ export default function OrdersPage() {
                               )
                             }
                             value={order.status}
-                            className="bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded  leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                            className="bg-white border border-gray-300 text-gray-700 py-1 px-4 rounded  leading-tight focus:outline-none focus:bg-white focus:border-gray-500 m-1"
                           >
                             <option value="Pending">
                               قيد الانتظار

@@ -91,7 +91,7 @@ export default function AdminDashboard() {
           {Object.entries(componentsMap).map(([key, { label }]) => (
             <li
               key={key}
-              className={`my-2 cursor-pointer hover:text-blue-500 hover:bg-gray-200 p-2 rounded ${selectedComponent === key ? "bg-blue-500 text-white" : ""
+              className={`my-2 cursor-pointer hover:text-amazon-blue hover:bg-gray-200 p-2 rounded ${selectedComponent === key ? "bg-amazon-blue text-white" : ""
                 }`}
               onClick={() => setSelectedComponent(key)}
             >

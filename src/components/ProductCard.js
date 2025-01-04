@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { Edit, Trash2 } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
+import DOMPurify from 'dompurify';
+export const sanitizeHTML = (dirty) => {
+  return DOMPurify.sanitize(dirty);
+};
 
 const ProductCard = ({
   product,
@@ -59,9 +63,10 @@ const ProductCard = ({
         <h5 className="mb-2 block text-xl font-semibold leading-snug tracking-normal text-blue-gray-900 antialiased">
           {product.title}
         </h5>
-        <p className="block text-base font-light leading-relaxed text-inherit antialiased truncate-lines">
+        {/* <p className="block text-base font-light leading-relaxed text-inherit antialiased truncate-lines">
           {product.description}
-        </p>
+        </p> */}
+        <div className="block text-base font-light leading-relaxed text-inherit antialiased truncate-lines" dangerouslySetInnerHTML={{ __html: sanitizeHTML(product.description) }} />
 
         <span>الكمية المتاحة: <span className="text-green-600">{product.quantity}</span></span>
 
