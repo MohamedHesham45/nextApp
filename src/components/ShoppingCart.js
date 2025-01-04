@@ -4,7 +4,7 @@ import React, {
 } from "react";
 import Image from "next/image";
 
-export default function ShoppingCart({
+export default function ShoppingCartPage({
   cart,
   isVisible,
   setIsVisible,

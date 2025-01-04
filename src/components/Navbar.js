@@ -1,14 +1,32 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Menu, ChevronDown, LogOut, User } from "lucide-react";
+import {
+  Menu,
+  ChevronDown,
+  LogOut,
+  User,
+  ShoppingCart,
+  Heart,
+} from "lucide-react";
 import SignInModal from "@/app/(auth)/sign-in/[[...sign-in]]/page";
 import SignUpModal from "@/app/(auth)/sign-up/[[...sign-up]]/page";
 import { useAuth } from "@/app/context/AuthContext";
+import { useCartFavorite } from "@/app/context/cartFavoriteContext";
 import ProfileModal from "./ProfileModal";
-
+import ShoppingCartPage from "./ShoppingCart";
 export default function Navbar() {
-  const { userName, isLoggedIn, role, logout } = useAuth();
+  const {
+    cart,
+    setCart,
+    favorite,
+    setFavorite,
+    numberOfCartItems,
+    setNumberOfCartItems,
+    numberOfFavoriteItems,
+    setNumberOfFavoriteItems,
+  } = useCartFavorite();
+  const { userName, isLoggedIn, role, logout, email } = useAuth();
   const firstName = userName?.split(" ")[0];
   const [prevScrollPos, setPrevScrollPos] = useState(0);
   const [visible, setVisible] = useState(true);
@@ -17,8 +35,10 @@ export default function Navbar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isCartVisible, setIsCartVisible] = useState(false);
   const dropdownRef = useRef(null);
   useEffect(() => {
+    console.log("number of cart items", numberOfCartItems);
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
@@ -55,28 +75,33 @@ export default function Navbar() {
 
   const roleLinks = isLoggedIn
     ? role === "admin"
-      ? [
-        { href: "/admin-dashboard", label: "لوحة التحكم" },
-      ]
+      ? [{ href: "/admin-dashboard", label: "لوحة التحكم" }]
       : [{ href: "/user/orders", label: "إدارة الطلبات" }]
     : [];
 
   return (
     <>
       <header
-        className={`bg-amazon shadow fixed w-full z-50 transition-transform duration-300 ${visible ? "translate-y-0" : "-translate-y-full"
-          }`}
+        className={`bg-amazon shadow fixed w-full z-50 transition-transform duration-300 ${
+          visible ? "translate-y-0" : "-translate-y-full"
+        }`}
       >
         <nav className="container mx-auto px-6 h-16 flex justify-between items-center">
           <div className="text-xl font-semibold text-white order-2">
             <Link href="/">ستارة مول</Link>
           </div>
-          <div className="hidden md:flex space-x-6 items-center h-full order-1">
-            <Link href="/gallery" className="relative text-white hover:text-amazon-yellow transition group">
+          <div className="hidden md:flex  items-center h-full order-1">
+            <Link
+              href="/gallery"
+              className="relative text-white hover:text-amazon-yellow transition group order-6 px-4"
+            >
               <span className="block pb-1">المعرض</span>
               <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-amazon-yellow group-hover:w-full transition-all duration-300"></span>
             </Link>
-            <Link href="/contact" className="relative text-white hover:text-amazon-yellow transition group">
+            <Link
+              href="/contact"
+              className="relative text-white hover:text-amazon-yellow transition group order-5 px-4"
+            >
               <span className="block pb-1">تواصل معنا</span>
               <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-amazon-yellow group-hover:w-full transition-all duration-300"></span>
             </Link>
@@ -86,17 +111,31 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="relative text-white hover:text-amazon-yellow transition group"
+                className="relative text-white hover:text-amazon-yellow transition group order-4 px-4"
               >
                 <span className="block pb-1">{link.label}</span>
                 <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-amazon-yellow group-hover:w-full transition-all duration-300"></span>
               </Link>
             ))}
             {/* Role Check End */}
-
+            <button
+              onClick={() => setIsCartVisible(!isCartVisible)}
+              className="relative text-white hover:text-amazon-yellow transition group order-3 px-4"
+            >
+              <span className="block pb-1 absolute top-[-12px] right-[3px] text-sm bg-amazon-yellow text-amazon-dark-gray px-1 rounded-full text-amazon ">{numberOfCartItems}</span>
+              <ShoppingCart />
+            </button>
+            <button className="relative text-white hover:text-amazon-yellow transition group order-2 px-4">
+              {numberOfFavoriteItems > 0 && (
+                <span className="block pb-1 absolute top-[-12px] right-[3px] text-sm bg-amazon-yellow text-amazon-dark-gray px-1 rounded-full text-amazon ">
+                  {numberOfFavoriteItems}
+                </span>
+              )}
+              <Heart />
+            </button>
             {/* Logged In Check Start */}
             {isLoggedIn && (
-              <div className="relative" ref={dropdownRef}>
+              <div className="relative order-1" ref={dropdownRef}>
                 <button
                   onClick={toggleDropdown}
                   className="flex items-center space-x-2 hover:bg-amazon-blue/20 px-2 rounded-md transition-colors h-10"
@@ -104,23 +143,29 @@ export default function Navbar() {
                   <img
                     src="/avatar.png"
                     alt="User Avatar"
-                    className="w-8 h-8 rounded-full border border-amazon-yellow"
+                    className="w-8 h-8 rounded-full border border-amazon-yellow order-2"
                   />
-                  <span className="text-white">{firstName || "User"}</span>
-                  <ChevronDown size={16} className="text-white" />
+                  <span className="text-white order-1 px-2">
+                    {firstName || "User"}
+                  </span>
+                  <ChevronDown size={16} className="text-white " />
                 </button>
                 {isDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg transition-transform transform origin-top-right scale-100">
+                  <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg transition-transform transform origin-top-right scale-100 direction-rtl">
                     <div className="px-4 py-2">
-                      <p className="text-sm text-amazon-dark-gray">Logged in as</p>
-                      <p className="text-sm font-medium text-amazon-dark-gray">{userName || "User"}</p>
+                      <p className="text-sm text-amazon-dark-gray mb-2">
+                        تسجيل الدخول ك
+                      </p>
+                      <p className="text-sm font-medium text-amazon-dark-gray">
+                        {userName || "User"}
+                      </p>
                     </div>
                     <hr className="my-2" />
                     <button
                       onClick={openProfileModal}
                       className="flex items-center w-full px-4 py-2 text-sm text-amazon-dark-gray hover:bg-amazon-light-gray transition"
                     >
-                      <User size={16} className="mr-2" />
+                      <User size={16} className="mr-2 hidden " />
                       الملف الشخصي
                     </button>
                     <button
@@ -154,19 +199,21 @@ export default function Navbar() {
           </div>
         </nav>
         {isMenuOpen && (
-          <div className="md:hidden mt-4 px-6 bg-amazon text-white">
+          <div className="md:hidden mt-4 px-6 bg-amazon text-white direction-rtl">
             {isLoggedIn && (
               <div>
                 <div className="pb-2">
-                  <p className="text-sm text-amazon-yellow">Logged in as</p>
-                  <p className="text-sm font-medium text-white">{userName || "User"}</p>
+                  <p className="text-sm text-amazon-yellow">تسجيل الدخول ك</p>
+                  <p className="text-sm font-medium text-white">
+                    {userName || "User"}
+                  </p>
                 </div>
                 <button
                   onClick={openProfileModal}
                   className="flex items-center text-white hover:text-amazon-yellow transition-colors"
                 >
-                  <User size={16} className="mr-2" />
                   الملف الشخصي
+                  <User size={16} className="mr-2" />
                 </button>
               </div>
             )}
@@ -186,7 +233,10 @@ export default function Navbar() {
               <span className="block py-2 pb-3">المعرض</span>
               <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-amazon-yellow group-hover:w-full transition-all duration-300"></span>
             </Link>
-            <Link href="/contact" className="block py-2 text-white hover:text-amazon-yellow transition-colors">
+            <Link
+              href="/contact"
+              className="block py-2 text-white hover:text-amazon-yellow transition-colors"
+            >
               تواصل معنا
             </Link>
             {isLoggedIn && (
@@ -194,8 +244,8 @@ export default function Navbar() {
                 onClick={logout}
                 className="flex items-center w-full py-2 text-sm text-red-500 hover:text-red-400 transition-colors"
               >
-                <LogOut size={16} className="mr-2" />
                 تسجيل الخروج
+                <LogOut size={16} className="mr-2" />
               </button>
             )}
 
@@ -210,17 +260,35 @@ export default function Navbar() {
           </div>
         )}
         {/* Mobile Mode Menu End */}
-
       </header>
       {isModalOpen && modalType === "sign-in" && (
-        <SignInModal isOpen={isModalOpen} onClose={closeModal} setModalType={setModalType} />
+        <SignInModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          setModalType={setModalType}
+        />
       )}
       {isModalOpen && modalType === "sign-up" && (
-        <SignUpModal isOpen={isModalOpen} onClose={closeModal} setModalType={setModalType} />
+        <SignUpModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          setModalType={setModalType}
+        />
       )}
       <ProfileModal
         isOpen={isProfileModalOpen}
         onRequestClose={closeProfileModal}
+      />
+      <ShoppingCartPage
+        cart={[]}
+        isVisible={isCartVisible}
+        setIsVisible={setIsCartVisible}
+        // onUpdateItem={handleUpdateCartItem}
+        // onRemoveItem={handleRemoveFromCart}
+        userEmail={
+          // user?.primaryEmailAddress?.emailAddress
+          email
+        }
       />
     </>
   );

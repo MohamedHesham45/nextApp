@@ -8,6 +8,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import 'swiper/swiper-bundle.css';
+import { CartFavoriteProvider } from "./context/cartFavoriteContext";
 // import "leaflet/dist/leaflet.css";
 
 // const geistSans = localFont({
@@ -58,6 +59,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <AuthProvider>
+      <CartFavoriteProvider>
         <html lang="en">
           <body
           // className={`${geistSans.variable} ${geistMono.variable} antialiased`}
@@ -75,6 +77,7 @@ export default function RootLayout({ children }) {
               <Footer />
           </body>
         </html>
+      </CartFavoriteProvider>
     </AuthProvider>
   );
 }
