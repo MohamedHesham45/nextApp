@@ -195,7 +195,9 @@ export default function Gallery() {
           >
             <div className="relative">
               <img
-                src={product.images[0]}
+                src={
+                  // product.images[0] ||
+                "/123.jpg"}
                 alt={product.title}
                 width={300}
                 height={300}

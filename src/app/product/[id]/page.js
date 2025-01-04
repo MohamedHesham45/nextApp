@@ -4,6 +4,8 @@ import { useEffect, useState, Suspense } from 'react';
 import { useParams } from 'next/navigation';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { Heart, ShoppingCart } from "lucide-react";
+import { sanitizeHTML } from '@/components/ProductCard';
+import { useCartFavorite } from '@/app/context/cartFavoriteContext';
 
 export default function ProductPage() {
     return (
@@ -19,6 +21,53 @@ export function ProductDetails() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+    const { cart, setCart, favorite, setFavorite } = useCartFavorite();
+
+    const handleAddToFavorite = (e, product) => {
+        e.preventDefault();
+        const existingItemIndex = favorite.findIndex(item => item._id === product._id);
+
+        let updatedFavorite;
+        if (existingItemIndex !== -1) {
+            updatedFavorite = favorite.filter(item => item._id !== product._id);
+        } else {
+            updatedFavorite = [...favorite, product];
+        }
+
+        setFavorite(updatedFavorite);
+        localStorage.setItem('favorite', JSON.stringify(updatedFavorite));
+    };
+
+    const handleAddToCart = (e, product) => {
+        e.preventDefault();
+        const itemToAdd = {
+            ...product,
+            quantityCart: 1,
+            selectedImages: product.images,
+        };
+
+        const existingItemIndex = cart.findIndex(
+            (item) =>
+                item._id === product._id &&
+                JSON.stringify(item.selectedImages) ===
+                JSON.stringify(itemToAdd.selectedImages)
+        );
+
+        let updatedCart;
+        if (existingItemIndex !== -1) {
+            updatedCart = [...cart];
+            if (!updatedCart[existingItemIndex].quantityCart) {
+                updatedCart[existingItemIndex].quantityCart = 1;
+            }
+            updatedCart[existingItemIndex].quantityCart += 1;
+        } else {
+            updatedCart = [...cart, itemToAdd];
+        }
+
+        setCart(updatedCart);
+        localStorage.setItem('cart', JSON.stringify(updatedCart));
+    };
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -102,7 +151,8 @@ export function ProductDetails() {
                             {product.referenceCode && (
                                 <p className="text-gray-500">رقم المرجع: {product.referenceCode}</p>
                             )}
-                            <p className="text-gray-600 text-lg leading-relaxed">{product.description}</p>
+                            {/* <p className="text-gray-600 text-lg leading-relaxed">{product.description}</p> */}
+                            <div className="text-gray-600 text-lg leading-relaxed" dangerouslySetInnerHTML={{ __html: sanitizeHTML(product.description) }} />
                         </div>
 
                         <div className="space-y-6 bg-white p-8 rounded-2xl shadow-lg">
@@ -132,14 +182,17 @@ export function ProductDetails() {
                         <div className="space-y-4">
                             <div className="flex gap-6">
                                 <button
+                                onClick={(e) => handleAddToCart(e, product)}
                                     className="flex-1 bg-amazon-orange hover:bg-amazon-orange-dark text-white rounded-full transition-all duration-300 hover:scale-105 hover:shadow-xl flex items-center justify-center gap-3 text-lg font-semibold"
                                     disabled={product.quantity === 0}
                                 >
                                     <ShoppingCart className="h-6 w-6" />
                                     اضف الى السلة
                                 </button>
-                                <button className="p-5 bg-white hover:bg-red-50 text-gray-400 hover:text-red-500 rounded-full shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl border-2 border-gray-100 hover:border-red-500">
-                                    <Heart className="h-7 w-7 stroke-2" />
+                                <button 
+                                onClick={(e) => handleAddToFavorite(e, product)}
+                                className={`p-5 bg-white hover:bg-red-50 text-gray-400 hover:text-red-500 rounded-full shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl border-2 border-gray-100 hover:border-red-500 ${favorite.some(item => item._id === product._id) ? 'text-red-500 border-red-500' : 'text-gray-400 border-gray-100'}`}>
+                                    <Heart className={`h-7 w-7 stroke-2 ${favorite.some(item => item._id === product._id) ? 'fill-red-500' : ''}`}  />
                                 </button>
                             </div>
 

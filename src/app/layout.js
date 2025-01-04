@@ -8,6 +8,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import 'swiper/swiper-bundle.css';
+import 'react-quill/dist/quill.snow.css';
 import { CartFavoriteProvider } from "./context/cartFavoriteContext";
 // import "leaflet/dist/leaflet.css";
 
@@ -64,17 +65,17 @@ export default function RootLayout({ children }) {
           <body
           // className={`${geistSans.variable} ${geistMono.variable} antialiased`}
           >
-              <Navbar />
-              <main className="pt-12">
-                {" "}
-                {/* Add padding-top to account for fixed navbar */}
-                {children}
-                <WhatsAppButton
-                  phoneNumber="201223821206" // Replace with your actual WhatsApp number
-                  message="Hello! I have a question about your products." // Customize this message
-                />
-              </main>
-              <Footer />
+            <Navbar />
+            <main className="pt-12">
+              {" "}
+              {/* Add padding-top to account for fixed navbar */}
+              {children}
+              <WhatsAppButton
+                phoneNumber="201223821206" // Replace with your actual WhatsApp number
+                message="Hello! I have a question about your products." // Customize this message
+              />
+            </main>
+            <Footer />
           </body>
         </html>
       </CartFavoriteProvider>

@@ -82,9 +82,8 @@ export default function Navbar() {
   return (
     <>
       <header
-        className={`bg-amazon shadow fixed w-full z-50 transition-transform duration-300 ${
-          visible ? "translate-y-0" : "-translate-y-full"
-        }`}
+        className={`bg-amazon shadow fixed w-full z-50 transition-transform duration-300 ${visible ? "translate-y-0" : "-translate-y-full"
+          }`}
       >
         <nav className="container mx-auto px-6 h-16 flex justify-between items-center">
           <div className="text-xl font-semibold text-white order-2">
@@ -93,14 +92,14 @@ export default function Navbar() {
           <div className="hidden md:flex  items-center h-full order-1">
             <Link
               href="/gallery"
-              className="relative text-white hover:text-amazon-yellow transition group order-6 px-4"
+              className="relative text-white hover:text-amazon-yellow transition group order-6 mx-4"
             >
               <span className="block pb-1">المعرض</span>
               <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-amazon-yellow group-hover:w-full transition-all duration-300"></span>
             </Link>
             <Link
               href="/contact"
-              className="relative text-white hover:text-amazon-yellow transition group order-5 px-4"
+              className="relative text-white hover:text-amazon-yellow transition group order-5 mx-4"
             >
               <span className="block pb-1">تواصل معنا</span>
               <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-amazon-yellow group-hover:w-full transition-all duration-300"></span>
@@ -111,7 +110,7 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="relative text-white hover:text-amazon-yellow transition group order-4 px-4"
+                className="relative text-white hover:text-amazon-yellow transition group order-4 mx-4"
               >
                 <span className="block pb-1">{link.label}</span>
                 <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-amazon-yellow group-hover:w-full transition-all duration-300"></span>
@@ -122,17 +121,17 @@ export default function Navbar() {
               onClick={() => setIsCartVisible(!isCartVisible)}
               className="relative text-white hover:text-amazon-yellow transition group order-3 px-4"
             >
-              <span className="block pb-1 absolute top-[-12px] right-[3px] text-sm bg-amazon-yellow text-amazon-dark-gray px-1 rounded-full text-amazon ">{numberOfCartItems}</span>
+              <span className="block pb-1 absolute top-[-12px] right-[3px] text-sm bg-amazon-yellow text-amazon-dark-gray px-1 rounded-full">{numberOfCartItems}</span>
               <ShoppingCart />
             </button>
-            <button className="relative text-white hover:text-amazon-yellow transition group order-2 px-4">
+            <Link href="/favorites" className="relative text-white hover:text-amazon-yellow transition group order-2 px-4">
               {numberOfFavoriteItems > 0 && (
-                <span className="block pb-1 absolute top-[-12px] right-[3px] text-sm bg-amazon-yellow text-amazon-dark-gray px-1 rounded-full text-amazon ">
+                <span className="block pb-1 absolute top-[-12px] right-[3px] text-sm bg-amazon-yellow text-amazon-dark-gray px-1 rounded-full">
                   {numberOfFavoriteItems}
                 </span>
               )}
               <Heart />
-            </button>
+            </Link>
             {/* Logged In Check Start */}
             {isLoggedIn && (
               <div className="relative order-1" ref={dropdownRef}>
@@ -151,7 +150,7 @@ export default function Navbar() {
                   <ChevronDown size={16} className="text-white " />
                 </button>
                 {isDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg transition-transform transform origin-top-right scale-100 direction-rtl">
+                  <div className="absolute left-0 mt-2 w-48 bg-white border rounded-md shadow-lg transition-transform transform origin-top-right scale-100 direction-rtl">
                     <div className="px-4 py-2">
                       <p className="text-sm text-amazon-dark-gray mb-2">
                         تسجيل الدخول ك

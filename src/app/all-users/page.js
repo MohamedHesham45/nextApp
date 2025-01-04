@@ -129,7 +129,7 @@ export default function AllUsers() {
     return (
         <div className="container mx-auto px-4 py-8 direction-rtl">
             <div className="flex justify-between mb-4">
-                <h1 className="text-3xl font-bold">كل المستخدمين</h1>
+                <h1 className="text-3xl font-bold text-gray-800">كل المستخدمين</h1>
 
                 <select
                     value={role}

@@ -1,7 +1,46 @@
 import React, { useState, useEffect } from "react";
 import { XCircle } from "lucide-react";
+import dynamic from 'next/dynamic';
 
-const ProductForm = ({ onSubmit, initialData, onCancel, categories,loadingSubmit ,errorSubmit }) => {
+const ReactQuill = dynamic(() => import('react-quill'), {
+  ssr: false,
+  loading: () => <p>Loading editor...</p>
+});
+
+const modules = {
+  toolbar: [
+    [{ header: [1, 2, 3, 4, 5, 6, false] }],
+    ["bold", "italic", "underline", "strike"],
+    [{ color: [] }],
+    [{ script: "sub" }, { script: "super" }],
+    ["blockquote"],
+    [{ list: "ordered" }, { list: "bullet" }],
+    [{ indent: "-1" }, { indent: "+1" }],
+    [{ direction: "rtl" }],
+    [{ align: [] }],
+    ["link"],
+    ["clean"],
+  ],
+};
+
+const formats = [
+  "header",
+  "bold",
+  "italic",
+  "underline",
+  "strike",
+  "color",
+  "script",
+  "blockquote",
+  "list",
+  "bullet",
+  "indent",
+  "direction",
+  "align",
+  "link",
+];
+
+const ProductForm = ({ onSubmit, initialData, onCancel, categories, loadingSubmit, errorSubmit }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [images, setImages] = useState([]);
@@ -13,15 +52,15 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories,loadingSubmit
 
   useEffect(() => {
     if (initialData) {
-      const category=categories.find(cat=>cat._id===initialData.categoryId)
+      const category = categories.find(cat => cat._id === initialData.categoryId)
       setTitle(initialData.title);
       setDescription(initialData.description);
       setImages(initialData.images || []);
-      setCategory(category||{});
+      setCategory(category || {});
       setPrice(initialData.price || "");
       setPriceAfterDiscount(initialData.priceAfterDiscount || "");
       setQuantity(initialData.quantity || "");
-      
+
     } else {
       setTitle("");
       setDescription("");
@@ -35,7 +74,7 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories,loadingSubmit
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     setErrors({});
 
     const newErrors = {};
@@ -67,7 +106,7 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories,loadingSubmit
       await onSubmit(formData);
     } catch (error) {
       setErrors({ backend: errorSubmit });
-      console.log("errorSubmit",errorSubmit)
+      console.log("errorSubmit", errorSubmit)
     }
   };
 
@@ -91,26 +130,30 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories,loadingSubmit
           id="title"
           type="text"
           value={title}
-          onChange={(e) =>{
+          onChange={(e) => {
             setTitle(e.target.value)
-            setErrors({...errors,title:null,backend:null})
+            setErrors({ ...errors, title: null, backend: null })
           }}
-          />
-          {errors.title && <p className="text-red-500">{errors.title}</p>}
+        />
+        {errors.title && <p className="text-red-500">{errors.title}</p>}
       </div>
       <div className="mb-4">
         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="description">
           الوصف
         </label>
-        <textarea
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          id="description"
-          value={description}
-          onChange={(e) =>{
-            setDescription(e.target.value)
-            setErrors({...errors,description:null,backend:null})
-          }}
-        />
+        <div>
+          <ReactQuill
+            theme="snow"
+            value={description}
+            onChange={(content) => {
+              setDescription(content);
+              setErrors({ ...errors, description: null, backend: null });
+            }}
+            modules={modules}
+            formats={formats}
+            className="h-full direction-rtl"
+          />
+        </div>
         {errors.description && <p className="text-red-500">{errors.description}</p>}
       </div>
       <div className="flex justify-between gap-2">
@@ -122,9 +165,9 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories,loadingSubmit
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="category"
             value={JSON.stringify(category)}
-            onChange={(e) =>{
+            onChange={(e) => {
               setCategory(JSON.parse(e.target.value))
-              setErrors({...errors,category:null,backend:null})
+              setErrors({ ...errors, category: null, backend: null })
             }}
           >
             <option value="">حدد الفئة</option>
@@ -160,9 +203,9 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories,loadingSubmit
             type="number"
             step="0.01"
             value={price}
-            onChange={(e) =>{
+            onChange={(e) => {
               setPrice(e.target.value)
-              setErrors({...errors,price:null,backend:null})
+              setErrors({ ...errors, price: null, backend: null })
             }}
           />
           {errors.price && <p className="text-red-500">{errors.price}</p>}
@@ -190,9 +233,9 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories,loadingSubmit
           id="images"
           type="file"
           multiple
-          onChange={(e)=>{
+          onChange={(e) => {
             handleImageUpload(e)
-            setErrors({...errors,images:null,backend:null})
+            setErrors({ ...errors, images: null, backend: null })
           }}
         />
         {errors.images && <p className="text-red-500">{errors.images}</p>}
@@ -222,17 +265,17 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories,loadingSubmit
           type="submit"
           disabled={loadingSubmit}
         >
-         {loadingSubmit ? "جاري التحديث..." : initialData ? "تحديث المنتج" : "إضافة المنتج"}
+          {loadingSubmit ? "جاري التحديث..." : initialData ? "تحديث المنتج" : "إضافة المنتج"}
         </button>
-        
-          <button
-            className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            type="button"
-            onClick={onCancel}
-          >
-            إلغاء
-          </button>
-        
+
+        <button
+          className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          type="button"
+          onClick={onCancel}
+        >
+          إلغاء
+        </button>
+
       </div>
       {errors.backend && <p className="text-red-500">{errors.backend}</p>}
     </form>
