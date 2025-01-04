@@ -12,21 +12,21 @@ export default function LandingPage() {
   const [activePanel, setActivePanel] = useState(0);
 
   const panels = [
-    {
-      image: "/123.jpg",
-      title: "ستائر عصرية",
-      subtitle: "تصاميم فريدة تناسب ذوقك",
-    },
-    {
-      image: "/122.webp",
-      title: "أقمشة فاخرة",
-      subtitle: "جودة استثنائية بأسعار منافسة",
-    },
-    {
-      image: "/1.jpg",
-      title: "خدمة متميزة",
-      subtitle: "تركيب احترافي وضمان شامل",
-    }
+    // {
+    //   image: "/123.jpg",
+    //   title: "ستائر عصرية",
+    //   subtitle: "تصاميم فريدة تناسب ذوقك",
+    // },
+    // {
+    //   image: "/122.webp",
+    //   title: "أقمشة فاخرة",
+    //   subtitle: "جودة استثنائية بأسعار منافسة",
+    // },
+    // {
+    //   image: "/1.jpg",
+    //   title: "خدمة متميزة",
+    //   subtitle: "تركيب احترافي وضمان شامل",
+    // }
   ];
 
   useEffect(() => {
@@ -93,8 +93,8 @@ export default function LandingPage() {
             <div className="flex-1 md:w-3/4 relative">
               <div className="absolute inset-0">
                 <img
-                  src={panels[activePanel].image}
-                  alt={panels[activePanel].title}
+                  src={panels[activePanel]?.image||"/123.jpg"}
+                  alt={panels[activePanel]?.title||"ستارة مول"}
                   className="w-full h-full object-cover transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-amazon/90 via-amazon/50 to-transparent"></div>
@@ -127,9 +127,9 @@ export default function LandingPage() {
                 </div>
               </div>
             </div>
-            <div className="hidden md:flex md:w-1/4 flex-col">
+            {panels.length > 0 && <div className="hidden md:flex md:w-1/4 flex-col">
               {panels.map((panel, index) => renderPanel(panel, index))}
-            </div>
+            </div>}
           </div>
         </section>
 
