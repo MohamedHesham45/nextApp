@@ -29,6 +29,15 @@ import { CartFavoriteProvider } from "./context/cartFavoriteContext";
 // };
 
 export const metadata = {
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/favicon.ico',
+    other: {
+      rel: 'apple-touch-icon-precomposed',
+      url: '/favicon.ico',
+    },
+  },
   title:
     "Sitara Mall | Quality Products at Unbeatable Prices",
   description:
