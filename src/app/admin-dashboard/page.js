@@ -12,6 +12,7 @@ import ShippingTypes from "../shipping-type/page";
 import Governorates from "../governorate/page";
 import CustomizePage from "../customize/page";
 import Neighborhoods from "../neighborhood/page";
+import BuyTypePage from "../buyType/page";
 
 export default function AdminDashboard() {
   const [selectedComponent, setSelectedComponent] = useState("dashboard");
@@ -73,6 +74,7 @@ export default function AdminDashboard() {
     governorates: { component: <Governorates />, label: "المحافظات" },
     neighborhoods: { component: <Neighborhoods />, label: "المناطق" },
     customizepage: { component: <CustomizePage />, label: "الحقول المخصصة" },
+    buytype: { component: <BuyTypePage />, label: "نوع الدفع" },
   };
 
   const renderComponent = () => {
