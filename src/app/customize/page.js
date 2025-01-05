@@ -73,7 +73,7 @@ export default function CustomizePage() {
             hasError = true;
         }
 
-        if (!formData.value || formData.value.trim() === "") {
+        if (!formData.value) {
             setErrors((prevErrors) => ({ ...prevErrors, value: "القيمة مطلوبة" }));
             hasError = true;
         }
@@ -84,17 +84,36 @@ export default function CustomizePage() {
         }
 
         try {
-            const url =
-                modalMode === "add"
-                    ? "/api/customize"
-                    : `/api/customize/${selectedField._id}`;
-
+            const url = modalMode === "add" ? "/api/customize" : `/api/customize/${selectedField._id}`;
             const method = modalMode === "add" ? "POST" : "PUT";
+
+            let bodyData;
+            
+            if (formData.name === "صوره الوجهه" && formData.value instanceof File) {
+                const images = new FormData();
+                images.append('images', formData.value);
+                
+                // Upload file first
+                const uploadResponse = await fetch('/upload-images', {
+                    method: 'POST',
+                    body: images,
+                });
+
+                if (!uploadResponse.ok) throw new Error("حدث خطأ أثناء رفع الصور حاول مرة أخرى");
+                
+                const uploadResult = await uploadResponse.json();
+                bodyData = JSON.stringify({
+                    name: formData.name,
+                    value: uploadResult.url // Use the returned URL from upload
+                });
+            } else {
+                bodyData = JSON.stringify(formData);
+            }
 
             const response = await fetch(url, {
                 method,
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData),
+                body: bodyData,
             });
 
             if (!response.ok) throw new Error("Operation failed");
@@ -208,15 +227,27 @@ export default function CustomizePage() {
                                         </div>
                                         <div className="mb-4">
                                             <label className="block text-gray-700 mb-2 text-right">القيمة</label>
-                                            <input
-                                                type="text"
-                                                value={formData.value}
-                                                onChange={(e) => {
-                                                    setFormData({ ...formData, value: e.target.value })
-                                                    setErrors({ ...errors, value: "" })
-                                                }}
-                                                className="w-full p-2 border rounded text-right"
-                                            />
+                                            {formData.name === "صوره الوجهه" ? (
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={(e) => {
+                                                        setFormData({ ...formData, value: e.target.files[0] })
+                                                        setErrors({ ...errors, value: "" })
+                                                    }}
+                                                    className="w-full p-2 border rounded text-right"
+                                                />
+                                            ) : (
+                                                <input
+                                                    type="text"
+                                                    value={formData.value}
+                                                    onChange={(e) => {
+                                                        setFormData({ ...formData, value: e.target.value })
+                                                        setErrors({ ...errors, value: "" })
+                                                    }}
+                                                    className="w-full p-2 border rounded text-right"
+                                                />
+                                            )}
                                             {errors.value && (
                                                 <p className="text-red-500 text-sm">{errors.value}</p>
                                             )}
