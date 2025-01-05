@@ -28,20 +28,24 @@ export async function GET(request) {
       .find(query)
       .toArray();
 
-    const productsWithDefaults = products.map(
-      (product) => ({
-        ...product,
-        price: product.price ?? 0,
-        category:
+    const productsWithDefaults = await Promise.all(products.map(
+      async (product) => {
+        const category=await db.collection("categories").findOne({_id:new ObjectId(product.categoryId)})
+        return {
+          ...product,
+          price: product.price ?? 0,
+          categoryId:category,
+          category:
         product.category || "غير مصنف",
         discountPercentage:
         product.discountPercentage ?? 0,
-        priceAfterDiscount:
-        product.priceAfterDiscount ?? 0,
-        quantity: product.quantity ?? 0,
-      })
-    );
-    
+          priceAfterDiscount:
+            product.priceAfterDiscount ?? 0,
+          quantity: product.quantity ?? 0,
+        };
+      }
+    ));
+
     return NextResponse.json(
       productsWithDefaults
     );

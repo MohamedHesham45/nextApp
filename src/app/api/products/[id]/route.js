@@ -11,7 +11,8 @@ export async function GET(request, { params }) {
     if(!product){
       return NextResponse.json({message:"المنتج غير موجود"},{status:404})
     }
-    return NextResponse.json(product);
+    const category=await db.collection("categories").findOne({_id:new ObjectId(product.categoryId)})
+    return NextResponse.json({...product,categoryId:category});
   } catch (error) {
     console.error("Error in GET /api/products/[id]:", error);
     return NextResponse.json({ message: "حدث خطأ أثناء جلب المنتج" }, { status: 500 });
