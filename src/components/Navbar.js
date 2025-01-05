@@ -17,16 +17,10 @@ import ProfileModal from "./ProfileModal";
 import ShoppingCartPage from "./ShoppingCart";
 export default function Navbar() {
   const {
-    cart,
-    setCart,
-    favorite,
-    setFavorite,
     numberOfCartItems,
-    setNumberOfCartItems,
     numberOfFavoriteItems,
-    setNumberOfFavoriteItems,
   } = useCartFavorite();
-  const { userName, isLoggedIn, role, logout, email } = useAuth();
+  const { userName, isLoggedIn, role, logout } = useAuth();
   const firstName = userName?.split(" ")[0];
   const [prevScrollPos, setPrevScrollPos] = useState(0);
   const [visible, setVisible] = useState(true);
@@ -38,7 +32,6 @@ export default function Navbar() {
   const [isCartVisible, setIsCartVisible] = useState(false);
   const dropdownRef = useRef(null);
   useEffect(() => {
-    console.log("number of cart items", numberOfCartItems);
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
@@ -221,6 +214,7 @@ export default function Navbar() {
                 key={link.href}
                 href={link.href}
                 className="block py-2 text-white hover:text-amazon-yellow transition-colors"
+                onClick={() => setIsMenuOpen(false)}
               >
                 {link.label}
               </Link>
@@ -228,6 +222,7 @@ export default function Navbar() {
             <Link
               href="/gallery"
               className="relative block text-white hover:text-amazon-yellow transition-colors group"
+              onClick={() => setIsMenuOpen(false)}
             >
               <span className="block py-2 pb-3">المعرض</span>
               <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-amazon-yellow group-hover:w-full transition-all duration-300"></span>
@@ -235,12 +230,44 @@ export default function Navbar() {
             <Link
               href="/contact"
               className="block py-2 text-white hover:text-amazon-yellow transition-colors"
+              onClick={() => setIsMenuOpen(false)}
             >
               تواصل معنا
             </Link>
+            <button
+              onClick={() => {
+                setIsCartVisible(!isCartVisible)
+                setIsMenuOpen(false)
+              }}
+              className="block py-2 text-white hover:text-amazon-yellow transition-colors"
+            >
+              <div className="flex items-center">
+                <span>السلة</span>
+                <div className="relative mr-2">
+                  <ShoppingCart />
+                  <span className="block pb-1 absolute top-[-10px] right-[-5px] text-sm bg-amazon-yellow text-amazon-dark-gray px-1 rounded-full">{numberOfCartItems}</span>
+                </div>
+              </div>
+            </button>
+            <Link
+              href="/favorites"
+              className="block py-2 text-white hover:text-amazon-yellow transition-colors"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <div className="flex items-center">
+                <span>المفضلة</span>
+                <div className="relative mr-2">
+                  <Heart />
+                  {numberOfFavoriteItems > 0 && <span className="block pb-1 absolute top-[-10px] right-[-5px] text-sm bg-amazon-yellow text-amazon-dark-gray px-1 rounded-full">{numberOfFavoriteItems}</span>}
+                </div>
+              </div>
+            </Link>
             {isLoggedIn && (
               <button
-                onClick={logout}
+                onClick={() => {
+                  logout()
+                  setIsMenuOpen(false)
+                }}
                 className="flex items-center w-full py-2 text-sm text-red-500 hover:text-red-400 transition-colors"
               >
                 تسجيل الخروج
@@ -250,8 +277,11 @@ export default function Navbar() {
 
             {!isLoggedIn && (
               <button
-                onClick={() => openModal("sign-in")}
-                className="block w-full text-left py-2 text-white hover:text-amazon-yellow transition-colors"
+                onClick={() => {
+                  openModal("sign-in")
+                  setIsMenuOpen(false)
+                }}
+                className="block w-full text-start py-2 text-white hover:text-amazon-yellow transition-colors"
               >
                 تسجيل الدخول
               </button>
@@ -279,15 +309,9 @@ export default function Navbar() {
         onRequestClose={closeProfileModal}
       />
       <ShoppingCartPage
-        cart={[]}
         isVisible={isCartVisible}
         setIsVisible={setIsCartVisible}
-        // onUpdateItem={handleUpdateCartItem}
-        // onRemoveItem={handleRemoveFromCart}
-        userEmail={
-          // user?.primaryEmailAddress?.emailAddress
-          email
-        }
+        
       />
     </>
   );
