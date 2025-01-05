@@ -133,7 +133,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="bg-gray-100 py-10">
+        <section className="bg-amazon-light-gray py-10">
           <div className="container mx-auto px-6">
             {/* <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
               المنتجات المميزة
@@ -151,7 +151,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="py-20 bg-gray-100">
+        <section className="py-20 bg-amazon-light-gray">
           <div className="container mx-auto px-6">
             <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
               لماذا تختارنا؟
