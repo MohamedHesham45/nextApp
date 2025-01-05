@@ -23,6 +23,43 @@ export function ProductDetails() {
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
     const { cart, setCart, favorite, setFavorite } = useCartFavorite();
+    const [cartQuantity, setCartQuantity] = useState(0);
+
+    const handleQuantityChange = (e, change) => {
+        e.preventDefault();
+        const existingItemIndex = cart.findIndex(
+            (item) =>
+                item._id === product._id
+        );
+
+        if (existingItemIndex !== -1) {
+            const updatedCart = [...cart];
+            const newQuantity = updatedCart[existingItemIndex].quantityCart + change;
+
+            if (newQuantity <= 0) {
+                updatedCart.splice(existingItemIndex, 1);
+                setCartQuantity(0);
+            } else if (newQuantity <= product.quantity) {
+                updatedCart[existingItemIndex].quantityCart = newQuantity;
+                setCartQuantity(newQuantity);
+            }
+
+            setCart(updatedCart);
+            localStorage.setItem('cart', JSON.stringify(updatedCart));
+        }
+    };
+
+    useEffect(() => {
+        const existingItem = cart.find(
+            (item) =>
+                item._id === product?._id
+        );
+        if (existingItem) {
+            setCartQuantity(existingItem.quantityCart || 0);
+        } else {
+            setCartQuantity(0);
+        }
+    }, [cart, product?._id]);
 
     const handleAddToFavorite = (e, product) => {
         e.preventDefault();
@@ -68,6 +105,8 @@ export function ProductDetails() {
         setCart(updatedCart);
         localStorage.setItem('cart', JSON.stringify(updatedCart));
     };
+
+
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -181,27 +220,47 @@ export function ProductDetails() {
 
                         <div className="space-y-4">
                             <div className="flex gap-6">
+                                {cartQuantity > 0 ? (
+                                    <div className="flex-1 flex items-center justify-center gap-4 bg-gray-100 p-2 rounded-full">
+                                        <button
+                                            onClick={(e) => handleQuantityChange(e, -1)}
+                                            className="w-12 h-12 flex items-center justify-center bg-white text-gray-700 hover:bg-amazon-orange hover:text-white rounded-full transition-all duration-200 shadow-sm text-xl font-semibold"
+                                        >
+                                            -
+                                        </button>
+                                        <span className="w-16 text-center font-medium text-xl">{cartQuantity}</span>
+                                        <button
+                                            onClick={(e) => handleQuantityChange(e, 1)}
+                                            className={`w-12 h-12 flex items-center justify-center bg-white text-gray-700 rounded-full transition-all duration-200 shadow-sm text-xl font-semibold ${cartQuantity >= product.quantity ? 'opacity-50 cursor-not-allowed' : 'hover:bg-amazon-orange hover:text-white'}`}
+                                            disabled={cartQuantity >= product.quantity}
+                                        >
+                                            +
+                                        </button>
+                                    </div>
+                                ) : (product.quantity > 0 ?
+                                    (<button
+                                        onClick={(e) => handleAddToCart(e, product)}
+                                        className="flex-1 bg-amazon-orange hover:bg-amazon-orange-dark text-white rounded-full transition-all duration-300 hover:scale-105 hover:shadow-xl flex items-center justify-center gap-3 text-lg font-semibold"
+                                        disabled={product.quantity === 0}
+                                    >
+                                        <ShoppingCart className="h-6 w-6" />
+                                        اضف الى السلة
+                                    </button>) : ("")
+                                )}
                                 <button
-                                onClick={(e) => handleAddToCart(e, product)}
-                                    className="flex-1 bg-amazon-orange hover:bg-amazon-orange-dark text-white rounded-full transition-all duration-300 hover:scale-105 hover:shadow-xl flex items-center justify-center gap-3 text-lg font-semibold"
-                                    disabled={product.quantity === 0}
+                                    onClick={(e) => handleAddToFavorite(e, product)}
+                                    className={`p-5 bg-white hover:bg-red-50 text-gray-400 hover:text-red-500 rounded-full shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl border-2 border-gray-100 hover:border-red-500 ${favorite.some(item => item._id === product._id) ? 'text-red-500 border-red-500' : 'text-gray-400 border-gray-100'}`}
                                 >
-                                    <ShoppingCart className="h-6 w-6" />
-                                    اضف الى السلة
-                                </button>
-                                <button 
-                                onClick={(e) => handleAddToFavorite(e, product)}
-                                className={`p-5 bg-white hover:bg-red-50 text-gray-400 hover:text-red-500 rounded-full shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl border-2 border-gray-100 hover:border-red-500 ${favorite.some(item => item._id === product._id) ? 'text-red-500 border-red-500' : 'text-gray-400 border-gray-100'}`}>
-                                    <Heart className={`h-7 w-7 stroke-2 ${favorite.some(item => item._id === product._id) ? 'fill-red-500' : ''}`}  />
+                                    <Heart className={`h-7 w-7 stroke-2 ${favorite.some(item => item._id === product._id) ? 'fill-red-500' : ''}`} />
                                 </button>
                             </div>
 
-                            <button
+                            {/* <button
                                 className="w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-xl text-lg font-semibold"
                                 disabled={product.quantity === 0}
                             >
                                 اطلب الآن
-                            </button>
+                            </button> */}
                         </div>
                     </div>
                 </div>
