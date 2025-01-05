@@ -4,9 +4,11 @@ import Link from "next/link";
 import { Heart, ShoppingCart } from "lucide-react";
 import { useCartFavorite } from "@/app/context/cartFavoriteContext";
 import { sanitizeHTML } from "./ProductCard";
+import { useState, useEffect } from "react";
 
 const ProductCardHome = ({ product }) => {
     const { cart, setCart, favorite, setFavorite } = useCartFavorite();
+    const [cartQuantity, setCartQuantity] = useState(0);
 
     const handleAddToFavorite = (e, product) => {
         e.preventDefault();
@@ -50,8 +52,48 @@ const ProductCardHome = ({ product }) => {
         }
 
         setCart(updatedCart);
+        setCartQuantity(1);
         localStorage.setItem('cart', JSON.stringify(updatedCart));
     };
+
+    const handleQuantityChange = (e, change) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const existingItemIndex = cart.findIndex(
+            (item) =>
+                item._id === product._id &&
+                JSON.stringify(item.selectedImages) ===
+                JSON.stringify(product.images)
+        );
+
+        if (existingItemIndex !== -1) {
+            const updatedCart = [...cart];
+            const newQuantity = updatedCart[existingItemIndex].quantityCart + change;
+
+            if (newQuantity <= 0) {
+                updatedCart.splice(existingItemIndex, 1);
+                setCartQuantity(0);
+            } else if (newQuantity <= product.quantity) {
+                updatedCart[existingItemIndex].quantityCart = newQuantity;
+                setCartQuantity(newQuantity);
+            }
+
+            setCart(updatedCart);
+            localStorage.setItem('cart', JSON.stringify(updatedCart));
+        }
+    };
+
+    useEffect(() => {
+        const existingItem = cart.find(
+            (item) =>
+                item._id === product._id
+        );
+        if (existingItem) {
+            setCartQuantity(existingItem.quantityCart || 0);
+        } else {
+            setCartQuantity(0);
+        }
+    }, [cart, product._id]);
 
     return (
         <Link href={`/product/${product._id}`}>
@@ -59,8 +101,13 @@ const ProductCardHome = ({ product }) => {
                 <div className="flex bg-white shadow-lg hover:shadow-xl transition-shadow duration-300 flex-col md:flex-row relative group">
                     <div className="relative w-full md:w-[300px] h-[300px] flex-shrink-0 overflow-hidden">
                         <img src={"/123.jpg"} alt="shopping image"
-                            className="absolute inset-0 w-full h-full object-cover rounded-t-lg md:rounded-l-lg md:rounded-t-none transform group-hover:scale-105 transition-transform duration-300" />
-                        {product.quantity == 0 && <span className="absolute top-10 right-2 bg-blue-600 text-white text-sm font-bold px-2 py-1 rounded-md shadow-lg z-10">نفذت الكمية</span>}
+                            className="absolute inset-0 w-full h-full object-cover rounded-t-lg md:rounded-l-lg md:rounded-t-none transform group-hover:scale-110 transition-transform duration-300" />
+                        {product.quantity == 0 && (
+                            <>
+                                <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+                                <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-blue-600 text-white text-sm font-bold px-4 py-2 rounded-md shadow-lg z-10">نفذت الكمية</span>
+                            </>
+                        )}
                         {product.discountPercentage > 0 && <span className="absolute top-2 right-2 bg-red-600 text-white text-sm font-bold px-2 py-1 rounded-md shadow-lg z-10">
                             خصم {product.discountPercentage.toFixed(1)}%
                         </span>}
@@ -88,14 +135,33 @@ const ProductCardHome = ({ product }) => {
                             </div>
                         </div>
                         <div className="flex justify-center gap-2">
-                            <button
-                                onClick={(e) => handleAddToCart(e, product)}
-                                className="flex-1 bg-amazon-orange hover:bg-amazon-orange-dark text-white rounded-full transition-all duration-300 hover:scale-105 hover:shadow-lg flex items-center justify-center gap-2 text-sm"
-                                disabled={product.quantity === 0}
-                            >
-                                <ShoppingCart className="h-4 w-4" />
-                                اضف الى السلة
-                            </button>
+                            {cartQuantity > 0 ? (
+                                <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-full" onClick={(e) => e.preventDefault()}>
+                                    <button
+                                        onClick={(e) => handleQuantityChange(e, -1)}
+                                        className="w-7 h-7 flex items-center justify-center bg-white text-gray-700 hover:bg-amazon-orange hover:text-white rounded-full transition-all duration-200 shadow-sm"
+                                    >
+                                        -
+                                    </button>
+                                    <span className="w-8 text-center font-medium">{cartQuantity}</span>
+                                    <button
+                                        onClick={(e) => handleQuantityChange(e, 1)}
+                                        className={`w-7 h-7 flex items-center justify-center bg-white text-gray-700 rounded-full transition-all duration-200 shadow-sm ${cartQuantity >= product.quantity ? 'opacity-50 cursor-not-allowed' : 'hover:bg-amazon-orange hover:text-white'}`}
+                                        disabled={cartQuantity >= product.quantity}
+                                    >
+                                        +
+                                    </button>
+                                </div>
+                            ) : ( product.quantity > 0 ? (
+                                <button
+                                    onClick={(e) => handleAddToCart(e, product)}
+                                    className="flex-1 bg-amazon-orange hover:bg-amazon-orange-dark text-white rounded-full transition-all duration-300 hover:scale-105 hover:shadow-lg flex items-center justify-center gap-2 text-sm"
+                                    disabled={product.quantity === 0}
+                                >
+                                    <ShoppingCart className="h-4 w-4" />
+                                    اضف الى السلة
+                                </button>) : ("")
+                            )}
                             <button
                                 onClick={(e) => handleAddToFavorite(e, product)}
                                 className={`p-3 bg-white hover:bg-red-50 ${favorite.some(item => item._id === product._id) ? 'text-red-500 border-red-500' : 'text-gray-400 border-gray-100'} rounded-full shadow-md transition-all duration-300 hover:scale-105 hover:shadow-lg border-2 hover:border-red-500`}

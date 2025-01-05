@@ -20,7 +20,7 @@ export default function MapLocation() {
   }, []);
 
   return (
-    <section className="mb-16 container mx-auto px-6 ">
+    <section className="mb-16 container mx-auto px-6 bg-amazon-light-gray">
       <h2 className="text-3xl font-bold mb-8 text-center">
         Find Us
       </h2>
