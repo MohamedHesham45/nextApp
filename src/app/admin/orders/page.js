@@ -13,7 +13,7 @@ export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const {token,isLoaded,isLoggedIn,role} = useAuth();
+  const {token,isLoaded,isLoggedIn,role,profile} = useAuth();
   const router = useRouter();
   const [selectedOrder, setSelectedOrder] =
     useState(null);
@@ -106,44 +106,35 @@ export default function OrdersPage() {
   };
 
   const copyOrderDetails = (order) => {
-    const details = `
-    رقم الطلب: ${order._id}
-    اسم العميل: ${order.customerDetails.name}
-    رقم الهاتف: ${order.customerDetails.phone}
-    البريد الإلكتروني: ${
-      order.customerDetails.email
-    }
-    الحالة: ${order.status}
-    السعر الإجمالي: ج.م${order.totalPrice.toFixed(
-      2
-    )}
-    تاريخ الطلب: ${new Date(
-      order.orderDate
-    ).toLocaleString("ar-EG")}
+    const details = `رقم الطلب: ${order._id}
+اسم العميل: ${order.customerDetails.name}
+رقم الهاتف: ${order.customerDetails.phone}
+البريد الإلكتروني: ${order.customerDetails.email}
+الحالة: ${order.status === "Pending" ? "قيد الانتظار"
+  : order.status === "Processing" ? "قيد المعالجة"
+  : order.status === "Shipped" ? "تم الشحن"
+  : order.status === "Delivered" ? "تم التسليم"
+  : "ملغى"}
+السعر الإجمالي: ${order.totalPrice.toFixed(2)} ج.م
+تاريخ الطلب: ${new Date(order.orderDate).toLocaleString("ar-EG")}
 
-    تفاصيل العنوان:
-    المحافظة: ${order.customerDetails.governorate}
-    المركز/المنطقة: ${
-      order.customerDetails.centerArea
-    }
-    الحي: ${order.customerDetails.neighborhood}
-    تعليمات التسليم: ${
-      order.customerDetails.deliveryInstructions
-    }
+تفاصيل العنوان:
+المحافظة: ${order.customerDetails.governorate}
+المركز/المنطقة: ${order.customerDetails.centerArea}
+الحي: ${order.customerDetails.neighborhood}
+طريقة الاتصال: ${order.customerDetails.preferredContactMethod}
+نوع الدفع: ${order.customerDetails.buyType}
+نوع الشحن: ${order.customerDetails.shippingType}
+تعليمات التسليم: ${order.customerDetails.deliveryInstructions}
+رسائل اضافية: ${order.customerDetails.message}
 
-    العناصر:
-    ${order.orderItems
-      .map(
-        (item) =>
-          `- ${item.title} (الكمية: ${
-            item.quantity
-          }, السعر: ج.م${item.price.toFixed(2)})`
-      )
-      .join("\n")}
-  `;
+العناصر:
+${order.orderItems.map(item => `- ${item.title}
+  الكمية: ${item.quantity}
+  السعر: ${item.price.toFixed(2)} ج.م`).join('\n')}`;
 
-    navigator.clipboard.writeText(details);
-    alert("تم نسخ تفاصيل الطلب إلى الحافظة!");
+  navigator.clipboard.writeText(details);
+  alert("تم نسخ تفاصيل الطلب إلى الحافظة!");
   };
 
   if (loading) {
@@ -292,7 +283,7 @@ export default function OrdersPage() {
         ))}
         {isModalOpen && selectedOrder && (
           <div
-            className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full"
+            className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
             onClick={() => setIsModalOpen(false)}
           >
             <div
@@ -321,7 +312,15 @@ export default function OrdersPage() {
                   رقم الطلب : {selectedOrder._id}
                 </p>
                 <p className="text-sm text-gray-500 mb-1">
-                  الحالة : {selectedOrder.status}
+                  الحالة : {selectedOrder.status === "Pending"
+                ? "قيد الانتظار"
+                : selectedOrder.status === "Processing"
+                ? "قيد المعالجة"
+                : selectedOrder.status === "Shipped"
+                ? "تم الشحن"
+                : selectedOrder.status === "Delivered"
+                ? "تم التسليم"
+                : "ملغى"}
                 </p>
                 <p className="text-sm text-gray-500 mb-1">
                   التاريخ :{" "}
@@ -367,6 +366,24 @@ export default function OrdersPage() {
                     </p>
                     <p>
                       <span className="font-medium me-1">
+                        طريقة الاتصال :
+                      </span>{" "}
+                      {selectedOrder.customerDetails.preferredContactMethod}
+                    </p>
+                    <p>
+                      <span className="font-medium me-1">
+                        نوع الدفع :
+                      </span>{" "}
+                      {selectedOrder.customerDetails.buyType}
+                    </p>
+                    <p>
+                      <span className="font-medium me-1">
+                        نوع الشحن :
+                      </span>{" "}
+                      {selectedOrder.customerDetails.shippingType}
+                    </p>
+                    {selectedOrder.customerDetails.deliveryInstructions && <p>
+                      <span className="font-medium me-1">
                         تعليمات التسليم :
                       </span>{" "}
                       {
@@ -374,7 +391,13 @@ export default function OrdersPage() {
                           .customerDetails
                           .deliveryInstructions
                       }
-                    </p>
+                    </p>}
+                    {selectedOrder.customerDetails.message && <p>
+                      <span className="font-medium me-1">
+                        رسائل اضافية :
+                      </span>{" "}
+                      {selectedOrder.customerDetails.message}
+                    </p>}
                   </div>
                 </div>
                 <h4 className="text-sm font-medium text-gray-900 mt-4 mb-2">
@@ -387,7 +410,7 @@ export default function OrdersPage() {
                         key={index}
                         className="flex items-center space-x-2 "
                       >
-                        <Image
+                        <img
                           src={
                             item
                               .selectedImages?.[0] ||
@@ -419,7 +442,7 @@ export default function OrdersPage() {
                     2
                   )} ج.م
                 </p>
-                <div className="mt-4 flex justify-between">
+                <div className="mt-4 flex justify-between print:hidden">
                   <button
                     onClick={() =>
                       copyOrderDetails(

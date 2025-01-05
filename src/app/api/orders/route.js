@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
-
+import { ObjectId } from "mongodb";
 export async function GET() {
   try {
     const client = await clientPromise;
@@ -33,8 +33,15 @@ export async function POST(request) {
       orderItems,
       totalPrice,
       userId,
+      saveToProfile,
     } = await request.json();
-
+    if(saveToProfile){
+      const userDb = client.db("userDB");
+      const user = await userDb.collection("profiles").findOne({userId: new ObjectId(userId)});
+      if(user){
+        await userDb.collection("profiles").updateOne({userId: new ObjectId(userId)}, {$set: {governorate: customerDetails.governorate,neighborhood: customerDetails.neighborhood,centerArea: customerDetails.centerArea}});
+      }
+    }
     const newOrder = {
       customerDetails: {
         ...customerDetails,

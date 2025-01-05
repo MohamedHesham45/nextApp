@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
-
+import { ObjectId } from "mongodb";
 export async function GET(request) {
   try {
     const client = await clientPromise;
@@ -26,7 +26,20 @@ export async function GET(request) {
         },
       ])
       .toArray();
-    return NextResponse.json(products);
+      const productsWithCategories = await Promise.all(products.map(async (product) => {
+        const products= await Promise.all(product.products.map(async (product) => {
+          const category=await db.collection("categories").findOne({_id:new ObjectId(product.categoryId)})
+          return {
+            ...product,
+            categoryId:category
+          }
+        }))
+        return {
+          ...product,
+          products:products
+        }
+      }))
+    return NextResponse.json(productsWithCategories);
   } catch (error) {
     console.error("Error in GET /api/products/home:", error);
     return NextResponse.json(

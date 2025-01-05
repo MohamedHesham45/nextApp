@@ -90,6 +90,7 @@ export function AuthProvider({ children }) {
       value={{
         token,
         profile,
+        setProfile,
         isLoggedIn,
         userName,
         email, // Provide email in the context
