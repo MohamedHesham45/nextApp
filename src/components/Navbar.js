@@ -57,8 +57,23 @@ export default function Navbar() {
       setPrevScrollPos(currentScrollPos);
     };
 
+    const onScrollStop = callback => {
+      let isScrolling;
+      return (e) => {
+        clearTimeout(isScrolling);
+        isScrolling = setTimeout(() => {
+          callback();
+        }, 150);
+      };
+    };
+
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", onScrollStop(() => setVisible(true)), false);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", onScrollStop(() => setVisible(true)));
+    };
   }, [prevScrollPos]);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
