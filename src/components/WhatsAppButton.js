@@ -28,7 +28,7 @@ const message = "Hello! I have a question about your products.";
   return (
     <button
       onClick={handleClick}
-      className="fixed bottom-20 right-4 bg-green-500 text-white rounded-full p-3 shadow-lg z-50 transition-all duration-300 ease-in-out hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50"
+      className="fixed bottom-20 right-4 bg-green-500 text-white rounded-full p-3 shadow-lg z-40 transition-all duration-300 ease-in-out hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50"
       aria-label="Contact us on WhatsApp"
     >
       <svg

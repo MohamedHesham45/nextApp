@@ -85,11 +85,11 @@ export default function LandingPage() {
       <main>
         <section className="relative h-screen bg-amazon overflow-hidden">
           <div className="absolute inset-0 flex flex-col md:flex-row">
-            <div className="md:hidden flex h-48 bg-amazon">
+            {panels.length > 0 &&<div className="md:hidden flex h-48 bg-amazon">
               <div className="flex w-full">
                 {panels.map((panel, index) => renderPanel(panel, index, true))}
               </div>
-            </div>
+            </div>}
             <div className="flex-1 md:w-3/4 relative">
               <div className="absolute inset-0">
                 <img
@@ -204,7 +204,7 @@ export default function LandingPage() {
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-4 right-4 bg-blue-500 text-white p-2 rounded-full shadow-lg z-50 hover:bg-blue-600 transition duration-300  animate-bounce"
+          className="fixed bottom-4 right-4 bg-blue-500 text-white p-2 rounded-full shadow-lg z-40 hover:bg-blue-600 transition duration-300  animate-bounce"
           aria-label="Scroll to top"
         >
           <ChevronUp size={24} />
