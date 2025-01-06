@@ -95,7 +95,7 @@ export default function LandingPage() {
             <div className="flex-1 md:w-3/4 relative">
               <div className="absolute inset-0">
                 <img
-                  src={panels[activePanel]?.image?.startsWith('/') ? panels[activePanel]?.image : `/${panels[activePanel]?.image}`||mainImage}
+                  src={panels[activePanel]?.image?.startsWith('/') ? panels[activePanel]?.image : `/${panels[activePanel]?.image}`||mainImage?.startsWith('/') ? mainImage : `/${mainImage}`}
                   alt={panels[activePanel]?.title||"ستارة مول"}
                   className="w-full h-full object-cover transition-transform duration-700"
                 />
