@@ -57,17 +57,17 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories, loadingSubmi
       setDescription(initialData.description);
       setImages(initialData.images || []);
       setCategory(category || {});
-      setPrice(initialData.price || "");
-      setPriceAfterDiscount(initialData.priceAfterDiscount || "");
-      setQuantity(initialData.quantity || "");
+      setPrice(initialData.price || 0);
+      setPriceAfterDiscount(initialData.priceAfterDiscount || 0);
+      setQuantity(initialData.quantity || 1);
 
     } else {
       setTitle("");
       setDescription("");
       setImages([]);
       setCategory({});
-      setPrice("");
-      setPriceAfterDiscount("");
+      setPrice(0);
+      setPriceAfterDiscount(0);
       setQuantity(1);
     }
   }, [initialData]);

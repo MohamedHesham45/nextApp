@@ -116,7 +116,10 @@ export async function POST(request) {
     const referenceCode = `AB${(latestNumber + 1)
       .toString()
       .padStart(2, "0")}`;
-    const discountPercentage=((price-priceAfterDiscount)/price)*100
+      let discountPercentage=0
+      if(priceAfterDiscount!=0){
+        discountPercentage=((price-priceAfterDiscount)/price)*100
+      }
     const newProduct = {
       title,
       description,
