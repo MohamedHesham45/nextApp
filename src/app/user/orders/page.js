@@ -6,14 +6,16 @@ import React, {
   useCallback,
 } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { useAuth } from "@/app/context/AuthContext";
+import toast from 'react-hot-toast';
+
 
 export default function UserOrdersPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { userId, isLoaded } = useAuth();
+  const [loadingSub,setLoadingSub] = useState(false);
   console.log(userId);
   
   const router = useRouter();
@@ -28,7 +30,7 @@ export default function UserOrdersPage() {
       try {
         setLoading(true);
         const response = await fetch(
-          `/api/user/orders?userId=${userId}`
+          `/api/user/orders/${userId}`
         );
         if (!response.ok) {
           throw new Error(
@@ -37,7 +39,7 @@ export default function UserOrdersPage() {
         }
         const data = await response.json();
         setOrders(data);
-        console.log(orders);
+        console.log(data);
         
       } catch (err) {
         console.error(
@@ -72,6 +74,7 @@ export default function UserOrdersPage() {
     updates
   ) => {
     try {
+      setLoadingSub(true);
       const response = await fetch(
         `/api/orders/${orderId}`,
         {
@@ -88,14 +91,15 @@ export default function UserOrdersPage() {
       }
 
       fetchUserOrders();
+      toast.success("تم الإلغاء الطلب بنجاح");
     } catch (error) {
       console.error(
         "Error updating order:",
         error
       );
-      alert(
-        "Failed to update order. Please try again."
-      );
+      toast.error("حدث خطأ أثناء تحديث الطلب اعد المحاولة");
+    }finally{
+      setLoadingSub(false);
     }
   };
 
@@ -142,22 +146,46 @@ export default function UserOrdersPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">
-        My Orders
-      </h1>
+    <div className="  direction-rtl">
+       <div className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-amazon">
+            <div className="absolute inset-0 bg-gradient-to-r from-amazon-orange/10 via-amazon-yellow/20 to-amazon-blue/20"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-amazon/30 to-amazon/90"></div>
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amazon-yellow via-amazon-orange to-amazon-blue"></div>
+            <div className="absolute -top-24 -right-24 w-48 h-48 bg-amazon-orange/20 rounded-full blur-3xl"></div>
+            <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-amazon-yellow/20 rounded-full blur-3xl"></div>
+          </div>
+
+          <div className="relative py-20 px-4">
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center space-y-6">
+                <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
+                  <span className="text-amazon-yellow">كل </span>{" "}
+                  <span className="text-white">طلباتي</span>
+                </h1>
+                 <p className="text-amazon-light-gray/80 text-lg max-w-2xl mx-auto mb-8">
+                 يمكنك مراجعة جميع طلباتك هنا
+                </p> 
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-xl mx-auto">
+                 
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       {orders.length === 0 ? (
-        <p>You havent placed any orders yet.</p>
+        <p className="text-right">لم تقم بإجراء أي طلبات حتى الآن.</p>
       ) : (
-        <div className="grid gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 bg-gray-50 p-10 ">
           {orders.map((order) => (
             <div
               key={order._id}
-              className="bg-white shadow-md rounded-lg p-6"
+              className=" bg-white shadow-md rounded-lg p-6  "
             >
-              <div className="flex justify-between items-center mb-4">
+              <div className="flex flex-row justify-between items-center mb-4 direction-rtl">
                 <h2 className="text-xl font-semibold">
-                  Order #{order._id}
+                  طلب رقم #{order._id}
                 </h2>
                 <span
                   className={`px-2 py-1 rounded-full text-sm ${
@@ -165,45 +193,53 @@ export default function UserOrdersPage() {
                       ? "bg-green-200 text-green-800"
                       : order.status === "Shipped"
                       ? "bg-blue-200 text-blue-800"
-                      : order.status ===
-                        "Processing"
+                      : order.status === "Processing"
                       ? "bg-yellow-200 text-yellow-800"
-                      : "bg-gray-200 text-gray-800"
+                      : order.status === "Pending"
+                      ? "bg-gray-200 text-gray-800"
+                      : "bg-black text-white"
                   }`}
                 >
-                  {order.status}
+                  {order.status === "Delivered" ? "تم التوصيل" :
+                   order.status === "Shipped" ? "تم الشحن" :
+                   order.status === "Processing" ? "قيد المعالجة" :
+                   order.status === "Pending" ? "قيد الانتظار" :
+                   order.status === "Cancelled" ? "ملغي" : order.status}
                 </span>
               </div>
-              <p className="text-gray-600">
-                Date:{" "}
-                {new Date(
-                  order.orderDate
-                ).toLocaleString()}
-              </p>
-              <p className="text-gray-600">
-                Total: ج.م
-                {order.totalPrice.toFixed(2)}
-              </p>
-              <div className="mt-4 flex justify-between items-center">
+              <div className="flex flex-row items-center gap-2 my-4">
+                <img src={order.orderItems[0]?.selectedImages?.[0] || "/123.jpg"} alt={order.orderItems[0]?.title || "Order image"} className="w-full  rounded-md object-cover" />
+               
+              </div>
+              <div className="flex flex-row text-2xl justify-between items-center my-4">
+                <p >
+                  {order.orderItems[0]?.title}
+                </p>
+                </div>
+              <div className="text-right">
+                <p className="text-gray-600">
+                  <span className="text-black">التاريخ:</span>{" "}
+                  {new Date(order.orderDate).toLocaleString('ar-EG')}
+                </p>
+                <p className="text-gray-600">
+                  <span className="text-black">الإجمالي:</span><span className="text-amazon-orange"> {order.totalPrice.toFixed(2)} ج.م</span>
+                </p>
+              </div>
+
+              <div className="mt-4 flex flex-row justify-between items-center">
                 <button
-                  onClick={() =>
-                    handleViewDetails(order)
-                  }
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                  onClick={() => handleViewDetails(order)}
+                  className="bg-amazon hover:bg-amazon-blue text-white font-bold py-2 px-4 rounded"
                 >
-                  View Details
+                  عرض التفاصيل
                 </button>
                 {order.status === "Pending" && (
                   <button
-                    onClick={() =>
-                      handleUpdateOrder(
-                        order._id,
-                        { status: "Cancelled" }
-                      )
-                    }
+                    onClick={() => handleUpdateOrder(order._id, { status: "Cancelled" })}
                     className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                    disabled={loadingSub}
                   >
-                    Cancel Order
+                   {loadingSub ? "جاري التحديث..." : "إلغاء الطلب"}
                   </button>
                 )}
               </div>
@@ -212,90 +248,72 @@ export default function UserOrdersPage() {
         </div>
       )}
       {isModalOpen && selectedOrder && (
-        <div
-          className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full"
-          onClick={() => setIsModalOpen(false)}
-        >
-          <div
-            className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="mt-3">
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full direction-rtl"
+          onClick={() => setIsModalOpen(false)}>
+          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white rtl"
+            onClick={(e) => e.stopPropagation()}>
+            <div className="mt-3 text-right">
               <h3 className="text-lg font-medium text-gray-900 mb-2">
-                Order Details
+                تفاصيل الطلب
               </h3>
               <p className="text-sm text-gray-500 mb-1">
-                Order ID: {selectedOrder._id}
+                رقم الطلب: {selectedOrder._id}
               </p>
               <p className="text-sm text-gray-500 mb-1">
-                Status: {selectedOrder.status}
+                الحالة: {selectedOrder.status === "Delivered" ? "تم التوصيل" :
+                         selectedOrder.status === "Shipped" ? "تم الشحن" :
+                         selectedOrder.status === "Processing" ? "قيد المعالجة" :
+                         selectedOrder.status === "Pending" ? "قيد الانتظار" :
+                         selectedOrder.status === "Cancelled" ? "ملغي" : selectedOrder.status}
               </p>
               <p className="text-sm text-gray-500 mb-1">
-                Date:{" "}
-                {new Date(
-                  selectedOrder.orderDate
-                ).toLocaleString()}
+                التاريخ: {new Date(selectedOrder.orderDate).toLocaleString('ar-EG')}
               </p>
               <h4 className="text-sm font-medium text-gray-900 mt-4 mb-2">
-                Order Items:
+                المنتجات:
               </h4>
               <ul className="space-y-2">
-                {selectedOrder.orderItems.map(
-                  (item, index) => (
-                    <li
-                      key={index}
-                      className="flex items-center space-x-2"
-                    >
-                      <Image
-                        src={
-                          item
-                            .selectedImages?.[0] ||
-                          "/placeholder.png"
-                        }
-                        alt={item.title}
-                        width={50}
-                        height={50}
-                        className="rounded"
-                      />
-                      <div>
-                        <p className="text-sm font-medium">
-                          {item.title}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          Quantity:{" "}
-                          {item.quantity} - Price:
-                          ج.م
-                          {item.price.toFixed(2)}
-                        </p>
-                      </div>
-                    </li>
-                  )
-                )}
+                {selectedOrder.orderItems.map((item, index) => (
+                  <li key={index} className="flex items-center space-x-2">
+                    <img
+                      src={item.selectedImages?.[0] || "/placeholder.png"}
+                      alt={item.title}
+                      width={50}
+                      height={50}
+                      className="rounded"
+                    />
+                    <div>
+                      <p className="text-sm font-medium">
+                        {item.title}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        الكمية: {item.quantity} - السعر: {item.price.toFixed(2)} ج.م
+                      </p>
+                    </div>
+                  </li>
+                ))}
               </ul>
               <p className="text-sm font-medium text-gray-900 mt-4">
-                Total Price: ج.م
-                {selectedOrder.totalPrice.toFixed(
-                  2
-                )}
+                السعر الإجمالي: {selectedOrder.totalPrice.toFixed(2)} ج.م
               </p>
-              <div className="mt-4 flex justify-between">
+              <div className="mt-4 flex print:hidden justify-between">
                 <button
-                  onClick={() =>
-                    copyOrderDetails(
-                      selectedOrder
-                    )
-                  }
+                  onClick={() => copyOrderDetails(selectedOrder)}
                   className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded"
                 >
-                  Copy Details
+                  نسخ التفاصيل
                 </button>
                 <button
-                  onClick={() =>
-                    setIsModalOpen(false)
-                  }
+                  onClick={() => window.print()}
+                  className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                >
+                  طباعة
+                </button>
+                <button
+                  onClick={() => setIsModalOpen(false)}
                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                 >
-                  Close
+                  إغلاق
                 </button>
               </div>
             </div>

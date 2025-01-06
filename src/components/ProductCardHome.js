@@ -5,6 +5,7 @@ import { Heart, ShoppingCart } from "lucide-react";
 import { useCartFavorite } from "@/app/context/cartFavoriteContext";
 import { sanitizeHTML } from "./ProductCard";
 import { useState, useEffect } from "react";
+import { toast } from 'react-hot-toast';
 
 const ProductCardHome = ({ product }) => {
     const { cart, setCart, favorite, setFavorite } = useCartFavorite();
@@ -17,8 +18,10 @@ const ProductCardHome = ({ product }) => {
         let updatedFavorite;
         if (existingItemIndex !== -1) {
             updatedFavorite = favorite.filter(item => item._id !== product._id);
+            toast.success('تم إزالة المنتج من المفضلة');
         } else {
             updatedFavorite = [...favorite, product];
+            toast.success('تم إضافة المنتج إلى المفضلة');
         }
 
         setFavorite(updatedFavorite);
@@ -54,6 +57,7 @@ const ProductCardHome = ({ product }) => {
         setCart(updatedCart);
         setCartQuantity(1);
         localStorage.setItem('cart', JSON.stringify(updatedCart));
+        toast.success('تم إضافة المنتج إلى السلة');
     };
 
     const handleQuantityChange = (e, change) => {
@@ -81,6 +85,7 @@ const ProductCardHome = ({ product }) => {
             setCart(updatedCart);
             localStorage.setItem('cart', JSON.stringify(updatedCart));
         }
+        toast.success('تم إضافة المنتج إلى السلة');
     };
 
     useEffect(() => {
@@ -92,6 +97,7 @@ const ProductCardHome = ({ product }) => {
             setCartQuantity(existingItem.quantityCart || 0);
         } else {
             setCartQuantity(0);
+            
         }
     }, [cart, product._id]);
 
@@ -100,7 +106,7 @@ const ProductCardHome = ({ product }) => {
             <div className="flex-col md:flex-row justify-between flex gap-4 mx-4 py-12 hover:cursor-pointer">
                 <div className="flex bg-white shadow-lg hover:shadow-xl transition-shadow duration-300 flex-col md:flex-row relative group">
                     <div className="relative w-full md:w-[300px] h-[300px] flex-shrink-0 overflow-hidden">
-                        <img src={"/123.jpg"} alt="shopping image"
+                        <img src={product.images?.[0] || "/123.jpg"} alt="shopping image"
                             className="absolute inset-0 w-full h-full object-cover rounded-t-lg md:rounded-l-lg md:rounded-t-none transform group-hover:scale-110 transition-transform duration-300" />
                         {product.quantity == 0 && (
                             <>
@@ -135,7 +141,7 @@ const ProductCardHome = ({ product }) => {
                             </div>
                         </div>
                         <div className="flex justify-center gap-2">
-                            {cartQuantity > 0 ? (
+                            {/* {cartQuantity > 0 ? (
                                 <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-full" onClick={(e) => e.preventDefault()}>
                                     <button
                                         onClick={(e) => handleQuantityChange(e, -1)}
@@ -152,16 +158,22 @@ const ProductCardHome = ({ product }) => {
                                         +
                                     </button>
                                 </div>
-                            ) : ( product.quantity > 0 ? (
+                            ) : ( */}
                                 <button
-                                    onClick={(e) => handleAddToCart(e, product)}
-                                    className="flex-1 bg-amazon-orange hover:bg-amazon-orange-dark text-white rounded-full transition-all duration-300 hover:scale-105 hover:shadow-lg flex items-center justify-center gap-2 text-sm"
+                                    onClick={(e) =>{
+                                        if(cartQuantity > 0){
+                                            handleQuantityChange(e, 1)
+                                        }else{
+                                            handleAddToCart(e, product)
+                                        }
+                                    }}
+                                    className={`flex-1 bg-amazon-orange hover:bg-amazon-orange-dark  rounded-full transition-all duration-300  flex items-center justify-center gap-2 text-sm ${product.quantity === 0 || cartQuantity >= product.quantity ? 'opacity-50 cursor-not-allowed bg-gray-300  text-amazon-dark hover:bg-gray-300 ' : 'text-white hover:scale-105 hover:shadow-lg'}`}
                                     disabled={product.quantity === 0}
                                 >
-                                    <ShoppingCart className="h-4 w-4" />
-                                    اضف الى السلة
-                                </button>) : ("")
-                            )}
+                                    {!cartQuantity >= product.quantity?<ShoppingCart className="h-4 w-4" />:""}
+                                    {product.quantity===0?"نفذت الكمية":(cartQuantity >= product.quantity ? "انتهت الكمية المتاحة" : "اضف الى السلة")}
+                                </button>
+                            {/* )} */}
                             <button
                                 onClick={(e) => handleAddToFavorite(e, product)}
                                 className={`p-3 bg-white hover:bg-red-50 ${favorite.some(item => item._id === product._id) ? 'text-red-500 border-red-500' : 'text-gray-400 border-gray-100'} rounded-full shadow-md transition-all duration-300 hover:scale-105 hover:shadow-lg border-2 hover:border-red-500`}

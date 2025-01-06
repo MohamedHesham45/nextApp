@@ -52,6 +52,10 @@ export async function POST(request) {
       orderDate: new Date(),
       status: "Pending",
     };
+    const product = await db.collection("products").findOne({_id: new ObjectId(orderItems[0].productId)});
+    if(product){
+      await db.collection("products").updateOne({_id: new ObjectId(orderItems[0].productId)}, {$set: {quantity: product.quantity - orderItems[0].quantity}});
+    }
 
     const result = await db
       .collection("orders")

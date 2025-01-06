@@ -11,24 +11,26 @@ export default function LandingPage() {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [activePanel, setActivePanel] = useState(0);
 
-  const panels = [
-    // {
-    //   image: "/123.jpg",
-    //   title: "ستائر عصرية",
-    //   subtitle: "تصاميم فريدة تناسب ذوقك",
-    // },
-    // {
-    //   image: "/122.webp",
-    //   title: "أقمشة فاخرة",
-    //   subtitle: "جودة استثنائية بأسعار منافسة",
-    // },
-    // {
-    //   image: "/1.jpg",
-    //   title: "خدمة متميزة",
-    //   subtitle: "تركيب احترافي وضمان شامل",
-    // }
-  ];
-
+  const [panels, setPanels] = useState([]);
+  const [mainImage, setMainImage] = useState("/123.jpg");
+  useEffect(() => {
+    const fetchPanels = async () => {
+      const res = await fetch("/api/panels");
+      const data = await res.json();
+      if (data.length > 0) {
+        setPanels(data);
+      }
+    };
+    const fetchMainImage = async () => {
+      const res = await fetch("/api/customize?name=صوره الوجهه");
+      const data = await res.json();
+      if (data.length > 0) {
+        setMainImage(data[0].value);
+      }
+    };
+    fetchPanels();
+    fetchMainImage();
+  }, []);
   useEffect(() => {
     const handleScroll = () => setShowScrollTop(window.pageYOffset > 300);
     window.addEventListener("scroll", handleScroll);
@@ -93,7 +95,7 @@ export default function LandingPage() {
             <div className="flex-1 md:w-3/4 relative">
               <div className="absolute inset-0">
                 <img
-                  src={panels[activePanel]?.image||"/123.jpg"}
+                  src={panels[activePanel]?.image||mainImage}
                   alt={panels[activePanel]?.title||"ستارة مول"}
                   className="w-full h-full object-cover transition-transform duration-700"
                 />
@@ -152,7 +154,7 @@ export default function LandingPage() {
         </section>
 
         <section className="py-20 bg-amazon-light-gray">
-          <div className="container mx-auto px-6">
+          <div className="container mx-auto px-6 py-12">
             <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
               لماذا تختارنا؟
             </h2>
@@ -196,9 +198,9 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
+        <MapLocation />
         </section>
 
-        <MapLocation />
       </main>
 
       {showScrollTop && (

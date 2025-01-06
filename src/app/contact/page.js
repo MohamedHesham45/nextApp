@@ -76,7 +76,7 @@ const fetchEmail = async () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 shadow-xl rounded-lg py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 shadow-xl rounded-lg py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <div className="bg-gray-200 rounded-lg shadow-xl mb-8">
           <div className="bg-gray-300 p-8 text-black text-center">

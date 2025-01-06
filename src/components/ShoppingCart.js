@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useCartFavorite } from "@/app/context/cartFavoriteContext";
 import { useAuth } from "@/app/context/AuthContext";
-
+import { toast } from 'react-hot-toast';
 export default function ShoppingCartPage({ isVisible, setIsVisible }) {
   const { cart, setCart } = useCartFavorite();
-  const { profile, setProfile } = useAuth();
+  const { profile, setProfile,isLoggedIn } = useAuth();
 
   const [customerDetails, setCustomerDetails] = useState({
     name: "",
@@ -207,6 +207,10 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
 
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
+    if (!isLoggedIn) {
+      toast.error('يرجى تسجيل الدخول لإنشاء طلب');
+      return;
+    }
 
     if (!validateForm()) {
       return;
@@ -243,6 +247,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
 
       if (response.ok) {
         const result = await response.json();
+        toast.success(`تم إنشاء الطلب بنجاح! رقم الطلب: ${result.orderId}`);
         // alert(`Order placed successfully! Order ID: ${result.orderId}`);
         // Clear the cart or perform any other necessary actions
         // You might want to add a function to clear the cart and update the parent component
@@ -251,7 +256,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
       }
     } catch (error) {
       console.error("Error placing order:", error);
-      alert("Failed to place order. Please try again.");
+      toast.error("حدث خطأ اعد المحاوله");
     } finally {
       if (saveToProfile) {
         setProfile({

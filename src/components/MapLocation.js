@@ -20,6 +20,7 @@ export default function MapLocation() {
   }, []);
 
   return (
+    <div className="bg-amazon-light-gray">
     <section className="mb-16 container mx-auto px-6 bg-amazon-light-gray">
       <h2 className="text-3xl font-bold mb-8 text-center">
         Find Us
@@ -29,11 +30,12 @@ export default function MapLocation() {
         href="https://maps.apple.com/?ll=31.263354,32.292418&q=%D8%A7%D9%84%D8%B3%D9%8A%D8%A7%D8%B1%D8%A9%20%D9%85%D8%B1%D9%83%D9%88%D9%86%D8%A9&t=h"
         target="_blank"
         rel="noopener noreferrer"
-        className="text-blue-500 underline mt-4 block text-center "
+        className="text-white  mt-4 block text-center bg-amazon-orange p-2 rounded-lg hover:bg-amazon-blue w-fit mx-auto"
       >
         View on Apple Maps
       </a>
     </section>
+    </div>
   );
 }
 

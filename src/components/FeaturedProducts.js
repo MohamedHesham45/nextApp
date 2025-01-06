@@ -4,7 +4,6 @@ import React, {
   useState,
   useEffect,
 } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
@@ -84,7 +83,7 @@ export default function FeaturedProducts() {
         slidesPerView={1}
         navigation
         pagination={{ clickable: true }}
-        autoplay={{ delay: 3000, disableOnInteraction: false }}
+        autoplay={{ delay: 5000, disableOnInteraction: false }}
         breakpoints={{
           640: {
             slidesPerView: 2,
@@ -98,23 +97,25 @@ export default function FeaturedProducts() {
         }}
         className="featured-products-slider"
       >
-        {products.map((product) => (
-          <SwiperSlide key={product._id}>
-            <Link
-              href={`/category/${product.category}`}
+        {products.map((product) => {
+          console.log(product);
+          return (
+            <SwiperSlide key={product._id}>
+              <Link
+                href={`/category/${product.category}`}
               className="block group"
             >
               <div className="bg-white shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl">
                 <div className="relative h-64">
                   <img
-                    src="123.jpg"
+                    src={product.images?.[0]||"/123.jpg"}
                     alt={product.title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent flex items-center justify-center transition-all duration-300">
                     <div className="text-center transform transition-all duration-300 group-hover:scale-105">
                       <h3 className="text-white text-xl font-bold text-center px-4 group-hover:text-amazon-yellow">
-                        شاهد جميع ال{" "}{product.category}
+                        شاهد جميع {" "}{product.category.startsWith('ال') ? product.category : `ال${product.category}`}
                       </h3>
                       <span className="inline-block mt-4 px-6 py-2 bg-amazon-yellow text-white text-sm font-bold rounded-full opacity-0 transform translate-y-4 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
                         اكتشف المزيد
@@ -125,7 +126,7 @@ export default function FeaturedProducts() {
               </div>
             </Link>
           </SwiperSlide>
-        ))}
+        )})}
       </Swiper>
       <div className="mt-10 text-center">
         <Link

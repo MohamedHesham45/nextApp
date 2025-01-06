@@ -10,6 +10,8 @@ import "swiper/css/pagination";
 import 'swiper/swiper-bundle.css';
 import 'react-quill/dist/quill.snow.css';
 import { CartFavoriteProvider } from "./context/cartFavoriteContext";
+import { Toaster } from 'react-hot-toast';
+
 // import "leaflet/dist/leaflet.css";
 
 // const geistSans = localFont({
@@ -74,6 +76,7 @@ export default function RootLayout({ children }) {
           <body
           // className={`${geistSans.variable} ${geistMono.variable} antialiased`}
           >
+            <Toaster position="top-right" />
             <Navbar />
             <main className="pt-12">
               {" "}

@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function SignUpModal({ isOpen, onClose, setModalType }) {
   const [formData, setFormData] = useState({
@@ -11,6 +12,7 @@ export default function SignUpModal({ isOpen, onClose, setModalType }) {
     // neighborhood: "",
     // phone: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -116,15 +118,24 @@ export default function SignUpModal({ isOpen, onClose, setModalType }) {
               <label htmlFor="password" className="block text-sm font-medium mb-1">
                 كلمة السر
               </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border rounded-md"
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-3 py-2 border rounded-md"
+                />
+                <button 
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)} 
+                  className="absolute left-2 top-1/2 transform -translate-y-1/2"
+                >
+                  {showPassword ? <EyeOff /> : <Eye />}
+                </button>
+              </div>
             </div>
 
             {/* Central Area and Governorate in one line */}

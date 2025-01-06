@@ -1,23 +1,17 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
 
-export async function GET(request) {
+export async function GET(request, { params }) {
   try {
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get("userId");
+    const userId = params.id;
 
-    if (!userId) {
-      return NextResponse.json(
-        { error: "User ID is required" },
-        { status: 400 }
-      );
-    }
+   
 
     const client = await clientPromise;
     const db = client.db("productDB");
     const orders = await db
       .collection("orders")
-      .find({ "customerDetails.email": userId })
+      .find({ "customerDetails.userId": userId })
       .sort({ orderDate: -1 })
       .toArray();
 

@@ -93,7 +93,6 @@ export default function CustomizePage() {
                 const images = new FormData();
                 images.append('images', formData.value);
                 
-                // Upload file first
                 const uploadResponse = await fetch('/upload-images', {
                     method: 'POST',
                     body: images,
@@ -104,7 +103,7 @@ export default function CustomizePage() {
                 const uploadResult = await uploadResponse.json();
                 bodyData = JSON.stringify({
                     name: formData.name,
-                    value: uploadResult.url // Use the returned URL from upload
+                    value: uploadResult[0] 
                 });
             } else {
                 bodyData = JSON.stringify(formData);
