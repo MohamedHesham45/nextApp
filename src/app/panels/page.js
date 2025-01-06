@@ -105,7 +105,7 @@ export default function PanelsPage() {
 
                 if (!uploadResponse.ok) throw new Error("حدث خطأ أثناء رفع الصور");
                 const uploadResult = await uploadResponse.json();
-                bodyData = { ...formData, image: uploadResult[0] };
+                bodyData = { ...formData, image: uploadResult.files[0] };
             }
 
             const response = await fetch(url, {
@@ -159,7 +159,7 @@ export default function PanelsPage() {
                     {panels.map((panel) => (
                         <div key={panel._id} className="bg-white border p-4 rounded shadow-lg hover:bg-gray-50">
                             <img 
-                                src={panel.image} 
+                                src={panel.image?.startsWith('/') ? panel.image : `/${panel.image}`} 
                                 alt={panel.title}
                                 className="w-full h-48 object-cover mb-4 rounded"
                             />

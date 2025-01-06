@@ -246,7 +246,7 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories, loadingSubmi
           <div className="flex flex-wrap">
             {images.map((image, index) => (
               <div key={index} className="relative m-1">
-                <img src={typeof image === 'string' ? image : URL.createObjectURL(image)} alt={`Image ${index}`} className="w-20 h-20 object-cover" />
+                <img src={typeof image === 'string' ? image?.startsWith('/') ? image : `/${image}` : URL.createObjectURL(image)} alt={`Image ${index}`} className="w-20 h-20 object-cover" />
                 <button
                   type="button"
                   onClick={() => handleDeleteImage(index)}

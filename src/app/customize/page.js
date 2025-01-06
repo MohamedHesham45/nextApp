@@ -103,7 +103,7 @@ export default function CustomizePage() {
                 const uploadResult = await uploadResponse.json();
                 bodyData = JSON.stringify({
                     name: formData.name,
-                    value: uploadResult[0] 
+                    value: uploadResult.files[0] 
                 });
             } else {
                 bodyData = JSON.stringify(formData);

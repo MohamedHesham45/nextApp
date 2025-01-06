@@ -108,7 +108,7 @@ export default function FeaturedProducts() {
               <div className="bg-white shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl">
                 <div className="relative h-64">
                   <img
-                    src={product.images?.[0]||"/123.jpg"}
+                    src={product.images?.[0]?.startsWith('/') ? product.images?.[0] : `/${product.images?.[0]}`||"/123.jpg"}
                     alt={product.title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />

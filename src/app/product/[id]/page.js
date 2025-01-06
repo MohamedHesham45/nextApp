@@ -150,7 +150,7 @@ export function ProductDetails() {
             <div className="space-y-6">
               <div className="relative group">
                 <img
-                  src={images[selectedImageIndex]}
+                  src={images[selectedImageIndex]?.startsWith('/') ? images[selectedImageIndex] : `/${images[selectedImageIndex]}`}
                   alt={`${product.title} - صورة ${selectedImageIndex + 1}`}
                   className="w-full h-[600px] object-cover rounded-2xl shadow-2xl transition-transform duration-300 group-hover:scale-[1.02]"
                 />
@@ -171,7 +171,7 @@ export function ProductDetails() {
                   {images.map((image, index) => (
                     <button
                       key={index}
-                      onClick={() => setSelectedImageIndex(index)}
+                      onMouseEnter={() => setSelectedImageIndex(index)}
                       className={`relative flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden ${
                         selectedImageIndex === index
                           ? "ring-4 ring-amazon-blue"
@@ -179,7 +179,7 @@ export function ProductDetails() {
                       } transition-all duration-200`}
                     >
                       <img
-                        src={image}
+                        src={image?.startsWith('/') ? image : `/${image}`}
                         alt={`${product.title} - صورة مصغرة ${index + 1}`}
                         className="w-full h-full object-cover"
                       />

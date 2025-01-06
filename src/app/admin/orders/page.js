@@ -413,7 +413,7 @@ ${order.orderItems.map(item => `- ${item.title}
                         <img
                           src={
                             item
-                              .selectedImages?.[0] ||
+                              .selectedImages?.[0]?.startsWith('/') ? item.selectedImages[0] : `/${item.selectedImages[0]}` ||
                             "/placeholder.png"
                           }
                           alt={item.title}

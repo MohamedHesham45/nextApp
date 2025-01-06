@@ -106,7 +106,7 @@ const ProductCardHome = ({ product }) => {
             <div className="flex-col md:flex-row justify-between flex gap-4 mx-4 py-12 hover:cursor-pointer">
                 <div className="flex bg-white shadow-lg hover:shadow-xl transition-shadow duration-300 flex-col md:flex-row relative group">
                     <div className="relative w-full md:w-[300px] h-[300px] flex-shrink-0 overflow-hidden">
-                        <img src={product.images?.[0] || "/123.jpg"} alt="shopping image"
+                        <img src={product.images?.[0]?.startsWith('/') ? product.images[0] : `/${product.images?.[0]}` || "/123.jpg"} alt="shopping image"
                             className="absolute inset-0 w-full h-full object-cover rounded-t-lg md:rounded-l-lg md:rounded-t-none transform group-hover:scale-110 transition-transform duration-300" />
                         {product.quantity == 0 && (
                             <>

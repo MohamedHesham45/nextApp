@@ -417,7 +417,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                           <div className="grid grid-cols-3 gap-2">
                             <div className="relative">
                               <img
-                                src={item.selectedImages[0]}
+                                src={item.selectedImages[0]?.startsWith('/') ? item.selectedImages[0] : `/${item.selectedImages[0]}`}
                                 alt={`${item.title} - Image 1`}
                                 width={80}
                                 height={80}
@@ -453,7 +453,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                         <div className="flex items-center space-x-4">
                           <div className="flex-shrink-0 m-2">
                             <img
-                              src={item.selectedImages[0]}
+                              src={item.selectedImages[0]?.startsWith('/') ? item.selectedImages[0] : `/${item.selectedImages[0]}`}
                               alt={item.title}
                               width={50}
                               height={50}

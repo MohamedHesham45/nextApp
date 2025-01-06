@@ -31,7 +31,7 @@ const ProductCard = ({
             {product.images.map((image, index) => (
               <SwiperSlide key={index}>
                 <img
-                  src={image || "/1.jpg"}
+                  src={image?.startsWith('/') ? image : `/${image}` || "/1.jpg"}
                   alt={`Product Image ${index + 1}`}
                   className="object-cover w-full h-full"
                 />
