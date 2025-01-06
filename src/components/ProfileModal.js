@@ -98,7 +98,6 @@ const ProfileModal = ({ isOpen, onRequestClose }) => {
         throw new Error(`Error updating profile: ${response.statusText}`);
       }
       const data = await response.json();
-      console.log("Profile updated successfully:", data);
       setIsEditing(false);
     } catch (error) {
       console.error("Error updating profile:", error);

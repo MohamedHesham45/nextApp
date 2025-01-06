@@ -48,8 +48,6 @@ export default function SignInModal({ isOpen, onClose, setModalType }) {
       const { token, profile } = data;
       login(token, profile);
 
-      console.log("Sign-In Successful:", data);
-      // alert("Sign-In Successful!");
       onClose();
     } catch (err) {
       setValidationError("اسم المستخدم أو كلمة المرور غير صحيحة.");

@@ -43,7 +43,6 @@ export default function BuyTypePage() {
     const fetchBuyTypes = async () => {
         try {
             const response = await fetch("/api/buyType");
-            console.log(response);
             if (!response.ok) throw new Error("Failed to fetch buy types");
             const data = await response.json();
             setBuyTypes(data);

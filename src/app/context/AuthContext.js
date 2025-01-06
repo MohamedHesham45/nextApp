@@ -57,8 +57,6 @@ export function AuthProvider({ children }) {
 
   const login = (token, profile) => {
     localStorage.setItem("authToken", token);
-    console.log(profile);
-    console.log(token);
 
     setToken(token);
     setProfile(profile);

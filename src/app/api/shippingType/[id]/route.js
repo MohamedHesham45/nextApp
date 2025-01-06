@@ -29,7 +29,6 @@ export async function PUT(request, { params }) {
         const shippingType=await db.collection("shippingType").findOne({ _id: new ObjectId(params.id) });
         return NextResponse.json({message:"Shipping type updated successfully",shippingType});
     }catch(error){
-        console.log(error);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }

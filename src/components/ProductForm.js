@@ -106,7 +106,6 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories, loadingSubmi
       await onSubmit(formData);
     } catch (error) {
       setErrors({ backend: errorSubmit });
-      console.log("errorSubmit", errorSubmit)
     }
   };
 

@@ -15,7 +15,6 @@ export async function GET(request) {
 
 export async function POST(request) {
   try{
-    console.log("POST request received");
     let { name , minCount } = await request.json();
     const client = await clientPromise;
     const db = client.db("productDB");

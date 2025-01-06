@@ -25,7 +25,6 @@ const FiveProductsPerCategory = () => {
         } finally {
             setIsLoading(false);
         }
-        console.log(categories);
     }, []);
 
     useEffect(() => {

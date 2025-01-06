@@ -3,7 +3,6 @@ import clientPromise from "@/lib/mongodb";
 
 export async function POST(req) {
   try{
-    console.log(req);
     const { name } = await req.json();
     const client = await clientPromise;
     const db = client.db("buyType");

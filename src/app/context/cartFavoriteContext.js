@@ -30,9 +30,7 @@ export function CartFavoriteProvider({ children }) {
   useEffect(() => {
     const sum = cart.reduce((total, item) => total + item.quantityCart, 0);
     setNumberOfCartItems(sum);
-    console.log("Updated numberOfCartItems:", sum); // Correct value after state update
-    console.log("cart", cart);
-    console.log("sum", numberOfCartItems);
+   
   }, [cart]);
 
   useEffect(() => {

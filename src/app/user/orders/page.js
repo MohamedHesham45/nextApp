@@ -11,7 +11,6 @@ export default function UserOrdersPage() {
   const [error, setError] = useState(null);
   const { userId, isLoaded } = useAuth();
   const [loadingSub, setLoadingSub] = useState(false);
-  console.log(userId);
 
   const router = useRouter();
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -27,7 +26,6 @@ export default function UserOrdersPage() {
       }
       const data = await response.json();
       setOrders(data);
-      console.log(data);
     } catch (err) {
       console.error("Error fetching orders:", err);
       setError("Failed to load orders. Please try again later.");

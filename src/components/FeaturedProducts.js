@@ -98,7 +98,6 @@ export default function FeaturedProducts() {
         className="featured-products-slider"
       >
         {products.map((product) => {
-          console.log(product);
           return (
             <SwiperSlide key={product._id}>
               <Link
