@@ -152,7 +152,7 @@ export function ProductDetails() {
                 <img
                   src={images[selectedImageIndex]?.startsWith('/') ? images[selectedImageIndex] : `/${images[selectedImageIndex]}`}
                   alt={`${product.title} - صورة ${selectedImageIndex + 1}`}
-                  className="w-full h-[600px] rounded-2xl shadow-2xl transition-transform duration-300 group-hover:scale-[1.02]"
+                  className="w-full h-[350px] md:h-[520px]  rounded-2xl shadow-2xl transition-transform duration-300 group-hover:scale-[1.02]"
                 />
                 {product.quantity === 0 && (
                   <span className="absolute top-6 right-6 bg-amazon-blue text-white text-sm font-bold px-4 py-2 rounded-lg shadow-lg">
