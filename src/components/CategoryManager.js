@@ -1,7 +1,7 @@
 "use client"
 import React, { useState, useEffect } from "react";
 import LoadingSpinner from "./LoadingSpinner";
-import { Trash2 } from "lucide-react";
+import { Edit, Trash2 } from "lucide-react";
 import { toast } from 'react-hot-toast';
 
 const CategoryManager = ({ onCategoryChange, onDeleteCategory }) => {
@@ -13,7 +13,9 @@ const CategoryManager = ({ onCategoryChange, onDeleteCategory }) => {
   const [minCount, setMinCount] = useState(1);
   const [errorMessage, setErrorMessage] = useState("");
   const [categoryToDelete, setCategoryToDelete] = useState(null);
-  const [errorSubmit,setErrorSubmit]=useState(false)
+  const [errorSubmit, setErrorSubmit] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
+  const [categoryToEdit, setCategoryToEdit] = useState(null);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -111,6 +113,46 @@ const CategoryManager = ({ onCategoryChange, onDeleteCategory }) => {
     }
   };
 
+  const editCategory = async () => {
+    if (categoryToEdit && newCategory) {
+      try {
+        setIsLoading(true);
+        setErrorSubmit(true);
+        const response = await fetch(`/api/category/${categoryToEdit._id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name: newCategory, minCount }),
+        });
+
+        if (response.ok) {
+          const updatedCategory = await response.json();
+          const updatedCategories = categories.map((cat) =>
+            cat._id === categoryToEdit._id ? updatedCategory : cat
+          );
+          setCategories(updatedCategories);
+          onCategoryChange(updatedCategories);
+          setIsModalOpen(false);
+          setNewCategory("");
+          setMinCount(1);
+          setCategoryToEdit(null);
+          setIsEditing(false);
+          toast.success('تم تعديل الفئة بنجاح');
+        } else {
+          const errorData = await response.json();
+          setErrorMessage(errorData.error || "حدث خطأ أثناء تعديل الفئة");
+          toast.error(errorData.error || "حدث خطأ أثناء تعديل الفئة");
+        }
+      } catch (error) {
+        console.error("Error editing category:", error);
+      } finally {
+        setIsLoading(false);
+        setErrorSubmit(false);
+      }
+    }
+  };
+
   return (
     <div className="flex flex-col items-center justify-center p-4 w-full direction-rtl">
       <div className="bg-gray-100 shadow-xl rounded-lg p-6 w-full">
@@ -150,15 +192,29 @@ const CategoryManager = ({ onCategoryChange, onDeleteCategory }) => {
                       الحد الأدنى: {category.minCount}
                     </p>
                   </div>
-                  <button
-                    onClick={() => {
-                      setCategoryToDelete(category);
-                      setIsDeleteModalOpen(true);
-                    }}
-                    className="text-red-500 hover:text-red-700 font-bold text-lg"
-                  >
-                    <Trash2 />
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => {
+                        setIsEditing(true);
+                        setCategoryToEdit(category);
+                        setNewCategory(category.name);
+                        setMinCount(category.minCount);
+                        setIsModalOpen(true);
+                      }}
+                      className="text-gray-500 hover:cursor-pointer hover:text-blue-700"
+                    >
+                      <Edit />
+                    </button>
+                    <button
+                      onClick={() => {
+                        setCategoryToDelete(category);
+                        setIsDeleteModalOpen(true);
+                      }}
+                      className="text-red-500 hover:text-red-700 font-bold text-lg"
+                    >
+                      <Trash2 />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -169,7 +225,7 @@ const CategoryManager = ({ onCategoryChange, onDeleteCategory }) => {
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50 direction-rtl">
           <div className="bg-white p-6 rounded shadow-lg w-1/3">
-            <h3 className="text-xl font-semibold mb-4">إضافة فئة جديدة</h3>
+            <h3 className="text-xl font-semibold mb-4">{isEditing ? "تعديل الفئة" : "إضافة فئة جديدة"}</h3>
             {errorMessage && (
               <p className="text-red-500 text-sm mb-4">{errorMessage}</p>
             )}
@@ -190,19 +246,26 @@ const CategoryManager = ({ onCategoryChange, onDeleteCategory }) => {
             />
             <div className="flex justify-end gap-2">
               <button
-                onClick={addCategory} 
+                onClick={isEditing ? editCategory : addCategory}
                 disabled={errorSubmit}
                 className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               >
-                {errorSubmit ? "جاري الحفظ ..." : "إضافة"}
+                {errorSubmit ? "جاري الحفظ ..." : isEditing ? "تعديل" : "إضافة"}
               </button>
               <button
-                onClick={() => setIsModalOpen(false)}
+                onClick={() => {
+                  setIsModalOpen(false);
+                  setIsEditing(false);
+                  setCategoryToEdit(null);
+                  setNewCategory("");
+                  setMinCount(1);
+                  setErrorMessage("");
+                }}
                 className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               >
                 إلغاء
               </button>
-              
+
             </div>
           </div>
         </div>
