@@ -115,14 +115,14 @@ const ProductCardHome = ({ product }) => {
     return (
         <Link href={`/product/${product._id}`}>
             <div className="flex-col md:flex-row justify-between flex gap-4 mx-4 py-12 hover:cursor-pointer">
-                <div className="flex bg-white shadow-lg hover:shadow-xl transition-shadow duration-300 flex-col md:flex-row relative group">
-                    <div className="relative w-full md:w-[300px] h-[300px] flex-shrink-0 overflow-hidden">
+                <div className="flex bg-white shadow-lg hover:shadow-xl transition-shadow duration-300 flex-col md:flex-row relative group flex-1">
+                    <div className="relative w-full md:w-[300px] h-[300px] flex-shrink-0 overflow-hidden md:flex-1">
 
                         <Slider {...settings}>
                             { product.images.map((image, index) => (
                                 <div key={index}>
                                     <img src={image.startsWith("/") ? image : `/${image}`} alt={`Product Image ${index + 1}`} 
-                                    className="w-full h-[300px] rounded-t-lg md:rounded-l-lg md:rounded-t-none transform group-hover:scale-110 transition-transform duration-300" />
+                                    className="w-full h-[300px] transform group-hover:scale-110 transition-transform duration-300" />
                                 </div>
                             ))}
                         </Slider>
@@ -136,7 +136,7 @@ const ProductCardHome = ({ product }) => {
                             خصم {Math.round(product.discountPercentage)}%
                         </span>}
                     </div>
-                    <div className="flex flex-col justify-between p-6">
+                    <div className="flex flex-col justify-between p-6 flex-1">
                         <div className="space-y-2">
                             <h1 className="flex-auto text-xl font-semibold text-gray-800">{product.title}</h1>
                             <div className="text-sm text-gray-600 line-clamp-2" dangerouslySetInnerHTML={{ __html: sanitizeHTML(product.description) }} />
