@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Edit, Trash2 } from "lucide-react";
-import { Swiper, SwiperSlide } from "swiper/react";
+import Slider from "react-slick";
+
 import DOMPurify from 'dompurify';
 export const sanitizeHTML = (dirty) => {
   return DOMPurify.sanitize(dirty);
@@ -18,27 +19,31 @@ const ProductCard = ({
     (1 - product.discountPercentage / 100);
     
 
+    const settings = {
+      dots: true,           // Pagination dots
+      infinite: true,       // Infinite loop
+      speed: 500,           // Transition speed
+      slidesToShow: 1,      // Number of slides to show
+      slidesToScroll: 1,    // Number of slides to scroll
+      autoplay: true,       // Enable autoplay
+      autoplaySpeed: 5000,  // Time between slides in ms
+    };
+  
   return (
     <div className="m-5 relative flex flex-col w-full max-w-sm mx-auto rounded-xl bg-white bg-clip-border text-gray-700 shadow-md direction-rtl">
       <div className="relative mx-4 -mt-6 h-40 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border text-white shadow-lg shadow-blue-gray-500/40 bg-gradient-to-r">
         {product.images && product.images.length > 0 ? (
-          <Swiper
-            autoplay={{
-              delay: 3000,
-              disableOnInteraction: false,
-            }}
-          >
-            {product.images.map((image, index) => (
-              <SwiperSlide key={index}>
-                <img
-                  src={image?.startsWith('/') ? image : `/${image}` || "/1.jpg"}
-                  alt={`Product Image ${index + 1}`}
-                  className="object-cover w-full h-full"
-                />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        ) : (
+          <Slider {...settings}>
+          {product.images.map((image, index) => (
+            <div key={index}>
+              <img
+                src={image.startsWith("/") ? image : `/${image}`}
+                alt={`Product Image ${index + 1}`}
+                className="object-cover w-full h-full"
+              />
+            </div>
+          ))}
+        </Slider>        ) : (
           <img
             src="/1.jpg"
             alt="Placeholder"
@@ -47,7 +52,7 @@ const ProductCard = ({
         )}
         {product.quantity == 0 && <span className="absolute top-2 left-2 bg-blue-600 text-white text-sm font-bold px-2 py-1 rounded-md shadow-lg z-10">نفذت الكمية</span>}
         {product.discountPercentage > 0 && <span className="absolute top-2 right-2 bg-red-600 text-white text-sm font-bold px-2 py-1 rounded-md shadow-lg z-10">
-          خصم {product.discountPercentage.toFixed(1)}%
+          خصم {Math.round(product.discountPercentage)}%
         </span>}
       </div>
 
@@ -72,12 +77,12 @@ const ProductCard = ({
 
         {product.discountPercentage > 0 ? (
           <div className="mt-4 flex justify-between text-sm font-medium text-gray-700">
-            <span>قبل الخصم: <span className="text-red-600 line-through">{product.price.toFixed(2)}</span></span>
-            <span>بعد الخصم: <span className="text-green-600">{discountedPrice.toFixed(2)}</span></span>
+            <span>قبل الخصم: <span className="text-red-600 line-through">{Math.round(product.price)}</span></span>
+            <span>بعد الخصم: <span className="text-green-600">{Math.round(discountedPrice)}</span></span>
           </div>
         ) : (
           <div className="mt-4 flex justify-between text-sm font-medium text-gray-700">
-            <span>السعر: <span className="text-green-600">{product.price.toFixed(2)}</span></span>
+            <span>السعر: <span className="text-green-600">{Math.round(product.price)}</span></span>
           </div>
         )}
       </div>

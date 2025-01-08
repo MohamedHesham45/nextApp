@@ -432,13 +432,13 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                                 : " text-green-600 font-bold"
                             }`}
                           >
-                            {item.price.toFixed(2)} ج.م
+                            {Math.round(item.price)} ج.م
                           </p>
                           {item.discountPercentage > 0 && (
                             <p className="text-sm font-bold text-green-600">
-                              {calculateDiscountedPrice(item).toFixed(2)} ج.م
+                              {Math.round(calculateDiscountedPrice(item))} ج.م
                               <span className="text-red-500 mr-4">
-                                ({item.discountPercentage.toFixed(1)}
+                                ({Math.round(item.discountPercentage)}
                                 %)
                               </span>
                             </p>
@@ -498,13 +498,13 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                                   : " text-green-600 font-bold"
                               }`}
                             >
-                              {item.price.toFixed(2)} ج.م
+                              {Math.round(item.price)} ج.م
                             </p>
                             {item.discountPercentage > 0 && (
                               <p className="text-sm font-bold text-green-600">
-                                {calculateDiscountedPrice(item).toFixed(2)} ج.م
+                                {Math.round(calculateDiscountedPrice(item))} ج.م
                                 <span className="text-red-500 mr-4">
-                                  ({item.discountPercentage.toFixed(1)}
+                                  ({Math.round(item.discountPercentage)}
                                   %)
                                 </span>
                               </p>

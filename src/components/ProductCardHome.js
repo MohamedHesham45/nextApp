@@ -6,6 +6,8 @@ import { useCartFavorite } from "@/app/context/cartFavoriteContext";
 import { sanitizeHTML } from "./ProductCard";
 import { useState, useEffect } from "react";
 import { toast } from 'react-hot-toast';
+import Slider from "react-slick";
+
 
 const ProductCardHome = ({ product }) => {
     const { cart, setCart, favorite, setFavorite } = useCartFavorite();
@@ -101,13 +103,29 @@ const ProductCardHome = ({ product }) => {
         }
     }, [cart, product._id]);
 
+    const settings = {
+      infinite: true,       // Infinite loop
+      speed: 700,           // Transition speed
+      slidesToShow: 1,      // Number of slides to show
+      slidesToScroll: 1,    // Number of slides to scroll
+      autoplay: true,       // Enable autoplay
+      autoplaySpeed: 5000,  // Time between slides in ms
+    };
+  
     return (
         <Link href={`/product/${product._id}`}>
             <div className="flex-col md:flex-row justify-between flex gap-4 mx-4 py-12 hover:cursor-pointer">
                 <div className="flex bg-white shadow-lg hover:shadow-xl transition-shadow duration-300 flex-col md:flex-row relative group">
                     <div className="relative w-full md:w-[300px] h-[300px] flex-shrink-0 overflow-hidden">
-                        <img src={product.images?.[0]?.startsWith('/') ? product.images[0] : `/${product.images?.[0]}` || "/123.jpg"} alt="shopping image"
-                            className="absolute inset-0 w-full h-full object-cover rounded-t-lg md:rounded-l-lg md:rounded-t-none transform group-hover:scale-110 transition-transform duration-300" />
+
+                        <Slider {...settings}>
+                            { product.images.map((image, index) => (
+                                <div key={index}>
+                                    <img src={image.startsWith("/") ? image : `/${image}`} alt={`Product Image ${index + 1}`} 
+                                    className="w-full h-[300px] rounded-t-lg md:rounded-l-lg md:rounded-t-none transform group-hover:scale-110 transition-transform duration-300" />
+                                </div>
+                            ))}
+                        </Slider>
                         {product.quantity == 0 && (
                             <>
                                 <div className="absolute inset-0 bg-black bg-opacity-40"></div>
@@ -115,7 +133,7 @@ const ProductCardHome = ({ product }) => {
                             </>
                         )}
                         {product.discountPercentage > 0 && <span className="absolute top-2 right-2 bg-red-600 text-white text-sm font-bold px-2 py-1 rounded-md shadow-lg z-10">
-                            خصم {product.discountPercentage.toFixed(1)}%
+                            خصم {Math.round(product.discountPercentage)}%
                         </span>}
                     </div>
                     <div className="flex flex-col justify-between p-6">
@@ -124,12 +142,12 @@ const ProductCardHome = ({ product }) => {
                             <div className="text-sm text-gray-600 line-clamp-2" dangerouslySetInnerHTML={{ __html: sanitizeHTML(product.description) }} />
                             {product.discountPercentage > 0 ? (
                                 <div className="flex justify-between items-center text-sm font-medium">
-                                    <span className="text-gray-500">قبل الخصم: <span className="text-red-500 line-through">{product.price.toFixed(2)}</span></span>
-                                    <span className="text-gray-500">بعد الخصم: <span className="text-green-600 font-bold">{product.priceAfterDiscount.toFixed(2)}</span></span>
+                                    <span className="text-gray-500">قبل الخصم: <span className="text-red-500 line-through">{Math.round(product.price)}</span></span>
+                                    <span className="text-gray-500">بعد الخصم: <span className="text-green-600 font-bold">{Math.round(product.priceAfterDiscount)}</span></span>
                                 </div>
                             ) : (
                                 <div className="flex justify-between items-center text-sm font-medium">
-                                    <span className="text-gray-500">السعر: <span className="text-green-600 font-bold">{product.price.toFixed(2)}</span></span>
+                                    <span className="text-gray-500">السعر: <span className="text-green-600 font-bold">{Math.round(product.price)}</span></span>
                                 </div>
                             )}
                             <div className="flex justify-end items-center text-sm">

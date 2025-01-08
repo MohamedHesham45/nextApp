@@ -52,13 +52,13 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories, loadingSubmi
 
   useEffect(() => {
     if (initialData) {
-      const category = categories.find(cat => cat._id === initialData.categoryId)
+      const category = categories.find(cat => cat._id === initialData.categoryId._id)
       setTitle(initialData.title);
       setDescription(initialData.description);
       setImages(initialData.images || []);
       setCategory(category || {});
-      setPrice(initialData.price || 0);
-      setPriceAfterDiscount(initialData.priceAfterDiscount || 0);
+      setPrice(initialData.price || "");
+      setPriceAfterDiscount(initialData.priceAfterDiscount || "");
       setQuantity(initialData.quantity || 1);
 
     } else {
@@ -66,8 +66,8 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories, loadingSubmi
       setDescription("");
       setImages([]);
       setCategory({});
-      setPrice(0);
-      setPriceAfterDiscount(0);
+      setPrice("");
+      setPriceAfterDiscount("");
       setQuantity(1);
     }
   }, [initialData]);
@@ -95,7 +95,7 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories, loadingSubmi
     formData.append("description", description);
     formData.append("category", category.name);
     formData.append("price", parseFloat(price));
-    formData.append("priceAfterDiscount", parseFloat(priceAfterDiscount));
+    formData.append("priceAfterDiscount", parseFloat(priceAfterDiscount) || 0);
     formData.append("categoryId", category._id);
     formData.append("quantity", parseInt(quantity, 10));
     images.forEach((image) => {
@@ -201,7 +201,8 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories, loadingSubmi
               className="shadow appearance-none border rounded w-full py-2 text-gray-700 focus:outline-none focus:shadow-outline"
               id="price"
               type="number"
-              step="0.01"
+              min="0"
+              step="1"
               value={price}
               onChange={(e) => {
                 setPrice(e.target.value)

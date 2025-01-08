@@ -161,7 +161,7 @@ export function ProductDetails() {
                 )}
                 {product.discountPercentage > 0 && (
                   <span className="absolute top-6 left-6 bg-red-600 text-white text-sm font-bold px-4 py-2 rounded-lg shadow-lg">
-                    خصم {product.discountPercentage.toFixed(1)}%
+                    خصم {Math.round(product.discountPercentage)}%
                   </span>
                 )}
               </div>
@@ -214,13 +214,13 @@ export function ProductDetails() {
                     <p className="text-gray-500 text-lg">
                       قبل الخصم:{" "}
                       <span className="text-red-500 line-through">
-                        {product.price.toFixed(2)} جنيه
+                        {Math.round(product.price)} جنيه
                       </span>
                     </p>
                     <p className="text-gray-500 text-lg">
                       بعد الخصم:{" "}
                       <span className="text-green-600 font-bold text-3xl">
-                        {product.priceAfterDiscount.toFixed(2)} جنيه
+                        {Math.round(product.priceAfterDiscount)} جنيه
                       </span>
                     </p>
                   </div>
@@ -228,7 +228,7 @@ export function ProductDetails() {
                   <p className="text-gray-500 text-lg">
                     السعر:{" "}
                     <span className="text-green-600 font-bold text-3xl">
-                      {product.price.toFixed(2)} جنيه
+                      {Math.round(product.price)} جنيه
                     </span>
                   </p>
                 )}

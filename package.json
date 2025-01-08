@@ -28,9 +28,11 @@
     "react-hot-toast": "^2.5.1",
     "react-quill": "^2.0.0",
     "react-responsive-carousel": "^3.2.23",
+    "react-slick": "^0.30.3",
     "sharp": "^0.31.3",
+    "slick-carousel": "^1.8.1",
     "svix": "^1.37.0",
-    "swiper": "^11.1.15"
+    "swiper": "^11.2.0"
   },
   "devDependencies": {
     "@types/react": "19.0.2",
