@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { XCircle } from "lucide-react";
 import dynamic from 'next/dynamic';
+import imageCompression from 'browser-image-compression';
 
 const ReactQuill = dynamic(() => import('react-quill'), {
   ssr: false,
@@ -109,9 +110,31 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories, loadingSubmi
     }
   };
 
-  const handleImageUpload = (e) => {
+  const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files);
-    setImages((prevImages) => [...prevImages, ...files]);
+  const processedFiles = [];
+
+  for (let file of files) {
+    if (file.size > 5 * 1024 * 1024) { 
+      try {
+        const compressedFile = await imageCompression(file, {
+          maxSizeMB: 2, 
+          maxWidthOrHeight: 1920, 
+          useWebWorker: true, 
+        });
+
+        const renamedFile = new File([compressedFile], "updated_image_" + new Date().getTime() + ".jpg", { type: compressedFile.type });
+        processedFiles.push(renamedFile);
+      } catch (error) {
+        console.error('Error compressing file:', error);
+      }
+    } else {
+      processedFiles.push(file); 
+    }
+  }
+
+  setImages((prevImages) => [...prevImages, ...processedFiles]);
+
   };
 
   const handleDeleteImage = (index) => {
