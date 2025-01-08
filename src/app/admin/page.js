@@ -6,6 +6,9 @@ import ProductList from "@/components/ProductList";
 import ProductForm from "@/components/ProductForm";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { useAuth } from "../context/AuthContext";
+import { toast } from 'react-hot-toast';
+
+
 
 export default function AdminPage() {
   const { token, isLoaded, role, isLoggedIn } = useAuth();
@@ -88,9 +91,10 @@ export default function AdminPage() {
       });
 
       fetchProducts();
+      toast.success('تم حذف المنتج بنجاح')
     } catch (err) {
       console.error(err);
-      alert("Failed to delete product. Please try again.");
+      toast.error('حدث خطأ أثناء حذف المنتج اعد المحاولة')
     } finally {
       setLoadingDelete(false)
     }
@@ -102,6 +106,8 @@ export default function AdminPage() {
       const imagesProduct = productData.getAll("images")
       const finalData = {}
       const imagess = []
+      const images = new FormData()
+      const checkImages=[]
       productData.forEach((value, key) => {
         if (key != "images") {
           finalData[key] = value
@@ -112,7 +118,6 @@ export default function AdminPage() {
         }
       })
       if (imagesProduct.length > 0) {
-        const images = new FormData()
         imagesProduct.forEach(image => {
           if (typeof image !== "string") {
             images.append("images", image)
@@ -163,8 +168,9 @@ export default function AdminPage() {
 
       fetchProducts();
       setIsModalOpen(false);
+      toast.success('تم إضافة المنتج بنجاح')
     } catch (err) {
-      console.error(err);
+      toast.error(err.message || "حدث خطأ أثناء إضافة المنتج")
       setErrorSubmit(err.message);
       throw new Error(err.message)
     } finally {

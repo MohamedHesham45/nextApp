@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import Image from "next/image";
+import React, { useState, useEffect, useRef } from "react";
 import { useCartFavorite } from "@/app/context/cartFavoriteContext";
 import { useAuth } from "@/app/context/AuthContext";
 import { toast } from 'react-hot-toast';
@@ -37,6 +36,20 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
   const [selectedBuyType, setSelectedBuyType] = useState("");
   const [buyTypes, setBuyTypes] = useState([]);
   const [minCartPrice, setMinCartPrice] = useState(0);
+
+  // Create refs for form fields
+  const nameRef = useRef(null);
+  const phoneRef = useRef(null);
+  const shippingTypeRef = useRef(null);
+  const governorateRef = useRef(null);
+  const neighborhoodRef = useRef(null);
+  const centerAreaRef = useRef(null);
+  const buyTypeRef = useRef(null);
+  const categoryRef = useRef(null);
+
+  // Create a ref object to store refs for each category
+  const categoryRefs = useRef({});
+
   useEffect(() => {
     setCategoryErrors({});
     setAllCategoriesError("");
@@ -178,6 +191,13 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
       }
     });
     setCategoryErrors(errors);
+
+    // Scroll to the first category error if it exists
+    const firstErrorKey = Object.keys(errors)[0];
+    if (firstErrorKey && categoryRefs.current[firstErrorKey]) {
+      categoryRefs.current[firstErrorKey].scrollIntoView({ behavior: 'smooth' });
+    }
+
     return Object.keys(errors).length === 0;
   };
 
@@ -185,38 +205,46 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
     const errors = {};
 
     // Required field validation
-    if (!customerDetails.name.trim()) errors.name = "الاسم مطلوب";
-    if (!customerDetails.email.trim()) errors.email = "البريد الإلكتروني مطلوب";
-    else if (!/\S+@\S+\.\S+/.test(customerDetails.email))
-      errors.email = "البريد الإلكتروني غير صالح";
-
-    if (!customerDetails.phone.trim()) errors.phone = "رقم الهاتف مطلوب";
-
+    if (!customerDetails.name) errors.name = "الاسم مطلوب";
+    if (!customerDetails.phone) errors.phone = "رقم الهاتف مطلوب";
     if (!selectedShippingType) errors.shippingType = "نوع الشحن مطلوب";
     if (!selectedGovernorate) errors.governorate = "المحافظة مطلوبة";
     if (!customerDetails.neighborhood) errors.neighborhood = "الحي مطلوب";
-    if (!customerDetails.centerArea.trim())
+    if (!customerDetails.centerArea)
       errors.centerArea = "المركز/المنطقة مطلوب";
     if (!customerDetails.preferredContactMethod) errors.preferredContactMethod = "طريقة الاتصال مطلوبة";
     if (!customerDetails.buyType) errors.buyType = "نوع الدفع مطلوب";
     if (totalAmount < minCartPrice) errors.minCartPrice = `الحد الأدنى للشراء هو ${minCartPrice} ج.م`;
 
     setFormErrors(errors);
+
+    // Scroll to the first error
+    if (Object.keys(errors).length > 0) {
+      if (errors.name) nameRef.current.scrollIntoView({ behavior: 'smooth' });
+      else if (errors.phone) phoneRef.current.scrollIntoView({ behavior: 'smooth' });
+      else if (errors.shippingType) shippingTypeRef.current.scrollIntoView({ behavior: 'smooth' });
+      else if (errors.governorate) governorateRef.current.scrollIntoView({ behavior: 'smooth' });
+      else if (errors.neighborhood) neighborhoodRef.current.scrollIntoView({ behavior: 'smooth' });
+      else if (errors.centerArea) centerAreaRef.current.scrollIntoView({ behavior: 'smooth' });
+      else if (errors.buyType) buyTypeRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+
     return Object.keys(errors).length === 0;
   };
 
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
-    if (!isLoggedIn) {
-      toast.error('يرجى تسجيل الدخول لإنشاء طلب');
-      return;
-    }
+    // if (!isLoggedIn) {
+    //   toast.error('يرجى تسجيل الدخول لإنشاء طلب');
+    //   return;
+    // }
 
     if (!validateForm()) {
       return;
     }
 
     if (!validateMinimumQuantities()) {
+      categoryRef.current.scrollIntoView({ behavior: 'smooth' });
       setAllCategoriesError("يرجى التحقق من الحد الأدنى للكميات في كل فئة");
       return;
     }
@@ -231,7 +259,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
         selectedImages: item.selectedImages,
       })),
       totalPrice: totalAmount + shippingCost,
-      userId: profile.userId,
+      userId: profile.userId||"",
       saveToProfile: saveToProfile,
     };
 
@@ -337,6 +365,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
               <div
                 key={group.category._id}
                 className="mb-6 bg-gray-100 p-2 rounded-lg"
+                ref={(el) => (categoryRefs.current[group.category._id] = el)}
               >
                 <div className="flex justify-between items-center mb-2">
                   <h3 className="font-bold text-lg">{group.category.name}</h3>
@@ -360,7 +389,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                 <ul className="space-y-4">
                   {group.items.map((item) => (
                     <li
-                      key={`${item._id}-${item.selectedImages.join()}`}
+                      key={`${item._id}-${item.selectedImages?.join()}`}
                       className="flex flex-col bg-white p-2 rounded-lg"
                     >
                       {editingItem && editingItem._id === item._id ? (
@@ -417,7 +446,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                           <div className="grid grid-cols-3 gap-2">
                             <div className="relative">
                               <img
-                                src={item.selectedImages[0]?.startsWith('/') ? item.selectedImages[0] : `/${item.selectedImages[0]}`}
+                                src={item.selectedImages?.[0]?.startsWith('/') ? item.selectedImages?.[0] : `/${item.selectedImages?.[0]}`}
                                 alt={`${item.title} - Image 1`}
                                 width={80}
                                 height={80}
@@ -453,7 +482,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                         <div className="flex items-center space-x-4">
                           <div className="flex-shrink-0 m-2">
                             <img
-                              src={item.selectedImages[0]?.startsWith('/') ? item.selectedImages[0] : `/${item.selectedImages[0]}`}
+                              src={item.selectedImages?.[0]?.startsWith('/') ? item.selectedImages?.[0] : `/${item.selectedImages?.[0]}`}
                               alt={item.title}
                               width={50}
                               height={50}
@@ -506,7 +535,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
               </div>
             ))}
             <form onSubmit={handlePlaceOrder} className="mt-6 space-y-4">
-              <div>
+              <div ref={nameRef}>
                 <label htmlFor="name" className="block mb-1">
                   الاسم
                 </label>
@@ -560,7 +589,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                   </p>
                 )}
               </div>
-              <div>
+              <div ref={phoneRef}>
                 <label htmlFor="phone" className="block mb-1">
                   الهاتف
                 </label>
@@ -588,7 +617,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                   </p>
                 )}
               </div>
-              <div>
+              <div ref={shippingTypeRef}>
                 <label htmlFor="shippingType" className="block mb-1">
                   نوع الشحن
                 </label>
@@ -606,9 +635,9 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                         ...customerDetails,
                         shippingType: selectedType.name,
                       });
-                    }else{
+                    } else {
                       setSelectedShippingTypeDetails(null);
-                    } 
+                    }
                     setFormErrors({
                       ...formErrors,
                       shippingType: "",
@@ -642,7 +671,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                   </div>
                 )}
               </div>
-              <div>
+              <div ref={governorateRef}>
                 <label htmlFor="governorate" className="block mb-1">
                   المحافظة
                 </label>
@@ -681,7 +710,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                   </p>
                 )}
               </div>
-              <div>
+              <div ref={neighborhoodRef}>
                 <label htmlFor="neighborhood" className="block mb-1">
                   الحي
                 </label>
@@ -719,7 +748,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                   </p>
                 )}
               </div>
-              <div>
+              <div ref={centerAreaRef}>
                 <label htmlFor="centerArea" className="block mb-1">
                   المركز/المنطقة
                 </label>
@@ -771,7 +800,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                   <option value="بريد إلكتروني">بريد إلكتروني</option>
                 </select>
               </div>
-              <div>
+              <div ref={buyTypeRef}>
                 <label htmlFor="buyType" className="block mb-1">
                   نوع الدفع
                 </label>
@@ -782,6 +811,10 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                     const selectedType = buyTypes.find(
                       (type) => type._id === e.target.value
                     );
+                    setFormErrors({
+                      ...formErrors,
+                      buyType: "",
+                    });
                     setSelectedBuyType(e.target.value);
                     setCustomerDetails({
                       ...customerDetails,
@@ -897,7 +930,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                 className="w-full bg-amazon hover:bg-amazon-orange text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105"
                 disabled={loading}
               >
-                {loading ? "جاري الإنشاء..." : "إنشاء الطلب"}
+                {loading ? "جاري الإنشاء..." : "تابع الطلب"}
               </button>
             </form>
           </>

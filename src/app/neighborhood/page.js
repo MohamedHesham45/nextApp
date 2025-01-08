@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/navigation";
 import { Trash2, Edit, Plus } from "lucide-react";
-
+import { toast } from 'react-hot-toast';
 export default function Neighborhoods() {
     const [neighborhoods, setNeighborhoods] = useState([]);
     const [governorates, setGovernorates] = useState([]);
@@ -125,10 +125,12 @@ export default function Neighborhoods() {
             }
 
             if (!response.ok) throw new Error("فشلت العملية");
+            toast.success('تم إضافة أو تعديل الحي بنجاح')
             await fetchData();
             closeModal();
         } catch (error) {
-            setError("خطأ: " + error.message);
+            setError("خطأ: ")
+            toast.error('حدث خطأ أثناء إضافة أو تعديل الحي')
         } finally {
             setSubmitLoading(false);
         }

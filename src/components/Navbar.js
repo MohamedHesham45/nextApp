@@ -199,10 +199,25 @@ export default function Navbar() {
           {/* Logged In Check End */}
 
           {/* Mobile Mode Menu Start */}
-          <div className="md:hidden">
+          <div className="md:hidden flex">
             <button onClick={toggleMenu} className="text-white">
               <Menu size={24} />
             </button>
+            <button
+              onClick={() => setIsCartVisible(!isCartVisible)}
+              className="relative text-white hover:text-amazon-yellow transition group order-3 px-4"
+            >
+              <span className="block pb-1 absolute top-[-12px] right-[3px] text-sm bg-amazon-yellow text-amazon-dark-gray px-1 rounded-full">{numberOfCartItems}</span>
+              <ShoppingCart />
+            </button>
+            <Link href="/favorites" className="relative text-white hover:text-amazon-yellow transition group order-2 px-4">
+              {numberOfFavoriteItems > 0 && (
+                <span className="block pb-1 absolute top-[-12px] right-[3px] text-sm bg-amazon-yellow text-amazon-dark-gray px-1 rounded-full">
+                  {numberOfFavoriteItems}
+                </span>
+              )}
+              <Heart />
+            </Link>
           </div>
         </nav>
         {isMenuOpen && (
@@ -248,34 +263,6 @@ export default function Navbar() {
               onClick={() => setIsMenuOpen(false)}
             >
               تواصل معنا
-            </Link>
-            <button
-              onClick={() => {
-                setIsCartVisible(!isCartVisible)
-                setIsMenuOpen(false)
-              }}
-              className="block py-2 text-white hover:text-amazon-yellow transition-colors"
-            >
-              <div className="flex items-center">
-                <span>السلة</span>
-                <div className="relative mr-2">
-                  <ShoppingCart />
-                  <span className="block pb-1 absolute top-[-10px] right-[-5px] text-sm bg-amazon-yellow text-amazon-dark-gray px-1 rounded-full">{numberOfCartItems}</span>
-                </div>
-              </div>
-            </button>
-            <Link
-              href="/favorites"
-              className="block py-2 text-white hover:text-amazon-yellow transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <div className="flex items-center">
-                <span>المفضلة</span>
-                <div className="relative mr-2">
-                  <Heart />
-                  {numberOfFavoriteItems > 0 && <span className="block pb-1 absolute top-[-10px] right-[-5px] text-sm bg-amazon-yellow text-amazon-dark-gray px-1 rounded-full">{numberOfFavoriteItems}</span>}
-                </div>
-              </div>
             </Link>
             {isLoggedIn && (
               <button

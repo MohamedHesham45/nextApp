@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useAuth } from "@/app/context/AuthContext";
 import LoadingSpinner from "@/components/LoadingSpinner";
-
+import { toast } from 'react-hot-toast';
 export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -83,7 +83,7 @@ export default function OrdersPage() {
 
       if (!response.ok) {
         throw new Error(
-          "Failed to update order status"
+          "فشل في تحديث حالة الطلب"
         );
       }
 
@@ -94,14 +94,14 @@ export default function OrdersPage() {
             : order
         )
       );
+      const status=newStatus === "Pending" ? "قيد الانتظار" : newStatus === "Processing" ? "قيد المعالجة" : newStatus === "Shipped" ? "تم الشحن" : newStatus === "Delivered" ? "تم التسليم" : "ملغى"
+      toast.success('تم تحديث حالة الطلب بنجاح إلى '+status)
     } catch (error) {
       console.error(
-        "Error updating order status:",
+        "حدث خطأ أثناء تحديث حالة الطلب:",
         error
       );
-      alert(
-        "فشل في تحديث حالة الطلب. يرجى المحاولة مرة أخرى."
-      );
+      toast.error('فشل في تحديث حالة الطلب. يرجى المحاولة مرة أخرى.')
     }
   };
 

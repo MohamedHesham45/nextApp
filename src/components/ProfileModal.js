@@ -117,7 +117,7 @@ const ProfileModal = ({ isOpen, onRequestClose }) => {
       className="direction-rtl fixed inset-0 backdrop-blur-lg flex items-center justify-center z-50 px-5 backdrop-brightness-75"
     >
       <div
-        className="bg-white p-6 rounded-md shadow-2xl w-full md:w-2/3 lg:w-2/3 relative"
+        className="bg-white p-6 rounded-md shadow-2xl w-full md:w-2/3 lg:w-2/3 relative max-h-[80vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
 

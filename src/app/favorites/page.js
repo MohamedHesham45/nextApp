@@ -28,7 +28,7 @@ const FavoritesPage = () => {
             {/* Content Section */}
             <div className="container mx-auto px-4 py-8">
                 {favorite.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-16 text-center">
+                    <div className="flex flex-col items-center justify-center py-16 text-center ">
                         <Heart className="h-16 w-16 text-gray-300 mb-4" />
                         <h2 className="text-2xl font-semibold text-gray-600 mb-2">قائمة المفضلة فارغة</h2>
                         <p className="text-gray-500">لم تقم بإضافة أي منتجات إلى المفضلة بعد</p>

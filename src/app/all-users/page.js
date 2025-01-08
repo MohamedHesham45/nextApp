@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/navigation";
 import { Trash2, Edit } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 export default function AllUsers() {
     const [users, setUsers] = useState([]);
@@ -74,8 +75,10 @@ export default function AllUsers() {
 
             const updatedFilteredUsers = filteredUsers.filter((user) => user.userId !== userToDelete.userId);
             setFilteredUsers(updatedFilteredUsers);
+            toast.success('تم حذف المستخدم بنجاح')
         } catch (error) {
-            setError("Error deleting user: " + error.message);
+            setError("حدث خطأ أثناء حذف المستخدم")
+            toast.error('حدث خطأ أثناء حذف المستخدم')
         } finally {
             setLoading(false);
             setIsModalOpen(false);
@@ -103,8 +106,10 @@ export default function AllUsers() {
             setUsers(updatedUsers);
             setFilteredUsers(updatedUsers);
             setEditingUserId(null);
+            toast.success('تم تحديث حالة المستخدم بنجاح ل '+newRole)
         } catch (error) {
-            setError("Error updating user role: " + error.message);
+            setError("حدث خطأ أثناء تحديث حالة المستخدم")
+            toast.error('حدث خطأ أثناء تحديث حالة المستخدم')
         }finally{
             setErrorSubmit(false)
         }

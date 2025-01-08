@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/navigation";
 import { Trash2, Edit, Plus } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 export default function ShippingTypes() {
     const [shippingTypes, setShippingTypes] = useState([]);
@@ -49,7 +50,8 @@ export default function ShippingTypes() {
             const data = await response.json();
             setShippingTypes(data);
         } catch (error) {
-            setError("Error fetching shipping types: " + error.message);
+            setError("حدث خطأ أثناء جلب أنواع الشحن")
+            toast.error('حدث خطأ أثناء جلب أنواع الشحن')
         } finally {
             setLoading(false);
         }
@@ -96,8 +98,10 @@ export default function ShippingTypes() {
 
             await fetchShippingTypes();
             closeModal();
+            toast.success('تم إضافة أو تعديل نوع الشحن بنجاح')
         } catch (error) {
-            setError("Error: " + error.message);
+            setError("حدث خطأ أثناء إضافة أو تعديل نوع الشحن")
+            toast.error('حدث خطأ أثناء إضافة أو تعديل نوع الشحن')
         } finally {
             setSubmitLoading(false);
         }
@@ -118,8 +122,10 @@ export default function ShippingTypes() {
             if (!response.ok) throw new Error("Failed to delete");
             await fetchShippingTypes();
             closeModal();
+            toast.success('تم حذف نوع الشحن بنجاح')
         } catch (error) {
-            setError("Error deleting: " + error.message);
+            setError("حدث خطأ أثناء حذف نوع الشحن")
+            toast.error('حدث خطأ أثناء حذف نوع الشحن')
         } finally {
             setSubmitLoading(false);
         }

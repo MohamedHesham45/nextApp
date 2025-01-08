@@ -103,7 +103,7 @@ export default function UserOrdersPage() {
   }
 
   return (
-    <div className="  direction-rtl">
+    <div className="min-h-screen bg-gray-50 direction-rtl">
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-amazon">
           <div className="absolute inset-0 bg-gradient-to-r from-amazon-orange/10 via-amazon-yellow/20 to-amazon-blue/20"></div>
@@ -130,7 +130,10 @@ export default function UserOrdersPage() {
       </div>
 
       {orders.length === 0 ? (
-        <p className="text-right">لم تقم بإجراء أي طلبات حتى الآن.</p>
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <h2 className="text-2xl font-semibold text-gray-600 mb-2">قائمة الطلبات فارغة</h2>
+          <p className="text-gray-500">لم تقم بإجراء أي طلبات حتى الآن.</p>
+        </div>
       ) : (
         <div className="grid  gap-6 bg-gray-50 p-10 ">
           {orders.map((order) => (

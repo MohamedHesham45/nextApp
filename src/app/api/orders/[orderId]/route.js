@@ -28,6 +28,10 @@ export async function PATCH(request, { params }) {
         { status: 404 }
       );
     }
+    const order = await db.collection("orders").findOne({_id: new ObjectId(params.orderId)});
+    if(order.customerDetails.email){
+      await sendOrderStatusChangeEmail(order.customerDetails.email, "تحديث حالة طلبك", order);
+    }
 
     return NextResponse.json({
       message:

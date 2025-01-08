@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import LoadingSpinner from "./LoadingSpinner";
 import { Trash2 } from "lucide-react";
+import { toast } from 'react-hot-toast';
 
 const CategoryManager = ({ onCategoryChange, onDeleteCategory }) => {
   const [categories, setCategories] = useState([]);
@@ -56,11 +57,12 @@ const CategoryManager = ({ onCategoryChange, onDeleteCategory }) => {
           setMinCount(1);
           onCategoryChange(updatedCategories);
           setIsModalOpen(false);
+          toast.success('تم إضافة الفئة بنجاح')
         } else {
           console.error("Failed to add category");
           const errorData = await response.json();
           setErrorMessage(errorData.error || "حدث خطأ أثناء إضافة الفئة");
-
+          toast.error(errorData.error || "حدث خطأ أثناء إضافة الفئة")
         }
       } catch (error) {
         console.error("Error adding category:", error);
@@ -92,8 +94,12 @@ const CategoryManager = ({ onCategoryChange, onDeleteCategory }) => {
           setCategories(updatedCategories);
           onCategoryChange(updatedCategories);
           setIsDeleteModalOpen(false);
+          toast.success('تم حذف الفئة بنجاح')
         } else {
+          toast.error(errorData.error || "حدث خطأ أثناء حذف الفئة")
           console.error("Failed to delete category");
+          const errorData = await response.json();
+          setErrorMessage(errorData.error || "حدث خطأ أثناء حذف الفئة");
 
         }
       } catch (error) {

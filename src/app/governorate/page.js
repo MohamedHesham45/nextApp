@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/navigation";
 import { Trash2, Edit, Plus } from "lucide-react";
+import { toast } from 'react-hot-toast';
 
 export default function Governorates() {
   const [governorates, setGovernorates] = useState([]);
@@ -98,6 +99,7 @@ export default function Governorates() {
             nameEn: formData.nameEn,
           }),
         });
+        toast.success('تم إضافة المحافظة بنجاح')
       } else if (modalMode === "addShipping") {
         response = await fetch(`/api/governorate/${selectedGovernorate._id}`, {
           method: "PUT",
@@ -112,12 +114,13 @@ export default function Governorates() {
           }),
         });
       }
-
       if (!response.ok) throw new Error("Operation failed");
       await fetchData();
+      toast.success('تم إضافة أو تعديل السعر بنجاح')
       closeModal();
     } catch (error) {
-      setError("Error: " + error.message);
+      setError("حدث خطأ أثناء إضافة أو تعديل المحافظة")
+      toast.error('حدث خطأ أثناء إضافة أو تعديل المحافظة')
     } finally {
       setSubmitLoading(false);
     }
@@ -145,9 +148,11 @@ export default function Governorates() {
       );
       if (!response.ok) throw new Error("Failed to delete");
       await fetchData();
+      toast.success('تم حذف المحافظة بنجاح')
       closeModal();
     } catch (error) {
-      setError("Error deleting: " + error.message);
+      setError("حدث خطأ أثناء حذف المحافظة")
+      toast.error('حدث خطأ أثناء حذف المحافظة')
     } finally {
       setSubmitLoading(false);
     }

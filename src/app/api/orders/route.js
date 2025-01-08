@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
+import { sendOrderEmail } from "../nodemailer/service";
 export async function GET() {
   try {
     const client = await clientPromise;
@@ -60,11 +61,12 @@ export async function POST(request) {
     const result = await db
       .collection("orders")
       .insertOne(newOrder);
-
+    await sendOrderEmail(customerDetails.email||"", "تفاصيل الطلب", newOrder);
     return NextResponse.json({
       message: "Order placed successfully",
       orderId: result.insertedId,
     });
+
   } catch (error) {
     console.error(
       "Error in POST /api/orders:",

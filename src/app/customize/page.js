@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/navigation";
 import { Trash2, Edit, Plus } from "lucide-react";
+import { toast } from 'react-hot-toast';
 
 export default function CustomizePage() {
     const [customFields, setCustomFields] = useState([]);
@@ -118,9 +119,11 @@ export default function CustomizePage() {
             if (!response.ok) throw new Error("Operation failed");
 
             await fetchCustomFields();
+            toast.success('تم إضافة أو تعديل الحقل بنجاح')
             closeModal();
         } catch (error) {
-            setError("Error: " + error.message);
+            setError("Error: ")
+            toast.error('حدث خطأ أثناء إضافة أو تعديل الحقل')
         } finally {
             setSubmitLoading(false);
         }

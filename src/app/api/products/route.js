@@ -26,6 +26,7 @@ export async function GET(request) {
     const products = await db
       .collection("products")
       .find(query)
+      .sort({referenceCode:-1})
       .toArray();
 
     const productsWithDefaults = await Promise.all(products.map(
