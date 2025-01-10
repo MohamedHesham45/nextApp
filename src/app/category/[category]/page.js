@@ -7,15 +7,21 @@ import { Search } from "lucide-react";
 
 export default function CategoryPage() {
   const { category } = useParams();
-  const decodedCategory = decodeURIComponent(category);
-  const displayCategory = decodedCategory.startsWith('ال') ? decodedCategory : `ال${decodedCategory}`;
+  // const decodedCategory = decodeURIComponent(category);
+  const[displayCategory, setDisplayCategory] = useState('');
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     async function fetchCategoryProducts() {
       try {
-        const response = await fetch(`/api/products?category=${category}`);
+        const res = await fetch(`/api/category/${category}`);
+        const categoryData = await res.json();
+        console.log(categoryData);
+        setDisplayCategory(categoryData.category.name.startsWith('ال') ? categoryData.category.name : `ال${categoryData.category.name}`);
+
+
+        const response = await fetch(`/api/products?categoryId=${category}`);
         if (!response.ok) {
           throw new Error("Failed to fetch category products");
         }

@@ -7,6 +7,7 @@ import { Heart, ShoppingCart } from "lucide-react";
 import { sanitizeHTML } from "@/components/ProductCard";
 import { useCartFavorite } from "@/app/context/cartFavoriteContext";
 import { toast } from "react-hot-toast";
+import ShoppingCartPage from "@/components/ShoppingCart";
 
 export default function ProductPage() {
   return (
@@ -22,6 +23,7 @@ export function ProductDetails() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [isCartVisible, setIsCartVisible] = useState(false);
 
   const { cart, setCart, favorite, setFavorite } = useCartFavorite();
   const [cartQuantity, setCartQuantity] = useState(0);
@@ -108,6 +110,33 @@ export function ProductDetails() {
     localStorage.setItem("cart", JSON.stringify(updatedCart));
     toast.success("تم إضافة المنتج إلى السلة");
   };
+  const handleBuyNow = (e, product) => {
+    e.preventDefault();
+    const itemToAdd = {
+      ...product,
+      quantityCart: 1,
+      selectedImages: product.images,
+    };
+
+    const existingItemIndex = cart.findIndex(
+      (item) =>
+        item._id === product._id &&
+        JSON.stringify(item.selectedImages) ===
+          JSON.stringify(itemToAdd.selectedImages)
+    );
+
+    let updatedCart;
+    if (existingItemIndex === -1) {
+      updatedCart = [...cart, itemToAdd];
+      setCart(updatedCart);
+      localStorage.setItem("cart", JSON.stringify(updatedCart));
+      toast.success("تم إضافة المنتج إلى السلة");
+      setIsCartVisible(true);
+    }else{
+      setIsCartVisible(true);
+    }
+
+  };
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -144,42 +173,46 @@ export function ProductDetails() {
 
   return (
     <div className="bg-gray-50">
-      <div className="container mx-auto px-6 md:px-16 lg:px-32 py-16 direction-rtl min-h-screen">
+      <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-16 py-8 md:py-16 direction-rtl min-h-screen">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-            <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
+            <div className="space-y-4 md:space-y-6">
               <div className="relative group">
                 <img
-                  src={images[selectedImageIndex]?.startsWith('/') ? images[selectedImageIndex] : `/${images[selectedImageIndex]}`}
+                  src={
+                    images[selectedImageIndex]?.startsWith("/")
+                      ? images[selectedImageIndex]
+                      : `/${images[selectedImageIndex]}`
+                  }
                   alt={`${product.title} - صورة ${selectedImageIndex + 1}`}
-                  className="w-full h-[350px] md:h-[520px]  rounded-2xl shadow-2xl transition-transform duration-300 group-hover:scale-[1.02]"
+                  className="w-full h-[250px] sm:h-[350px] md:h-[500px] rounded-2xl shadow-2xl transition-transform duration-300 group-hover:scale-[1.02]"
                 />
                 {product.quantity === 0 && (
-                  <span className="absolute top-6 right-6 bg-amazon-blue text-white text-sm font-bold px-4 py-2 rounded-lg shadow-lg">
+                  <span className="absolute top-4 right-4 sm:top-6 sm:right-6 bg-amazon-blue text-white text-xs sm:text-sm font-bold px-2 sm:px-4 py-1 sm:py-2 rounded-lg shadow-lg">
                     نفذت الكمية
                   </span>
                 )}
                 {product.discountPercentage > 0 && (
-                  <span className="absolute top-6 left-6 bg-red-600 text-white text-sm font-bold px-4 py-2 rounded-lg shadow-lg">
+                  <span className="absolute top-4 left-4 sm:top-6 sm:left-6 bg-red-600 text-white text-xs sm:text-sm font-bold px-2 sm:px-4 py-1 sm:py-2 rounded-lg shadow-lg">
                     خصم {Math.round(product.discountPercentage)}%
                   </span>
                 )}
               </div>
 
               {images.length > 1 && (
-                <div className="flex gap-4 overflow-x-auto pb-2">
+                <div className="flex gap-2 sm:gap-4 overflow-x-auto pb-2">
                   {images.map((image, index) => (
                     <button
                       key={index}
                       onMouseEnter={() => setSelectedImageIndex(index)}
-                      className={`relative flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden ${
+                      className={`relative flex-shrink-0 w-16 h-16 sm:w-24 sm:h-24 rounded-lg overflow-hidden ${
                         selectedImageIndex === index
                           ? "ring-4 ring-amazon-blue"
                           : "ring-2 ring-gray-200 hover:ring-blue-300"
                       } transition-all duration-200`}
                     >
                       <img
-                        src={image?.startsWith('/') ? image : `/${image}`}
+                        src={image?.startsWith("/") ? image : `/${image}`}
                         alt={`${product.title} - صورة مصغرة ${index + 1}`}
                         className="w-full h-full object-cover"
                       />
@@ -189,128 +222,149 @@ export function ProductDetails() {
               )}
             </div>
 
-            <div className="space-y-10">
+            <div className="space-y-4 md:space-y-6 bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-lg">
               <div className="space-y-6">
-                <h1 className="text-4xl font-bold text-gray-800 leading-tight">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 leading-tight">
                   {product.title}
                 </h1>
                 {product.referenceCode && (
-                  <p className="text-gray-500">
+                  <p className="text-gray-500 text-sm sm:text-base">
                     رقم المرجع: {product.referenceCode}
                   </p>
                 )}
-                {/* <p className="text-gray-600 text-lg leading-relaxed">{product.description}</p> */}
                 <div
-                  className="text-gray-600 text-lg leading-relaxed"
+                  className="text-gray-600 text-sm sm:text-lg leading-relaxed"
                   dangerouslySetInnerHTML={{
                     __html: sanitizeHTML(product.description),
                   }}
                 />
               </div>
 
-              <div className="space-y-6 bg-white p-8 rounded-2xl shadow-lg">
-                {product.discountPercentage > 0 ? (
-                  <div className="space-y-3">
-                    <p className="text-gray-500 text-lg">
-                      قبل الخصم:{" "}
-                      <span className="text-red-500 line-through">
-                        {Math.round(product.price)} جنيه
-                      </span>
-                    </p>
-                    <p className="text-gray-500 text-lg">
-                      بعد الخصم:{" "}
-                      <span className="text-green-600 font-bold text-3xl">
-                        {Math.round(product.priceAfterDiscount)} جنيه
-                      </span>
-                    </p>
-                  </div>
-                ) : (
-                  <p className="text-gray-500 text-lg">
-                    السعر:{" "}
-                    <span className="text-green-600 font-bold text-3xl">
+              {product.discountPercentage > 0 ? (
+                <div className="space-y-2 sm:space-y-3">
+                  <p className="text-gray-500 text-sm sm:text-lg">
+                    قبل الخصم:{" "}
+                    <span className="text-red-500 line-through">
                       {Math.round(product.price)} جنيه
                     </span>
                   </p>
-                )}
-
-                <p className="text-gray-500 text-lg">
-                  الكمية المتوفرة:{" "}
-                  <span
-                    className={`font-bold ${
-                      product.quantity > 0 ? "text-green-600" : "text-red-500"
-                    }`}
-                  >
-                    {product.quantity > 0 ? product.quantity : "نفذت الكمية"}
+                  <p className="text-gray-500 text-sm sm:text-lg">
+                    بعد الخصم:{" "}
+                    <span className="text-green-600 font-bold text-2xl sm:text-3xl">
+                      {Math.round(product.priceAfterDiscount)} جنيه
+                    </span>
+                  </p>
+                </div>
+              ) : (
+                <p className="text-gray-500 text-sm sm:text-lg">
+                  السعر:{" "}
+                  <span className="text-green-600 font-bold text-2xl sm:text-3xl">
+                    {Math.round(product.price)} جنيه
                   </span>
                 </p>
-              </div>
+              )}
 
-              <div className="space-y-4">
-                <div className="flex gap-6">
-                  {cartQuantity > 0 ? (
-                    <div className="flex-1 flex items-center justify-center gap-4 bg-gray-100 p-2 rounded-full">
-                      <button
-                        onClick={(e) => handleQuantityChange(e, -1)}
-                        className="w-12 h-12 flex items-center justify-center bg-white text-gray-700 hover:bg-amazon-orange hover:text-white rounded-full transition-all duration-200 shadow-sm text-xl font-semibold"
-                      >
-                        -
-                      </button>
-                      <span className="w-16 text-center font-medium text-xl">
-                        {cartQuantity}
-                      </span>
-                      <button
-                        onClick={(e) => handleQuantityChange(e, 1)}
-                        className={`w-12 h-12 flex items-center justify-center bg-white text-gray-700 rounded-full transition-all duration-200 shadow-sm text-xl font-semibold ${
-                          cartQuantity >= product.quantity
-                            ? "opacity-50 cursor-not-allowed"
-                            : "hover:bg-amazon-orange hover:text-white"
-                        }`}
-                        disabled={cartQuantity >= product.quantity}
-                      >
-                        +
-                      </button>
-                    </div>
-                  ) : product.quantity > 0 ? (
+              <p className="text-gray-500 text-sm sm:text-lg">
+                <span className="text-gray-500">
+                  {product.quantity > 0 ? (
+                    <span className={`text-xl  `}>
+                      {product.quantity > 10 ? (
+                        <span className="text-green-500">
+                          متبقي <span className="font-bold">{product.quantity}</span> - اطلب الان
+                        </span>
+                      ) : (
+                        <span className="text-red-500">
+                          تبقي <span className="font-bold">{product.quantity}</span> فقط - اطلب الان
+                        </span>
+                      )}
+                    </span>
+                  ) : (
+                    <span className="text-red-500 text-lg font-bold">غير متاح الان</span>
+                  )}
+                </span>
+              </p>
+
+            <div className="space-y-4">
+              <div className="flex flex-wrap gap-4 sm:gap-6">
+                {cartQuantity > 0 ? (
+                  <div className="flex-1 flex items-center justify-center gap-2 sm:gap-4 bg-gray-100 p-2 rounded-full">
+                    <button
+                      onClick={(e) => handleQuantityChange(e, -1)}
+                      className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white text-gray-700 hover:bg-amazon-orange hover:text-white rounded-full transition-all duration-200 shadow-sm text-lg sm:text-xl font-semibold"
+                    >
+                      -
+                    </button>
+                    <span className="w-12 sm:w-16 text-center font-medium text-lg sm:text-xl">
+                      {cartQuantity}
+                    </span>
+                    <button
+                      onClick={(e) => handleQuantityChange(e, 1)}
+                      className={`w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white text-gray-700 rounded-full transition-all duration-200 shadow-sm text-lg sm:text-xl font-semibold ${
+                        cartQuantity >= product.quantity
+                          ? "opacity-50 cursor-not-allowed"
+                          : "hover:bg-amazon-orange hover:text-white"
+                      }`}
+                      disabled={cartQuantity >= product.quantity}
+                    >
+                      +
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex-1 flex items-center justify-center gap-2 sm:gap-4 rounded-full">
                     <button
                       onClick={(e) => handleAddToCart(e, product)}
-                      className="flex-1 bg-amazon-orange hover:bg-amazon-orange-dark text-white rounded-full transition-all duration-300 hover:scale-105 hover:shadow-xl flex items-center justify-center gap-3 text-lg font-semibold"
+                      className={`bg-amazon-orange hover:bg-amazon-orange-dark text-white rounded-full transition-all duration-200 hover:shadow-xl flex items-center justify-center text-base sm:text-lg font-semibold ${
+                        product.quantity === 0
+                        ? "opacity-50 cursor-not-allowed"
+                        : "hover:scale-105"
+                      } px-3 py-2 sm:px-4 sm:py-3 md:px-6 md:py-4 w-full `}
                       disabled={product.quantity === 0}
-                    >
-                      <ShoppingCart className="h-6 w-6" />
-                      اضف الى السلة
+                      >
+                      <ShoppingCart className="h-5 w-5 sm:h-6 sm:w-6" />
+                      اضف الى العربة
                     </button>
-                  ) : (
-                    ""
-                  )}
-                  <button
-                    onClick={(e) => handleAddToFavorite(e, product)}
-                    className={`p-5 bg-white hover:bg-red-50 text-gray-400 hover:text-red-500 rounded-full shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl border-2 border-gray-100 hover:border-red-500 ${
-                      favorite.some((item) => item._id === product._id)
-                        ? "text-red-500 border-red-500"
-                        : "text-gray-400 border-gray-100"
-                    }`}
+                  </div>
+                )}
+                <button
+                  onClick={(e) => handleAddToFavorite(e, product)}
+                  className={`p-4 sm:p-5 bg-white hover:bg-red-50 text-gray-400 hover:text-red-500 rounded-full shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl border-2 border-gray-100 hover:border-red-500 ${
+                    favorite.some((item) => item._id === product._id)
+                    ? "text-red-500 border-red-500"
+                    : "text-gray-400 border-gray-100"
+                  }`}
                   >
-                    <Heart
-                      className={`h-7 w-7 stroke-2 ${
-                        favorite.some((item) => item._id === product._id)
-                          ? "fill-red-500"
-                          : ""
-                      }`}
+                  <Heart
+                    className={`h-6 w-6 sm:h-7 sm:w-7 stroke-2 ${
+                      favorite.some((item) => item._id === product._id)
+                      ? "fill-red-500"
+                      : ""
+                    }`}
                     />
-                  </button>
-                </div>
-
-                {/* <button
-                                className="w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-xl text-lg font-semibold"
-                                disabled={product.quantity === 0}
-                            >
-                                اطلب الآن
-                            </button> */}
+                </button>
               </div>
+                    </div>
+
+              <button
+                className={`w-full bg-green-600 hover:bg-green-700 text-white py-3 sm:py-4 rounded-full transition-all duration-300 hover:shadow-xl text-base sm:text-lg font-semibold ${
+                  product.quantity === 0
+                    ? "opacity-50 cursor-not-allowed "
+                    : "hover:scale-105"
+                }`}
+                disabled={product.quantity === 0}
+                onClick={(e) => {
+                 handleBuyNow(e, product);
+                }}
+              >
+                اطلب الآن
+              </button>
             </div>
           </div>
         </div>
       </div>
+      <ShoppingCartPage
+        isVisible={isCartVisible}
+        setIsVisible={setIsCartVisible}
+      />
     </div>
   );
 }

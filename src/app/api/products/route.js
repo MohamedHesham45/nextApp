@@ -7,7 +7,7 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     // const featured = searchParams.get("featured");
-    const category = searchParams.get("category");
+    const categoryId = searchParams.get("categoryId");
 
     const client = await clientPromise;
     const db = client.db("productDB");
@@ -19,8 +19,8 @@ export async function GET(request) {
         
     //   };
     // }
-    if (category) {
-      query.category = category;
+    if (categoryId) {
+      query.categoryId = categoryId;
     }
 
     const products = await db
