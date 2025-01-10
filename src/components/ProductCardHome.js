@@ -150,11 +150,15 @@ const ProductCardHome = ({ product }) => {
                                     <span className="text-gray-500">السعر: <span className="text-green-600 font-bold">{Math.round(product.price)}</span></span>
                                 </div>
                             )}
-                            <div className="flex justify-end items-center text-sm">
+                            <div className="flex justify-start items-center text-sm pt-4">
                                 <span className="text-gray-500">
-                                    الكمية المتوفرة: <span className={`font-bold ${product.quantity > 0 ? 'text-green-600' : 'text-red-500'}`}>
-                                        {product.quantity > 0 ? product.quantity : 'نفذت الكمية'}
-                                    </span>
+                                    {product.quantity > 0 ?(
+                                        <span className={`text-lg  `}>
+                                           {product.quantity > 10 ? (<span className="text-green-500">متبقي <span className="font-bold">{product.quantity}</span> - اطلب الان</span>) : (<span className="text-red-500">تبقي <span className="font-bold">{product.quantity}</span> فقط - اطلب الان</span>)}
+                                        </span>
+                                    ):(
+                                        <span className="text-red-500  font-bold">غير متاح الان</span>
+                                    )}
                                 </span>
                             </div>
                         </div>
@@ -189,7 +193,7 @@ const ProductCardHome = ({ product }) => {
                                     disabled={product.quantity === 0}
                                 >
                                     {!cartQuantity >= product.quantity?<ShoppingCart className="h-4 w-4" />:""}
-                                    {product.quantity===0?"نفذت الكمية":(cartQuantity >= product.quantity ? "انتهت الكمية المتاحة" : "اضف الى السلة")}
+                                    {product.quantity===0?"نفذت الكمية":(cartQuantity >= product.quantity ? "انتهت الكمية المتاحة" : "اضف الى العربة")}
                                 </button>
                             {/* )} */}
                             <button

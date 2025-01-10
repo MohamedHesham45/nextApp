@@ -101,7 +101,7 @@ export default function FeaturedProducts() {
           return (
             <SwiperSlide key={product._id}>
               <Link
-                href={`/category/${product.category}`}
+                href={`/category/${product.categoryId._id}`}
               className="block group"
             >
               <div className="bg-white shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl">

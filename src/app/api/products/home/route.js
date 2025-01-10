@@ -19,7 +19,7 @@ export async function GET(request) {
           $project: {
             category: { $first: "$products.category" },
             products: {
-              $slice: ["$products", 4],
+              $slice: ["$products", -4],
             },
             _id: 0,
           },
