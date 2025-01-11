@@ -10,9 +10,32 @@ import FiveProductsPerCategory from "@/components/FiveProductsPerCategory";
 export default function LandingPage() {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [activePanel, setActivePanel] = useState(0);
-
   const [panels, setPanels] = useState([]);
   const [mainImage, setMainImage] = useState("/123.jpg");
+  const [whatsappNumber, setWhatsappNumber] = useState("");
+
+  useEffect(() => {
+    fetchCustomFields();
+  }, [])
+  const fetchCustomFields = async () => {
+    const response = await fetch("/api/customize?name=رقم الواتس");
+    if (!response.ok) throw new Error("Failed to fetch custom fields");
+    const data = await response.json();
+    setWhatsappNumber(data[0].value);
+  };
+
+  const message = "Hello! I have a question about your products.";
+
+  const handleClick = () => {
+    const encodedMessage =
+      encodeURIComponent(message);
+    window.open(
+      `https://wa.me/${whatsappNumber || "201223821206"}?text=${encodedMessage}`,
+      "_blank"
+    );
+  };
+
+
   useEffect(() => {
     const fetchPanels = async () => {
       const res = await fetch("/api/panels");
@@ -87,7 +110,7 @@ export default function LandingPage() {
       <main>
         <section className="relative h-screen bg-amazon overflow-hidden">
           <div className="absolute inset-0 flex flex-col md:flex-row">
-            {panels.length > 0 &&<div className="md:hidden flex h-48 bg-amazon">
+            {panels.length > 0 && <div className="md:hidden flex h-48 bg-amazon">
               <div className="flex w-full">
                 {panels.map((panel, index) => renderPanel(panel, index, true))}
               </div>
@@ -95,8 +118,8 @@ export default function LandingPage() {
             <div className="flex-1 md:w-3/4 relative">
               <div className="absolute inset-0">
                 <img
-                  src={panels[activePanel]?.image?.startsWith('/') ? panels[activePanel]?.image : `/${panels[activePanel]?.image}`||mainImage?.startsWith('/') ? mainImage : `/${mainImage}`}
-                  alt={panels[activePanel]?.title||"ستارة مول"}
+                  src={panels[activePanel]?.image?.startsWith('/') ? panels[activePanel]?.image : `/${panels[activePanel]?.image}` || mainImage?.startsWith('/') ? mainImage : `/${mainImage}`}
+                  alt={panels[activePanel]?.title || "ستارة مول"}
                   className="w-full h-full object-cover transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-amazon/90 via-amazon/50 to-transparent"></div>
@@ -153,37 +176,44 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="py-20 bg-amazon-light-gray">
-          <div className="container mx-auto px-6 py-12">
+        <section className="py-20 bg-amazon-light-gray direction-rtl">
+          <div className="container mx-auto px-6 py-12 hover:cursor-pointer">
             <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
               لماذا تختارنا؟
             </h2>
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="bg-white p-6 rounded-lg shadow-md text-center transform hover:scale-105 transition duration-300">
-                <div className="text-4xl mb-4">
-                  🏆
+              <Link href="/gallery">
+                <div className="bg-white p-6 rounded-lg shadow-md text-center transform hover:scale-105 transition duration-300 h-full">
+                  <div className="text-4xl mb-4">
+                    🏆
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">
+                    منتجات ذات جودة عالية
+                  </h3>
+                  <p className="text-gray-600">
+                    نحن نقدم فقط أفضل المنتجات ذات
+                    الجودة لعملائنا.
+                  </p>
                 </div>
-                <h3 className="text-xl font-semibold mb-2">
-                  منتجات ذات جودة عالية
-                </h3>
-                <p className="text-gray-600">
-                  نحن نقدم فقط أفضل المنتجات ذات
-                  الجودة لعملائنا.
-                </p>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow-md text-center transform hover:scale-105 transition duration-300">
-                <div className="text-4xl mb-4">
-                  🚚
+              </Link>
+              <Link href="/delivery-types">
+                <div className="bg-white p-6 rounded-lg shadow-md text-center transform hover:scale-105 transition duration-300 hover:cursor-pointer">
+                  <div className="text-4xl mb-4">
+                    🚚
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">
+                    الشحن السريع
+                  </h3>
+                  <p className="text-gray-600">
+                    احصل على توصيل طلباتك بسرعة مع
+                    خدمة الشحن الفعالة لدينا.
+                  </p>
                 </div>
-                <h3 className="text-xl font-semibold mb-2">
-                  الشحن السريع
-                </h3>
-                <p className="text-gray-600">
-                  احصل على توصيل طلباتك بسرعة مع
-                  خدمة الشحن الفعالة لدينا.
-                </p>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow-md text-center transform hover:scale-105 transition duration-300">
+              </Link>
+              <div className="bg-white p-6 rounded-lg shadow-md text-center transform hover:scale-105 hover:cursor-pointer transition duration-300"
+                onClick={handleClick}
+              >
                 <div className="text-4xl mb-4">
                   🎧
                 </div>
@@ -198,7 +228,7 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-        <MapLocation />
+          <MapLocation />
         </section>
 
       </main>
