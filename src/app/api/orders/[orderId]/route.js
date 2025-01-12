@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
+import { sendOrderStatusChangeEmail } from "../../nodemailer/service";
 
 export async function PATCH(request, { params }) {
   try {
