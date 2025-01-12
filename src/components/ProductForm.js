@@ -109,33 +109,39 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories, loadingSubmi
       setErrors({ backend: errorSubmit });
     }
   };
-
   const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files);
-  const processedFiles = [];
-
-  for (let file of files) {
-    if (file.size > 5 * 1024 * 1024) { 
+    const processedFiles = [];
+  
+    for (let file of files) {
       try {
-        const compressedFile = await imageCompression(file, {
-          maxSizeMB: 2, 
+        const compressionOptions = {
+          maxSizeMB: 1, 
           maxWidthOrHeight: 1920, 
           useWebWorker: true, 
-        });
-
-        const renamedFile = new File([compressedFile], "updated_image_" + new Date().getTime() + ".jpg", { type: compressedFile.type });
-        processedFiles.push(renamedFile);
+        };
+  
+        if (file.size > compressionOptions.maxSizeMB * 1024 * 1024) {
+          const compressedFile = await imageCompression(file, compressionOptions);
+  
+          const renamedFile = new File(
+            [compressedFile],
+            "updated_image_" + new Date().getTime() + ".jpg",
+            { type: compressedFile.type }
+          );
+  
+          processedFiles.push(renamedFile);
+        } else {
+          processedFiles.push(file);
+        }
       } catch (error) {
-        console.error('Error compressing file:', error);
+        console.error("Error compressing file:", error);
       }
-    } else {
-      processedFiles.push(file); 
     }
-  }
-
-  setImages((prevImages) => [...prevImages, ...processedFiles]);
-
+  
+    setImages((prevImages) => [...prevImages, ...processedFiles]);
   };
+  
 
   const handleDeleteImage = (index) => {
     setImages((prevImages) => prevImages.filter((_, i) => i !== index));
