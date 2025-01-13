@@ -28,6 +28,13 @@ const ProductCardHome = ({ product }) => {
 
         setFavorite(updatedFavorite);
         localStorage.setItem('favorite', JSON.stringify(updatedFavorite));
+        fbq('track', 'AddToWishlist', {
+            content_name: product.title,
+            content_category: product.category,
+            content_ids: [product._id],
+            value: product.price,
+            currency: 'EGP'
+        });
     };
 
     const handleAddToCart = (e, product) => {
