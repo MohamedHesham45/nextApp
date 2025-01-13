@@ -180,7 +180,7 @@ const CategoryManager = ({ onCategoryChange, onDeleteCategory }) => {
               <p>لايوجد فئات</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {categories.map((category) => (
                 <div
                   key={category._id}
@@ -224,7 +224,7 @@ const CategoryManager = ({ onCategoryChange, onDeleteCategory }) => {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50 direction-rtl">
-          <div className="bg-white p-6 rounded shadow-lg w-1/3">
+          <div className="bg-white p-6 rounded shadow-lg w-full sm:w-2/3 md:w-1/3">
             <h3 className="text-xl font-semibold mb-4">{isEditing ? "تعديل الفئة" : "إضافة فئة جديدة"}</h3>
             {errorMessage && (
               <p className="text-red-500 text-sm mb-4">{errorMessage}</p>
@@ -274,7 +274,7 @@ const CategoryManager = ({ onCategoryChange, onDeleteCategory }) => {
       {/* Delete Confirmation Modal */}
       {isDeleteModalOpen && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50 direction-rtl">
-          <div className="bg-white p-6 rounded shadow-lg w-1/3">
+          <div className="bg-white p-6 rounded shadow-lg w-full sm:w-2/3 md:w-1/3">
             <h3 className="text-xl font-semibold mb-4">تأكيد الحذف</h3>
             <p className="text-gray-700 mb-4">
               هل أنت متأكد أنك تريد حذف الفئة: {categoryToDelete?.name}؟

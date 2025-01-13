@@ -7,13 +7,13 @@ import { AuthProvider } from "./context/AuthContext";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import 'swiper/swiper-bundle.css';
-import 'react-quill/dist/quill.snow.css';
+import "swiper/swiper-bundle.css";
+import "react-quill/dist/quill.snow.css";
 import { CartFavoriteProvider } from "./context/cartFavoriteContext";
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from "react-hot-toast";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-
+// import Head from "next/head";
 
 // import "leaflet/dist/leaflet.css";
 
@@ -35,24 +35,22 @@ import "slick-carousel/slick/slick-theme.css";
 
 export const metadata = {
   icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon.ico',
-    apple: '/favicon.ico',
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
     other: {
-      rel: 'apple-touch-icon-precomposed',
-      url: '/favicon.ico',
+      rel: "apple-touch-icon-precomposed",
+      url: "/favicon.ico",
     },
   },
-  title:
-    "Sitara Mall | Quality Products at Unbeatable Prices",
+  title: "Sitara Mall | Quality Products at Unbeatable Prices",
   description:
     "Discover amazing products at Sitara Mall. We offer quality home decor, textiles, and more with fast shipping and 24/7 customer support.",
   keywords:
     "Sitara Mall, home decor, textiles, quality products, Port Said, Egypt",
   author: "Sitara Mall",
   openGraph: {
-    title:
-      "Sitara Mall | Quality Home Decor and Textiles",
+    title: "Sitara Mall | Quality Home Decor and Textiles",
     description:
       "Shop for premium home decor and textiles at Sitara Mall. Enjoy fast shipping and excellent customer service.",
     type: "website",
@@ -62,8 +60,7 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title:
-      "Sitara Mall | Quality Home Decor and Textiles",
+    title: "Sitara Mall | Quality Home Decor and Textiles",
     description:
       "Discover amazing products at unbeatable prices at Sitara Mall.",
     // image:
@@ -76,6 +73,38 @@ export default function RootLayout({ children }) {
     <AuthProvider>
       <CartFavoriteProvider>
         <html lang="en">
+          <head>
+            {/* <Head> */}
+              {/* Meta Pixel Code */}
+              <script
+                async
+                dangerouslySetInnerHTML={{
+                  __html: `
+                    !function(f,b,e,v,n,t,s){
+                      if(f.fbq)return;n=f.fbq=function(){
+                        n.callMethod ? n.callMethod.apply(n,arguments) : n.queue.push(arguments)
+                      };
+                      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+                      n.queue=[];t=b.createElement(e);t.async=!0;
+                      t.src=v;s=b.getElementsByTagName(e)[0];
+                      s.parentNode.insertBefore(t,s)
+                    }(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
+                    fbq('init', '620919593953224');
+                    fbq('track', 'PageView');
+                  `,
+                }}
+              />
+              <noscript>
+                <img
+                  height="1"
+                  width="1"
+                  style={{ display: "none" }}
+                  src="https://www.facebook.com/tr?id=620919593953224&ev=PageView&noscript=1"
+                />
+              </noscript>
+              {/* End Meta Pixel Code */}
+            {/* </Head> */}
+          </head>
           <body
           // className={`${geistSans.variable} ${geistMono.variable} antialiased`}
           >

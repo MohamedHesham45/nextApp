@@ -312,7 +312,9 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
     setCart(cart.filter((item) => item._id !== itemId));
     setEditingItem(null);
   };
-
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
   const handleSaveEdit = () => {
     if (editingItem) {
       const updatedCart = cart.map((item) => {

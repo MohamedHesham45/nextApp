@@ -52,14 +52,15 @@ const ProductCardHome = ({ product }) => {
                 updatedCart[existingItemIndex].quantityCart = 1;
             }
             updatedCart[existingItemIndex].quantityCart += 1;
+            toast.success('تم إضافة المنتج إلى السلة');
         } else {
             updatedCart = [...cart, itemToAdd];
+            toast.success('تم إضافة المنتج إلى السلة');
         }
 
         setCart(updatedCart);
         setCartQuantity(1);
         localStorage.setItem('cart', JSON.stringify(updatedCart));
-        toast.success('تم إضافة المنتج إلى السلة');
     };
 
     const handleQuantityChange = (e, change) => {
