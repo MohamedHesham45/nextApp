@@ -23,18 +23,37 @@ const ProductCardHome = ({ product }) => {
             toast.success('تم إزالة المنتج من المفضلة');
         } else {
             updatedFavorite = [...favorite, product];
+            var userAgent = navigator.userAgent;
+
+            fetch('https://api.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => {
+                var ipAddress = data.ip; // This will contain the user's IP address
+
+                // Now you can use both the IP address and User-Agent
+                fbq('track', 'AddToWishlist', {
+                    product_name: product.title,
+                    product_category: product.category,
+                    product_ids: [product._id],
+                    product_image: "https://sitaramall.com/" + product.images[0],
+                    product_price: product.price,
+                    product_price_after_discount: product.priceAfterDiscount || 0,
+                    product_quantity: product.quantity,
+                    product_images: product.images,
+                    value: product.priceAfterDiscount || product.price,
+                    currency: 'EGP',
+                    ip_address: ipAddress, // Add the IP address
+                    user_agent: userAgent // Add the User-Agent
+                });
+            })
+            .catch(error => console.error('Error fetching IP address:', error));
+
             toast.success('تم إضافة المنتج إلى المفضلة');
         }
 
         setFavorite(updatedFavorite);
         localStorage.setItem('favorite', JSON.stringify(updatedFavorite));
-        fbq('track', 'AddToWishlist', {
-            content_name: product.title,
-            content_category: product.category,
-            content_ids: [product._id],
-            value: product.price,
-            currency: 'EGP'
-        });
+        
     };
 
     const handleAddToCart = (e, product) => {
