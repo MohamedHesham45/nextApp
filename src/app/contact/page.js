@@ -7,6 +7,7 @@ import {
   MapPin,
   Mail,
 } from "lucide-react";
+import useMetaConversion from "@/components/SendMetaConversion";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -17,22 +18,22 @@ export default function Contact() {
   const [email, setEmail] = useState("sitaramall97@gmail.com");
   const [whatsappNumber, setWhatsappNumber] = useState("201223821206");
   const [error, setError] = useState(null);
-
+  const sendMetaConversion = useMetaConversion();
   const [isSubmitting, setIsSubmitting] =
     useState(false);
   const [submitResult, setSubmitResult] =
     useState(null);
-useEffect(() => {
-  fetchEmail();
-}, []);
-const fetchEmail = async () => {
-  const response = await fetch('/api/customize?name=ايميل التواصل');
-  const res=await fetch('/api/customize?name=رقم الواتس');
-  const data = await response.json();
-  const data2=await res.json();
-  setEmail(data[0].value);
-  setWhatsappNumber(data2[0].value);
-};
+  useEffect(() => {
+    fetchEmail();
+  }, []);
+  const fetchEmail = async () => {
+    const response = await fetch('/api/customize?name=ايميل التواصل');
+    const res = await fetch('/api/customize?name=رقم الواتس');
+    const data = await response.json();
+    const data2 = await res.json();
+    setEmail(data[0].value);
+    setWhatsappNumber(data2[0].value);
+  };
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
@@ -43,17 +44,17 @@ const fetchEmail = async () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newErrors={};
-    if(formData.name===""){
-      newErrors.name="الاسم مطلوب";
+    const newErrors = {};
+    if (formData.name === "") {
+      newErrors.name = "الاسم مطلوب";
     }
-    if(formData.email===""){
-      newErrors.email="الايميل مطلوب";
+    if (formData.email === "") {
+      newErrors.email = "الايميل مطلوب";
     }
-    if(formData.message===""){
-      newErrors.message="الرسالة مطلوبة";
+    if (formData.message === "") {
+      newErrors.message = "الرسالة مطلوبة";
     }
-    if(Object.keys(newErrors).length>0){
+    if (Object.keys(newErrors).length > 0) {
       setError(newErrors);
       return;
     }
@@ -67,7 +68,19 @@ const fetchEmail = async () => {
         body: JSON.stringify(formData),
       });
       const result = await response.json();
-      setSubmitResult({success:true,message:result.message});
+
+      var userAgent = navigator.userAgent;
+
+      fetch('https://api.ipify.org?format=json')
+        .then(response => response.json())
+        .then(async (data) => {
+          var ipAddress = data.ip;
+          await sendMetaConversion('Contact', {}, ipAddress, userAgent);
+        })
+        .catch(error => console.error('Error fetching IP address:', error));
+
+
+      setSubmitResult({ success: true, message: result.message });
     } catch (error) {
       setSubmitResult({ success: false, message: 'Error sending message' });
     } finally {
@@ -141,7 +154,7 @@ const fetchEmail = async () => {
                     id="name"
                     name="name"
                     value={formData.name}
-                    onChange={(e)=>{handleChange(e);setError({...error,name:null});setSubmitResult(null)}}
+                    onChange={(e) => { handleChange(e); setError({ ...error, name: null }); setSubmitResult(null) }}
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                   />
                   {error && error.name && (
@@ -160,7 +173,7 @@ const fetchEmail = async () => {
                     id="email"
                     name="email"
                     value={formData.email}
-                    onChange={(e)=>{handleChange(e);setError({...error,email:null});setSubmitResult(null)}}
+                    onChange={(e) => { handleChange(e); setError({ ...error, email: null }); setSubmitResult(null) }}
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                   />
                   {error && error.email && (
@@ -178,7 +191,7 @@ const fetchEmail = async () => {
                     id="message"
                     name="message"
                     value={formData.message}
-                    onChange={(e)=>{handleChange(e);setError({...error,message:null});setSubmitResult(null)}}
+                    onChange={(e) => { handleChange(e); setError({ ...error, message: null }); setSubmitResult(null) }}
                     rows="4"
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                   ></textarea>
@@ -198,11 +211,10 @@ const fetchEmail = async () => {
               </form>
               {submitResult && (
                 <div
-                  className={`mt-4 p-4 rounded-md ${
-                    submitResult.success
-                      ? "bg-green-100 text-green-700"
-                      : "bg-red-100 text-red-700"
-                  } transition-all duration-300 ease-in-out`}
+                  className={`mt-4 p-4 rounded-md ${submitResult.success
+                    ? "bg-green-100 text-green-700"
+                    : "bg-red-100 text-red-700"
+                    } transition-all duration-300 ease-in-out`}
                 >
                   {submitResult.message}
                 </div>

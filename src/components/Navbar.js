@@ -15,6 +15,7 @@ import { useAuth } from "@/app/context/AuthContext";
 import { useCartFavorite } from "@/app/context/cartFavoriteContext";
 import ProfileModal from "./ProfileModal";
 import ShoppingCartPage from "./ShoppingCart";
+import useMetaConversion from "./SendMetaConversion";
 export default function Navbar() {
   const {
     numberOfCartItems,
@@ -31,6 +32,7 @@ export default function Navbar() {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isCartVisible, setIsCartVisible] = useState(false);
   const dropdownRef = useRef(null);
+  const sendMetaConversion = useMetaConversion();
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -87,6 +89,22 @@ export default function Navbar() {
       : [{ href: "/user/orders", label: "إدارة الطلبات" }]
     : [];
 
+  const galleryConversionEvent = () => {
+    var userAgent = navigator.userAgent;
+
+    fetch('https://api.ipify.org?format=json')
+      .then(response => response.json())
+      .then(async (data) => {
+        var ipAddress = data.ip;
+        await sendMetaConversion('ViewContent', {
+          content_name: 'Gallery View',
+          content_type: 'gallery',
+          content_category: 'Gallery',
+          value: 0,
+        }, ipAddress, userAgent);
+      })
+      .catch(error => console.error('Error fetching IP address:', error));
+  }
   return (
     <>
       <header
@@ -94,13 +112,14 @@ export default function Navbar() {
           }`}
       >
         <nav className="container mx-auto px-6 h-16 flex justify-between items-center">
-          <div className="text-xl font-semibold text-white order-2">
+          <div className="text-xl font-semibold text-white order-2" >
             <Link href="/">ستارة مول</Link>
           </div>
           <div className="hidden md:flex  items-center h-full order-1">
             <Link
               href="/gallery"
               className="relative text-white hover:text-amazon-yellow transition group order-6 mx-4"
+              onClick={galleryConversionEvent}
             >
               <span className="block pb-1">المعرض</span>
               <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-amazon-yellow group-hover:w-full transition-all duration-300"></span>
@@ -313,7 +332,7 @@ export default function Navbar() {
       <ShoppingCartPage
         isVisible={isCartVisible}
         setIsVisible={setIsCartVisible}
-        
+
       />
     </>
   );

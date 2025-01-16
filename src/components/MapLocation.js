@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import useMetaConversion from "./SendMetaConversion";
 
 const MapComponent = dynamic(
   () => import("./MapComponent"),
@@ -12,12 +13,30 @@ const MapComponent = dynamic(
 );
 
 export default function MapLocation() {
+  const sendMetaConversion = useMetaConversion();
   const [isMounted, setIsMounted] =
     useState(false);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  const locationConversionEvent = () => {
+    var userAgent = navigator.userAgent;
+
+    fetch('https://api.ipify.org?format=json')
+      .then(response => response.json())
+      .then(async (data) => {
+        var ipAddress = data.ip;
+        await sendMetaConversion('FindLocation', {
+          content_name: 'Map View',
+          content_type: 'Map',
+          content_category: 'Map',
+          value: 0,
+        }, ipAddress, userAgent);
+      })
+      .catch(error => console.error('Error fetching IP address:', error));
+  }
 
   return (
     <div className="bg-amazon-light-gray">
@@ -31,6 +50,7 @@ export default function MapLocation() {
         target="_blank"
         rel="noopener noreferrer"
         className="text-white  mt-4 block text-center bg-amazon-orange p-2 rounded-lg hover:bg-amazon-blue w-fit mx-auto"
+        onClick={locationConversionEvent}
       >
         View on Apple Maps
       </a>
