@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import useMetaConversion from "./SendMetaConversion";
 
 const WhatsAppButton = () => {
+  const sendMetaConversion = useMetaConversion();
   const [whatsappNumber, setWhatsappNumber] = useState("");
 useEffect(()=>{
   fetchCustomFields();
@@ -23,6 +25,21 @@ const message = "Hello! I have a question about your products.";
       `https://wa.me/${whatsappNumber||"201223821206"}?text=${encodedMessage}`,
       "_blank"
     );
+
+    var userAgent = navigator.userAgent;
+
+    fetch('https://api.ipify.org?format=json')
+        .then(response => response.json())
+        .then(async (data) => {
+            var ipAddress = data.ip;
+            fbq('track', 'Contact', {
+                ip_address: ipAddress,
+                user_agent: userAgent
+            });
+            await sendMetaConversion('Contact', {
+            }, ipAddress, userAgent);
+        })
+        .catch(error => console.error('Error fetching IP address:', error));
   };
 
   return (

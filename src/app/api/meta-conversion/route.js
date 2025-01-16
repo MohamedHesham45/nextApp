@@ -26,7 +26,7 @@ export async function POST(request) {
 
         const hashedUserData = {
             em: hashData(userData?.em),
-            ph: hashData("01282692075"),
+            ph: hashData(userData?.pn),
             fn: hashData(userData?.fn),
             ln: hashData(userData?.ln),
             ct: hashData(userData?.ct),
@@ -53,7 +53,7 @@ export async function POST(request) {
                     action_source: "website",
                 },
             ],
-            test_event_code: "TEST32724"
+            // test_event_code: "TEST41644"
         });
 
         const response = await fetch(url, {

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
 import toast from "react-hot-toast";
+import useMetaConversion from "@/components/SendMetaConversion";
 
 export default function UserOrdersPage() {
   const [orders, setOrders] = useState([]);
@@ -16,6 +17,28 @@ export default function UserOrdersPage() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const sendMetaConversion = useMetaConversion();
+  useEffect(() => {
+    const trackPageView = async () => {
+      const userAgent = navigator.userAgent;
+      try {
+        const ipResponse = await fetch('https://api.ipify.org?format=json');
+        const ipData = await ipResponse.json();
+        await sendMetaConversion('ViewContent', {
+          content_name: 'Orders Page View',
+          content_type: 'orders',
+          content_category: 'User Orders',
+          value: 0,
+        }, ipData.ip, userAgent);
+      } catch (error) {
+        console.error('Error tracking conversion:', error);
+      }
+    };
+  
+    trackPageView();
+  }, []);
+  
+
   const fetchUserOrders = useCallback(async () => {
     if (!userId) return;
     try {
@@ -26,6 +49,9 @@ export default function UserOrdersPage() {
       }
       const data = await response.json();
       setOrders(data);
+
+      
+
     } catch (err) {
       console.error("Error fetching orders:", err);
       setError("Failed to load orders. Please try again later.");
@@ -84,8 +110,7 @@ export default function UserOrdersPage() {
       ${order.orderItems
         .map(
           (item) =>
-            `- ${item.title} (Quantity: ${
-              item.quantity
+            `- ${item.title} (Quantity: ${item.quantity
             }, Price: ج.م${item.price.toFixed(2)})`
         )
         .join("\n")}
@@ -144,37 +169,36 @@ export default function UserOrdersPage() {
               <div className="flex flex-row justify-between items-center mb-4 direction-rtl">
                 <h2 className="text-xl font-semibold">طلب رقم #{order._id}</h2>
                 <span
-                  className={`px-2 py-1 rounded-full text-sm ${
-                    order.status === "Delivered"
-                      ? "bg-green-200 text-green-800"
-                      : order.status === "Shipped"
+                  className={`px-2 py-1 rounded-full text-sm ${order.status === "Delivered"
+                    ? "bg-green-200 text-green-800"
+                    : order.status === "Shipped"
                       ? "bg-blue-200 text-blue-800"
                       : order.status === "Processing"
-                      ? "bg-yellow-200 text-yellow-800"
-                      : order.status === "Pending"
-                      ? "bg-gray-200 text-gray-800"
-                      : "bg-black text-white"
-                  }`}
+                        ? "bg-yellow-200 text-yellow-800"
+                        : order.status === "Pending"
+                          ? "bg-gray-200 text-gray-800"
+                          : "bg-black text-white"
+                    }`}
                 >
                   {order.status === "Delivered"
                     ? "تم التوصيل"
                     : order.status === "Shipped"
-                    ? "تم الشحن"
-                    : order.status === "Processing"
-                    ? "قيد المعالجة"
-                    : order.status === "Pending"
-                    ? "قيد الانتظار"
-                    : order.status === "Cancelled"
-                    ? "ملغي"
-                    : order.status}
+                      ? "تم الشحن"
+                      : order.status === "Processing"
+                        ? "قيد المعالجة"
+                        : order.status === "Pending"
+                          ? "قيد الانتظار"
+                          : order.status === "Cancelled"
+                            ? "ملغي"
+                            : order.status}
                 </span>
               </div>
               {order.orderItems.map((item, index) => (
                 <div key={index} className="flex flex-row items-center gap-2 my-4">
                   <div className="flex flex-row items-center gap-2 my-4">
                     <img
-                      src={item?.selectedImages?.[0]?.startsWith('/') 
-                        ? item.selectedImages[0] 
+                      src={item?.selectedImages?.[0]?.startsWith('/')
+                        ? item.selectedImages[0]
                         : `/${item.selectedImages[0]}`}
                       alt={item?.title || "Order image"}
                       className="w-20 h-20 rounded-md object-cover"
@@ -243,14 +267,14 @@ export default function UserOrdersPage() {
                 {selectedOrder.status === "Delivered"
                   ? "تم التوصيل"
                   : selectedOrder.status === "Shipped"
-                  ? "تم الشحن"
-                  : selectedOrder.status === "Processing"
-                  ? "قيد المعالجة"
-                  : selectedOrder.status === "Pending"
-                  ? "قيد الانتظار"
-                  : selectedOrder.status === "Cancelled"
-                  ? "ملغي"
-                  : selectedOrder.status}
+                    ? "تم الشحن"
+                    : selectedOrder.status === "Processing"
+                      ? "قيد المعالجة"
+                      : selectedOrder.status === "Pending"
+                        ? "قيد الانتظار"
+                        : selectedOrder.status === "Cancelled"
+                          ? "ملغي"
+                          : selectedOrder.status}
               </p>
               <p className="text-sm text-gray-500 mb-1">
                 التاريخ:{" "}
