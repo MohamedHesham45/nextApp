@@ -105,6 +105,30 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories, loadingSubmi
 
     try {
       await onSubmit(formData);
+
+      var userAgent = navigator.userAgent;
+
+      fetch('https://api.ipify.org?format=json')
+          .then(response => response.json())
+          .then(async (data) => {
+              var ipAddress = data.ip;
+              fbq('trackCustom', 'AddProduct', {
+                  product_name: formData.title,
+                  product_category: formData.category,
+                  // product_ids: [product._id],
+                  product_image: "https://sitaramall.com/" + formData.images[0],
+                  product_price: formData.price,
+                  product_price_after_discount: formData.priceAfterDiscount || formData.price,
+                  product_quantity: formData.quantity,
+                  product_images: formData.images.map(image => "https://sitaramall.com/" + image),
+                  value: formData.priceAfterDiscount || formData.price,
+                  currency: 'EGP',
+                  ip_address: ipAddress,
+                  user_agent: userAgent
+              });
+          })
+          .catch(error => console.error('Error fetching IP address:', error));
+
     } catch (error) {
       setErrors({ backend: errorSubmit });
     }
@@ -294,6 +318,7 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories, loadingSubmi
             className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             type="submit"
             disabled={loadingSubmit}
+
           >
             {loadingSubmit ? "جاري التحديث..." : initialData ? "تحديث المنتج" : "إضافة المنتج"}
           </button>
