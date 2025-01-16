@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useCartFavorite } from "@/app/context/cartFavoriteContext";
 import { useAuth } from "@/app/context/AuthContext";
 import { toast } from 'react-hot-toast';
+import useMetaConversion from "./SendMetaConversion";
 export default function ShoppingCartPage({ isVisible, setIsVisible }) {
   const { cart, setCart } = useCartFavorite();
   const { profile, setProfile,isLoggedIn } = useAuth();
@@ -36,6 +37,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
   const [selectedBuyType, setSelectedBuyType] = useState("");
   const [buyTypes, setBuyTypes] = useState([]);
   const [minCartPrice, setMinCartPrice] = useState(0);
+  const sendMetaConversion = useMetaConversion();
 
   // Create refs for form fields
   const nameRef = useRef(null);
@@ -279,6 +281,40 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
         // alert(`Order placed successfully! Order ID: ${result.orderId}`);
         // Clear the cart or perform any other necessary actions
         // You might want to add a function to clear the cart and update the parent component
+        var userAgent = navigator.userAgent;
+
+        fetch('https://api.ipify.org?format=json')
+        .then(response => response.json())
+        .then(async (data) => {
+            var ipAddress = data.ip;
+            fbq('track', 'Purchase', {
+                order_products_data: orderData,
+                order_total_price: totalAmount + shippingCost,
+                currency: 'EGP',
+                user_name: customerDetails.name || "",
+                user_email: customerDetails.email || "",
+                user_phone: customerDetails.phone || "",
+                user_governorate: customerDetails.governorate || "",
+                user_neighborhood: customerDetails.neighborhood || "",
+                user_center_area: customerDetails.centerArea || "",
+                value: product.priceAfterDiscount || product.price,
+                ip_address: ipAddress,
+                user_agent: userAgent
+            });
+            await sendMetaConversion('Purchase', {
+              order_products_data: orderData,
+              order_total_price: totalAmount + shippingCost,
+              currency: 'EGP',
+              user_name: customerDetails.name || "",
+              user_email: customerDetails.email || "",
+              user_phone: customerDetails.phone || "",
+              user_governorate: customerDetails.governorate || "",
+              user_neighborhood: customerDetails.neighborhood || "",
+              user_center_area: customerDetails.centerArea || "",
+              value: product.priceAfterDiscount || product.price,
+          }, ipAddress, userAgent);
+        })
+        .catch(error => console.error('Error fetching IP address:', error));
       } else {
         throw new Error("Failed to place order");
       }
