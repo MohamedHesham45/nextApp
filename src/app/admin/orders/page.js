@@ -120,7 +120,7 @@ export default function OrdersPage() {
 
 تفاصيل العنوان:
 المحافظة: ${order.customerDetails.governorate}
-المركز/المنطقة: ${order.customerDetails.centerArea}
+العنوان بالتفصيل: ${order.customerDetails.centerArea}
 الحي: ${order.customerDetails.neighborhood}
 طريقة الاتصال: ${order.customerDetails.preferredContactMethod}
 نوع الدفع: ${order.customerDetails.buyType}
@@ -346,7 +346,7 @@ ${order.orderItems.map(item => `- ${item.title}
                     </p>
                     <p>
                       <span className="font-medium">
-                        المركز/المنطقة :
+                        العنوان بالتفصيل :
                       </span>{" "}
                       {
                         selectedOrder

@@ -89,7 +89,7 @@ export default function RootLayout({ children }) {
                       t.src=v;s=b.getElementsByTagName(e)[0];
                       s.parentNode.insertBefore(t,s)
                     }(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
-                    fbq('init', '620919593953224');
+                    fbq('init', '1145069563944043');
                     fbq('track', 'PageView');
                   `,
                 }}
@@ -99,7 +99,7 @@ export default function RootLayout({ children }) {
                   height="1"
                   width="1"
                   style={{ display: "none" }}
-                  src="https://www.facebook.com/tr?id=620919593953224&ev=PageView&noscript=1"
+                  src="https://www.facebook.com/tr?id=1145069563944043&ev=PageView&noscript=1"
                 />
               </noscript>
               {/* End Meta Pixel Code */}

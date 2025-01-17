@@ -37,6 +37,10 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
   const [selectedBuyType, setSelectedBuyType] = useState("");
   const [buyTypes, setBuyTypes] = useState([]);
   const [minCartPrice, setMinCartPrice] = useState(0);
+  const [area,setArea]=useState('')
+  const [street,setStreet]=useState('')
+  const [architecture,setArchitecture]=useState('')
+  const [apartment,setApartment]=useState('')
   const sendMetaConversion = useMetaConversion();
 
   // Create refs for form fields
@@ -48,6 +52,10 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
   const centerAreaRef = useRef(null);
   const buyTypeRef = useRef(null);
   const categoryRef = useRef(null);
+  const areaRef = useRef(null);
+  const streetRef = useRef(null);
+  const architectureRef = useRef(null);
+  const apartmentRef = useRef(null);
 
   // Create a ref object to store refs for each category
   const categoryRefs = useRef({});
@@ -89,6 +97,13 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
   }, []);
   useEffect(() => {
     if (profile) {
+      // Split centerArea if it exists
+      const addressParts = profile.centerArea ? profile.centerArea.split('،') : ['', '', '', ''];
+      setArea(addressParts[0] || '');
+      setStreet(addressParts[1] || '');
+      setArchitecture(addressParts[2] || '');
+      setApartment(addressParts[3] || '');
+
       setCustomerDetails({
         ...customerDetails,
         name: profile.name,
@@ -212,8 +227,14 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
     if (!selectedShippingType) errors.shippingType = "نوع الشحن مطلوب";
     if (!selectedGovernorate) errors.governorate = "المحافظة مطلوبة";
     if (!customerDetails.neighborhood) errors.neighborhood = "الحي مطلوب";
-    if (!customerDetails.centerArea)
-      errors.centerArea = "المركز/المنطقة مطلوب";
+    if (!area)
+      errors.area = "المركز/المنطقة مطلوب";
+    if (!street)
+      errors.street = "الشارع طلب";
+    if (!apartment)
+      errors.apartment = "رقم الشقة مطلوب";
+    if (!architecture)
+      errors.architecture = "رقم العمارة مطلوب";
     if (!customerDetails.preferredContactMethod) errors.preferredContactMethod = "طريقة الاتصال مطلوبة";
     if (!customerDetails.buyType) errors.buyType = "نوع الدفع مطلوب";
     if (totalAmount < minCartPrice) errors.minCartPrice = `الحد الأدنى للشراء هو ${minCartPrice} ج.م`;
@@ -227,20 +248,27 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
       else if (errors.shippingType) shippingTypeRef.current.scrollIntoView({ behavior: 'smooth' });
       else if (errors.governorate) governorateRef.current.scrollIntoView({ behavior: 'smooth' });
       else if (errors.neighborhood) neighborhoodRef.current.scrollIntoView({ behavior: 'smooth' });
-      else if (errors.centerArea) centerAreaRef.current.scrollIntoView({ behavior: 'smooth' });
+      else if (errors.area) areaRef.current.scrollIntoView({ behavior: 'smooth' });
+      else if (errors.street) streetRef.current.scrollIntoView({ behavior: 'smooth' });
+      else if (errors.apartment) apartmentRef.current.scrollIntoView({ behavior: 'smooth' });
+      else if (errors.architecture) architectureRef.current.scrollIntoView({ behavior: 'smooth' });
       else if (errors.buyType) buyTypeRef.current.scrollIntoView({ behavior: 'smooth' });
     }
 
     return Object.keys(errors).length === 0;
   };
-
+  useEffect(() => {
+    const combinedCenterArea = `${area}، ${street}، ${architecture}، ${apartment}`.trim();
+    setCustomerDetails(prev => ({
+      ...prev,
+      centerArea: combinedCenterArea
+    }));
+  }, [area, street, architecture, apartment]);
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
-    // if (!isLoggedIn) {
-    //   toast.error('يرجى تسجيل الدخول لإنشاء طلب');
-    //   return;
-    // }
 
+    // Combine address fields
+    
     if (!validateForm()) {
       return;
     }
@@ -297,7 +325,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                 user_governorate: customerDetails.governorate || "",
                 user_neighborhood: customerDetails.neighborhood || "",
                 user_center_area: customerDetails.centerArea || "",
-                value: product.priceAfterDiscount || product.price,
+                value: totalAmount + shippingCost,
                 ip_address: ipAddress,
                 user_agent: userAgent
             });
@@ -311,7 +339,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
               user_governorate: customerDetails.governorate || "",
               user_neighborhood: customerDetails.neighborhood || "",
               user_center_area: customerDetails.centerArea || "",
-              value: product.priceAfterDiscount || product.price,
+              value: totalAmount + shippingCost,
           }, ipAddress, userAgent);
         })
         .catch(error => console.error('Error fetching IP address:', error));
@@ -786,33 +814,104 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                   </p>
                 )}
               </div>
-              <div ref={centerAreaRef}>
-                <label htmlFor="centerArea" className="block mb-1">
-                  المركز/المنطقة
-                </label>
-                <input
-                  type="text"
-                  id="centerArea"
-                  value={customerDetails.centerArea}
-                  onChange={(e) => {
-                    setCustomerDetails({
-                      ...customerDetails,
-                      centerArea: e.target.value,
-                    });
-                    setFormErrors({
-                      ...formErrors,
-                      centerArea: "",
-                    });
-                  }}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    formErrors.centerArea ? "border-red-500" : ""
-                  }`}
-                />
-                {formErrors.centerArea && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {formErrors.centerArea}
-                  </p>
-                )}
+              <div className="flex justify-between gap-4">
+                <div className="flex-1" ref={areaRef}>
+                  <label htmlFor="area" className="block mb-1">
+                    المركز/المنطقة
+                  </label>
+                  <input
+                    type="text"
+                    id="area"
+                    value={area}
+                    onChange={(e) => {
+                      setArea(e.target.value);
+                      setFormErrors({
+                        ...formErrors,
+                        area: "",
+                      });
+                    }}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      formErrors.area ? "border-red-500" : ""
+                    }`}
+                  />
+                  {formErrors.area && (
+                    <p className="text-red-500 text-sm mt-1">{formErrors.area}</p>
+                  )}
+                </div>
+
+                <div className="flex-1" ref={streetRef}>
+                  <label htmlFor="street" className="block mb-1">
+                    الشارع
+                  </label>
+                  <input
+                    type="text"
+                    id="street"
+                    value={street}
+                    onChange={(e) => {
+                      setStreet(e.target.value);
+                      setFormErrors({
+                        ...formErrors,
+                        street: "",
+                      });
+                    }}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      formErrors.street ? "border-red-500" : ""
+                    }`}
+                  />
+                  {formErrors.street && (
+                    <p className="text-red-500 text-sm mt-1">{formErrors.street}</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex justify-between gap-4">
+                <div className="flex-1" ref={architectureRef}>
+                  <label htmlFor="architecture" className="block mb-1">
+                    رقم العمارة
+                  </label>
+                  <input
+                    type="text"
+                    id="architecture"
+                    value={architecture}
+                    onChange={(e) => {
+                      setArchitecture(e.target.value);
+                      setFormErrors({
+                        ...formErrors,
+                        architecture: "",
+                      });
+                    }}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      formErrors.architecture ? "border-red-500" : ""
+                    }`}
+                  />
+                  {formErrors.architecture && (
+                    <p className="text-red-500 text-sm mt-1">{formErrors.architecture}</p>
+                  )}
+                </div>
+
+                <div className="flex-1" ref={apartmentRef}>
+                  <label htmlFor="apartment" className="block mb-1">
+                    رقم الشقة
+                  </label>
+                  <input
+                    type="text"
+                    id="apartment"
+                    value={apartment}
+                    onChange={(e) => {
+                      setApartment(e.target.value);
+                      setFormErrors({
+                        ...formErrors,
+                        apartment: "",
+                      });
+                    }}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      formErrors.apartment ? "border-red-500" : ""
+                    }`}
+                  />
+                  {formErrors.apartment && (
+                    <p className="text-red-500 text-sm mt-1">{formErrors.apartment}</p>
+                  )}
+                </div>
               </div>
               <div>
                 <label htmlFor="preferredContactMethod" className="block mb-1">
@@ -914,7 +1013,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                   rows="3"
                 ></textarea>
               </div>
-              <div className="flex items-center space-x-2 mb-4">
+              {isLoggedIn &&<div className="flex items-center space-x-2 mb-4">
                 <input
                   type="checkbox"
                   id="saveToProfile"
@@ -925,7 +1024,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                 <label htmlFor="saveToProfile" className="mr-2 font-bold">
                   حفظ العنوان في الملف الشخصي
                 </label>
-              </div>
+              </div>}
               <div className="mt-4 font-bold text-lg m-2">
                 {minCartPrice && totalAmount < minCartPrice && (
                   <div className="text-red-500 text-sm mt-1">
