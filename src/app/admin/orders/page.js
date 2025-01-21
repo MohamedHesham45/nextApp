@@ -106,6 +106,7 @@ export default function OrdersPage() {
   };
 
   const copyOrderDetails = (order) => {
+    const addressParts = order.customerDetails.centerArea.split('،');
     const details = `رقم الطلب: ${order._id}
 اسم العميل: ${order.customerDetails.name}
 رقم الهاتف: ${order.customerDetails.phone}
@@ -120,7 +121,10 @@ export default function OrdersPage() {
 
 تفاصيل العنوان:
 المحافظة: ${order.customerDetails.governorate}
-العنوان بالتفصيل: ${order.customerDetails.centerArea}
+المنطقة: ${addressParts[0] || ''}
+الشارع: ${addressParts[1] || ''}
+العمارة: ${addressParts[2] || ''}
+الشقة: ${addressParts[3] || ''}
 الحي: ${order.customerDetails.neighborhood}
 طريقة الاتصال: ${order.customerDetails.preferredContactMethod}
 نوع الدفع: ${order.customerDetails.buyType}
@@ -346,13 +350,19 @@ ${order.orderItems.map(item => `- ${item.title}
                     </p>
                     <p>
                       <span className="font-medium">
-                        العنوان بالتفصيل :
+                        تفاصيل العنوان:
                       </span>{" "}
-                      {
-                        selectedOrder
-                          .customerDetails
-                          .centerArea
-                      }
+                      {(() => {
+                        const addressParts = selectedOrder.customerDetails.centerArea.split('،');
+                        return (
+                          <>
+                            <div>المنطقة: {addressParts[0] || ''}</div>
+                            <div>الشارع: {addressParts[1] || ''}</div>
+                            <div>العمارة: {addressParts[2] || ''}</div>
+                            <div>الشقة: {addressParts[3] || ''}</div>
+                          </>
+                        );
+                      })()}
                     </p>
                     <p>
                       <span className="font-medium me-1">

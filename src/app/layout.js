@@ -43,28 +43,26 @@ export const metadata = {
       url: "/favicon.ico",
     },
   },
-  title: "Sitara Mall | Quality Products at Unbeatable Prices",
+  title: "ستارة مول | وسائد ديكورية وستائر عصرية بأسعار مميزة",
   description:
-    "Discover amazing products at Sitara Mall. We offer quality home decor, textiles, and more with fast shipping and 24/7 customer support.",
+    "متجر الكتروني مختص في بيع الوسائد الديكورية والستاير العصرية. من أحلى التصاميم وأحدثها وباستخدام أفضل الخامات. كوني متألقه في منزلك ومتميزة عن غيرك",
   keywords:
-    "Sitara Mall, home decor, textiles, quality products, Port Said, Egypt",
+    "ستارة مول, وسائد ديكورية, ستائر عصرية, ديكورات منزلية, بورسعيد, مصر, مفروشات, اكسسوارات منزلية",
   author: "Sitara Mall",
   openGraph: {
-    title: "Sitara Mall | Quality Home Decor and Textiles",
+    title: "ستارة مول | وسائد ديكورية وستائر عصرية",
     description:
-      "Shop for premium home decor and textiles at Sitara Mall. Enjoy fast shipping and excellent customer service.",
+      "متجر الكتروني مختص في بيع الوسائد الديكورية والستاير العصرية. تصاميم عصرية وخامات ممتازة. متوفر خدمة التوصيل لجميع أنحاء مصر",
     type: "website",
-    url: "https://www.sitaramall.com", // Replace with your actual website URL
-    // image:
-    //   "https://www.sitaramall.com/og-image.jpg", // Replace with an actual image URL
+    url: "https://www.sitaramall.com",
+    // image: "https://www.sitaramall.com/og-image.jpg",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Sitara Mall | Quality Home Decor and Textiles",
+    title: "ستارة مول | وسائد ديكورية وستائر عصرية",
     description:
-      "Discover amazing products at unbeatable prices at Sitara Mall.",
-    // image:
-    //   "https://www.sitaramall.com/twitter-image.jpg", // Replace with an actual image URL
+      "متجر الكتروني مختص في بيع الوسائد الديكورية والستاير العصرية في بورسعيد، مصر. تصاميم عصرية وخامات ممتازة",
+    // image: "https://www.sitaramall.com/twitter-image.jpg",
   },
 };
 

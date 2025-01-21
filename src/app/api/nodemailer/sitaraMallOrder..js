@@ -92,7 +92,15 @@ function generateOrderEmailSitaraMallTemplate(orderData) {
                     <p><strong>البريد الإلكتروني:</strong> ${customerDetails.email||"لا يوجد"}</p>
                     <p><strong>الهاتف:</strong> ${customerDetails.phone||"لا يوجد"}</p>
                     <p><strong>المحافظة:</strong> ${customerDetails.governorate||"لا يوجد"}</p>
-                    <p><strong>المنطقة:</strong> ${customerDetails.centerArea||"لا يوجد"}</p>
+                    ${(() => {
+                        const addressParts = customerDetails.centerArea ? customerDetails.centerArea.split('،') : ['', '', '', ''];
+                        return `
+                            <p><strong>المنطقة:</strong> ${addressParts[0] || "لا يوجد"}</p>
+                            <p><strong>الشارع:</strong> ${addressParts[1] || "لا يوجد"}</p>
+                            <p><strong>العمارة:</strong> ${addressParts[2] || "لا يوجد"}</p>
+                            <p><strong>الشقة:</strong> ${addressParts[3] || "لا يوجد"}</p>
+                        `;
+                    })()}
                     <p><strong>الحي:</strong> ${customerDetails.neighborhood||"لا يوجد"}</p>
                     <p><strong>الطريقة المفضلة للتواصل:</strong> ${customerDetails.preferredContactMethod||"لا يوجد"}</p>
                     <p><strong>طريقة الدفع:</strong> ${customerDetails.buyType||"لا يوجد"}</p>

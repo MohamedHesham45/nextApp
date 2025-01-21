@@ -60,6 +60,9 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
   // Create a ref object to store refs for each category
   const categoryRefs = useRef({});
 
+  // Add new state for modal
+  const [isMinPriceModalOpen, setIsMinPriceModalOpen] = useState(false);
+
   useEffect(() => {
     setCategoryErrors({});
     setAllCategoriesError("");
@@ -199,6 +202,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
   }, {});
 
   const validateMinimumQuantities = () => {
+    console.log("here")
     const errors = {};
     Object.values(groupedCartItems).forEach((group) => {
       if (group.totalQuantity < group.category.minCount) {
@@ -237,7 +241,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
       errors.architecture = "رقم العمارة مطلوب";
     if (!customerDetails.preferredContactMethod) errors.preferredContactMethod = "طريقة الاتصال مطلوبة";
     if (!customerDetails.buyType) errors.buyType = "نوع الدفع مطلوب";
-    if (totalAmount < minCartPrice) errors.minCartPrice = `الحد الأدنى للشراء هو ${minCartPrice} ج.م`;
+    //if (totalAmount < minCartPrice) errors.minCartPrice = `الحد الأدنى للشراء هو ${minCartPrice} ج.م`;
 
     setFormErrors(errors);
 
@@ -274,8 +278,14 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
     }
 
     if (!validateMinimumQuantities()) {
-      categoryRef.current.scrollIntoView({ behavior: 'smooth' });
+     // categoryRef.current.scrollIntoView({ behavior: 'smooth' });
       setAllCategoriesError("يرجى التحقق من الحد الأدنى للكميات في كل فئة");
+      return;
+    }
+
+    // Replace toast with modal
+    if(totalAmount < minCartPrice){
+      setIsMinPriceModalOpen(true);
       return;
     }
 
@@ -411,8 +421,8 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-y-0 right-0 w-full sm:w-1/3 bg-white shadow-lg z-50 overflow-y-auto direction-rtl">
-      <div className="p-4">
+    <div className="fixed inset-y-0 right-0 w-full sm:w-1/3 bg-white shadow-lg z-50 overflow-hidden direction-rtl flex flex-col">
+      <div className="p-4 flex-1 overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">عربة التسوق</h2>
           <button
@@ -1013,66 +1023,81 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                   rows="3"
                 ></textarea>
               </div>
-              {isLoggedIn &&<div className="flex items-center space-x-2 mb-4">
-                <input
-                  type="checkbox"
-                  id="saveToProfile"
-                  checked={saveToProfile}
-                  onChange={(e) => setSaveToProfile(e.target.checked)}
-                  className="form-checkbox h-5 w-5 text-blue-600 mx-2"
-                />
-                <label htmlFor="saveToProfile" className="mr-2 font-bold">
-                  حفظ العنوان في الملف الشخصي
-                </label>
-              </div>}
-              <div className="mt-4 font-bold text-lg m-2">
-                {minCartPrice && totalAmount < minCartPrice && (
-                  <div className="text-red-500 text-sm mt-1">
-                    الحد الأدنى للشراء هو {minCartPrice} ج.م
-                  </div>
-                )}
-                <div>
-                  المجموع:{" "}
-                  <span className="text-amazon-orange">
-                    {Math.round(totalAmount)} ج.م
-                  </span>
-                </div>
-                <div className="mb-2">
-                  تكلفة الشحن:{" "}
-                  <span className="text-amazon-orange">
-                    {calculateShippingCost()} ج.م
-                  </span>
-                </div>
-                <hr />
-                <div className="my-2">
-                  الإجمالي مع الشحن:{" "}
-                  <span className="text-green-500">
-                    {Math.round(totalAmount + calculateShippingCost())} ج.م
-                  </span>
-                </div>
-              </div>
-              {allCategoriesError && (
-                <div className="text-red-500 text-sm mt-1">
-                  {allCategoriesError}
-                </div>
-              )}
-              {minCartPrice && totalAmount < minCartPrice && (
-                <div className="text-red-500 text-sm mt-1">
-                   يجب عليك الشراء بحد أدنى هو {minCartPrice} ج.م
-                </div>
-              )}
-
-              <button
-                type="submit"
-                className="w-full bg-amazon hover:bg-amazon-orange text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105"
-                disabled={loading}
-              >
-                {loading ? "جاري الإنشاء..." : "تابع الطلب"}
-              </button>
             </form>
           </>
         )}
       </div>
+
+      {/* Fixed bottom section - only show when cart is not empty */}
+      {cart.length > 0 && (
+        <div className="border-t border-gray-200 bg-white p-4 shadow-lg">
+          {isLoggedIn && (
+            <div className="flex items-center space-x-2 mb-4">
+              <input
+                type="checkbox"
+                id="saveToProfile"
+                checked={saveToProfile}
+                onChange={(e) => setSaveToProfile(e.target.checked)}
+                className="form-checkbox h-5 w-5 text-blue-600 mx-2"
+              />
+              <label htmlFor="saveToProfile" className="mr-2 font-bold">
+                حفظ العنوان في الملف الشخصي
+              </label>
+            </div>
+          )}
+          <div className="font-bold text-lg">
+            {minCartPrice && totalAmount < minCartPrice && (
+              <div className="text-red-500 text-sm mb-2">
+                الحد الأدنى للشراء هو {minCartPrice} ج.م
+              </div>
+            )}
+            <div>
+              المجموع: <span className="text-amazon-orange">{Math.round(totalAmount)} ج.م</span>
+            </div>
+            <div className="mb-2">
+              تكلفة الشحن: <span className="text-amazon-orange">{calculateShippingCost()} ج.م</span>
+            </div>
+            <hr className="my-2" />
+            <div className="mb-4">
+              الإجمالي مع الشحن:{" "}
+              <span className="text-green-500">
+                {Math.round(totalAmount + calculateShippingCost())} ج.م
+              </span>
+            </div>
+          </div>
+          {allCategoriesError && (
+            <div className="text-red-500 text-sm mb-2">ll{allCategoriesError}</div>
+          )}
+          <button
+            type="button"
+            className="w-full bg-amazon hover:bg-amazon-orange text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105"
+            onClick={handlePlaceOrder}
+            disabled={loading}
+          >
+            {loading ? "جاري الإنشاء..." : "تابع الطلب"}
+          </button>
+        </div>
+      )}
+
+      {/* Add Modal */}
+      {isMinPriceModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4">
+            <h3 className="text-xl font-bold mb-4 text-center">تنبيه</h3>
+            <p className="text-center mb-6">
+              الحد الأدنى للشراء هو {minCartPrice} ج.م
+            </p>
+            <div className="flex justify-center">
+              <button
+                onClick={() => setIsMinPriceModalOpen(false)}
+                className="bg-amazon-orange hover:bg-amazon text-white font-bold py-2 px-6 rounded transition duration-300"
+              >
+                حسناً
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
