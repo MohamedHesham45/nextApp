@@ -63,6 +63,9 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
   // Add new state for modal
   const [isMinPriceModalOpen, setIsMinPriceModalOpen] = useState(false);
 
+  // Add ref for the cart container
+  const cartRef = useRef(null);
+
   useEffect(() => {
     setCategoryErrors({});
     setAllCategoriesError("");
@@ -418,10 +421,46 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
     }
   };
 
+  // Add useEffect to handle body scroll
+  useEffect(() => {
+    if (isVisible) {
+      // Prevent scrolling on the main body when cart is open
+      document.body.style.overflow = 'hidden';
+    } else {
+      // Re-enable scrolling when cart is closed
+      document.body.style.overflow = 'unset';
+    }
+
+    // Cleanup function to re-enable scrolling when component unmounts
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isVisible]);
+
+  // Add click outside handler
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (cartRef.current && !cartRef.current.contains(event.target)) {
+        setIsVisible(false);
+      }
+    }
+
+    // Add event listener when component mounts
+    document.addEventListener('mousedown', handleClickOutside);
+    
+    // Clean up event listener when component unmounts
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [setIsVisible]);
+
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-y-0 right-0 w-full sm:w-1/3 bg-white shadow-lg z-50 overflow-hidden direction-rtl flex flex-col">
+    <div 
+      ref={cartRef}
+      className="fixed inset-y-0 right-0 w-full sm:w-1/3 bg-white shadow-lg z-50 overflow-hidden direction-rtl flex flex-col"
+    >
       <div className="p-4 flex-1 overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">عربة التسوق</h2>
@@ -1023,6 +1062,43 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                   rows="3"
                 ></textarea>
               </div>
+            {isLoggedIn && (
+              <div className="flex items-center space-x-2 mb-4">
+                <input
+                  type="checkbox"
+                  id="saveToProfile"
+                  checked={saveToProfile}
+                  onChange={(e) => setSaveToProfile(e.target.checked)}
+                  className="form-checkbox h-5 w-5 text-blue-600 mx-2"
+                />
+                <label htmlFor="saveToProfile" className="mr-2 font-bold">
+                  حفظ العنوان في الملف الشخصي
+                </label>
+              </div>
+            )}
+            <div className="font-bold text-lg">
+              {minCartPrice && totalAmount < minCartPrice && (
+                <div className="text-red-500 text-sm mb-2">
+                  الحد الأدنى للشراء هو {minCartPrice} ج.م
+                </div>
+              )}
+              <div>
+                المجموع: <span className="text-amazon-orange">{Math.round(totalAmount)} ج.م</span>
+              </div>
+              <div className="mb-2">
+                تكلفة الشحن: <span className="text-amazon-orange">{calculateShippingCost()} ج.م</span>
+              </div>
+              <hr className="my-2" />
+              <div className="mb-4">
+                الإجمالي مع الشحن:{" "}
+                <span className="text-green-500">
+                  {Math.round(totalAmount + calculateShippingCost())} ج.م
+                </span>
+              </div>
+            </div>
+            {allCategoriesError && (
+              <div className="text-red-500 text-sm mb-2">ll{allCategoriesError}</div>
+            )}
             </form>
           </>
         )}
@@ -1031,43 +1107,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
       {/* Fixed bottom section - only show when cart is not empty */}
       {cart.length > 0 && (
         <div className="border-t border-gray-200 bg-white p-4 shadow-lg">
-          {isLoggedIn && (
-            <div className="flex items-center space-x-2 mb-4">
-              <input
-                type="checkbox"
-                id="saveToProfile"
-                checked={saveToProfile}
-                onChange={(e) => setSaveToProfile(e.target.checked)}
-                className="form-checkbox h-5 w-5 text-blue-600 mx-2"
-              />
-              <label htmlFor="saveToProfile" className="mr-2 font-bold">
-                حفظ العنوان في الملف الشخصي
-              </label>
-            </div>
-          )}
-          <div className="font-bold text-lg">
-            {minCartPrice && totalAmount < minCartPrice && (
-              <div className="text-red-500 text-sm mb-2">
-                الحد الأدنى للشراء هو {minCartPrice} ج.م
-              </div>
-            )}
-            <div>
-              المجموع: <span className="text-amazon-orange">{Math.round(totalAmount)} ج.م</span>
-            </div>
-            <div className="mb-2">
-              تكلفة الشحن: <span className="text-amazon-orange">{calculateShippingCost()} ج.م</span>
-            </div>
-            <hr className="my-2" />
-            <div className="mb-4">
-              الإجمالي مع الشحن:{" "}
-              <span className="text-green-500">
-                {Math.round(totalAmount + calculateShippingCost())} ج.م
-              </span>
-            </div>
-          </div>
-          {allCategoriesError && (
-            <div className="text-red-500 text-sm mb-2">ll{allCategoriesError}</div>
-          )}
+          
           <button
             type="button"
             className="w-full bg-amazon hover:bg-amazon-orange text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105"
