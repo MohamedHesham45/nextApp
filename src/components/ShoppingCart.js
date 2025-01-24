@@ -3,10 +3,11 @@ import { useCartFavorite } from "@/app/context/cartFavoriteContext";
 import { useAuth } from "@/app/context/AuthContext";
 import { toast } from 'react-hot-toast';
 import useMetaConversion from "./SendMetaConversion";
+import { useRouter } from "next/navigation";
 export default function ShoppingCartPage({ isVisible, setIsVisible }) {
   const { cart, setCart } = useCartFavorite();
-  const { profile, setProfile,isLoggedIn } = useAuth();
-
+  const { profile, setProfile, isLoggedIn } = useAuth();
+  const router = useRouter();
   const [customerDetails, setCustomerDetails] = useState({
     name: "",
     email: "",
@@ -37,10 +38,10 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
   const [selectedBuyType, setSelectedBuyType] = useState("");
   const [buyTypes, setBuyTypes] = useState([]);
   const [minCartPrice, setMinCartPrice] = useState(0);
-  const [area,setArea]=useState('')
-  const [street,setStreet]=useState('')
-  const [architecture,setArchitecture]=useState('')
-  const [apartment,setApartment]=useState('')
+  const [area, setArea] = useState('')
+  const [street, setStreet] = useState('')
+  const [architecture, setArchitecture] = useState('')
+  const [apartment, setApartment] = useState('')
   const sendMetaConversion = useMetaConversion();
 
   // Create refs for form fields
@@ -154,7 +155,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
       const neighborhood = neighborhoods.find(
         (nb) => nb.nameAr === profile.neighborhood
       );
-     
+
       if (neighborhood) {
         setSelectedNeighborhood(neighborhood);
       }
@@ -275,19 +276,19 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
     e.preventDefault();
 
     // Combine address fields
-    
+
     if (!validateForm()) {
       return;
     }
 
     if (!validateMinimumQuantities()) {
-     // categoryRef.current.scrollIntoView({ behavior: 'smooth' });
+      // categoryRef.current.scrollIntoView({ behavior: 'smooth' });
       setAllCategoriesError("يرجى التحقق من الحد الأدنى للكميات في كل فئة");
       return;
     }
 
     // Replace toast with modal
-    if(totalAmount < minCartPrice){
+    if (totalAmount < minCartPrice) {
       setIsMinPriceModalOpen(true);
       return;
     }
@@ -302,7 +303,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
         selectedImages: item.selectedImages,
       })),
       totalPrice: totalAmount + shippingCost,
-      userId: profile.userId||"",
+      userId: profile.userId || "",
       saveToProfile: saveToProfile,
     };
 
@@ -325,22 +326,22 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
         var userAgent = navigator.userAgent;
 
         fetch('https://api.ipify.org?format=json')
-        .then(response => response.json())
-        .then(async (data) => {
+          .then(response => response.json())
+          .then(async (data) => {
             var ipAddress = data.ip;
             fbq('track', 'Purchase', {
-                order_products_data: orderData,
-                order_total_price: totalAmount + shippingCost,
-                currency: 'EGP',
-                user_name: customerDetails.name || "",
-                user_email: customerDetails.email || "",
-                user_phone: customerDetails.phone || "",
-                user_governorate: customerDetails.governorate || "",
-                user_neighborhood: customerDetails.neighborhood || "",
-                user_center_area: customerDetails.centerArea || "",
-                value: totalAmount + shippingCost,
-                ip_address: ipAddress,
-                user_agent: userAgent
+              order_products_data: orderData,
+              order_total_price: totalAmount + shippingCost,
+              currency: 'EGP',
+              user_name: customerDetails.name || "",
+              user_email: customerDetails.email || "",
+              user_phone: customerDetails.phone || "",
+              user_governorate: customerDetails.governorate || "",
+              user_neighborhood: customerDetails.neighborhood || "",
+              user_center_area: customerDetails.centerArea || "",
+              value: totalAmount + shippingCost,
+              ip_address: ipAddress,
+              user_agent: userAgent
             });
             await sendMetaConversion('Purchase', {
               order_products_data: orderData,
@@ -353,29 +354,32 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
               user_neighborhood: customerDetails.neighborhood || "",
               user_center_area: customerDetails.centerArea || "",
               value: totalAmount + shippingCost,
-          }, ipAddress, userAgent);
-        })
-        .catch(error => console.error('Error fetching IP address:', error));
+            }, ipAddress, userAgent);
+          })
+          .catch(error => console.error('Error fetching IP address:', error));
+
+        if (saveToProfile) {
+          setProfile({
+            ...profile,
+            governorate: customerDetails.governorate,
+            neighborhood: customerDetails.neighborhood,
+            centerArea: customerDetails.centerArea,
+          });
+        }
+        setLoading(false);
+        setIsVisible(false);
+        setCart([]);
+        localStorage.removeItem("customerDetails");
+        localStorage.removeItem("cart");
+
+        router.push(`/order/${result.orderId}`)
       } else {
         throw new Error("Failed to place order");
       }
     } catch (error) {
       console.error("Error placing order:", error);
       toast.error("حدث خطأ اعد المحاوله");
-    } finally {
-      if (saveToProfile) {
-        setProfile({
-          ...profile,
-          governorate: customerDetails.governorate,
-          neighborhood: customerDetails.neighborhood,
-          centerArea: customerDetails.centerArea,
-        });
-      }
       setLoading(false);
-      setIsVisible(false);
-      setCart([]);
-      localStorage.removeItem("customerDetails");
-      localStorage.removeItem("cart");
     }
   };
 
@@ -447,7 +451,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
 
     // Add event listener when component mounts
     document.addEventListener('mousedown', handleClickOutside);
-    
+
     // Clean up event listener when component unmounts
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
@@ -457,7 +461,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
   if (!isVisible) return null;
 
   return (
-    <div 
+    <div
       ref={cartRef}
       className="fixed inset-y-0 right-0 w-full sm:w-1/3 bg-white shadow-lg z-50 overflow-hidden direction-rtl flex flex-col"
     >
@@ -485,11 +489,10 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                 <div className="flex justify-between items-center mb-2">
                   <h3 className="font-bold text-lg">{group.category.name}</h3>
                   <span
-                    className={`text-sm ${
-                      group.totalQuantity < group.category.minCount
-                        ? "text-red-500"
-                        : "text-green-500"
-                    }`}
+                    className={`text-sm ${group.totalQuantity < group.category.minCount
+                      ? "text-red-500"
+                      : "text-green-500"
+                      }`}
                   >
                     {group.totalQuantity} / {group.category.minCount} قطعة
                   </span>
@@ -541,11 +544,10 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                             </div>
                           </div>
                           <p
-                            className={`text-sm text-gray-500  ${
-                              item.discountPercentage > 0
-                                ? "line-through"
-                                : " text-green-600 font-bold"
-                            }`}
+                            className={`text-sm text-gray-500  ${item.discountPercentage > 0
+                              ? "line-through"
+                              : " text-green-600 font-bold"
+                              }`}
                           >
                             {Math.round(item.price)} ج.م
                           </p>
@@ -565,13 +567,12 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                                 alt={`${item.title} - Image 1`}
                                 width={80}
                                 height={80}
-                                className={`w-full h-20 object-cover rounded-lg cursor-pointer ${
-                                  editingItem.editedImages.includes(
-                                    item.selectedImages[0]
-                                  )
-                                    ? "border-2 border-blue-500"
-                                    : ""
-                                }`}
+                                className={`w-full h-20 object-cover rounded-lg cursor-pointer ${editingItem.editedImages.includes(
+                                  item.selectedImages[0]
+                                )
+                                  ? "border-2 border-blue-500"
+                                  : ""
+                                  }`}
                                 onClick={() =>
                                   toggleImageSelection(item.selectedImages[0])
                                 }
@@ -607,11 +608,10 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                           <div className="flex-1 ">
                             <h3 className="font-semibold">{item.title}</h3>
                             <p
-                              className={`text-sm text-gray-500  ${
-                                item.discountPercentage > 0
-                                  ? "line-through"
-                                  : " text-green-600 font-bold"
-                              }`}
+                              className={`text-sm text-gray-500  ${item.discountPercentage > 0
+                                ? "line-through"
+                                : " text-green-600 font-bold"
+                                }`}
                             >
                               {Math.round(item.price)} ج.م
                             </p>
@@ -668,9 +668,8 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                       name: "",
                     });
                   }}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    formErrors.name ? "border-red-500" : ""
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${formErrors.name ? "border-red-500" : ""
+                    }`}
                 />
                 {formErrors.name && (
                   <p className="text-red-500 text-sm mt-1">{formErrors.name}</p>
@@ -694,9 +693,8 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                       email: "",
                     });
                   }}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    formErrors.email ? "border-red-500" : ""
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${formErrors.email ? "border-red-500" : ""
+                    }`}
                 />
                 {formErrors.email && (
                   <p className="text-red-500 text-sm mt-1">
@@ -722,9 +720,8 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                       phone: "",
                     });
                   }}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-right ${
-                    formErrors.phone ? "border-red-500" : ""
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-right ${formErrors.phone ? "border-red-500" : ""
+                    }`}
                 />
                 {formErrors.phone && (
                   <p className="text-red-500 text-sm mt-1">
@@ -758,9 +755,8 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                       shippingType: "",
                     });
                   }}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    formErrors.shippingType ? "border-red-500" : ""
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${formErrors.shippingType ? "border-red-500" : ""
+                    }`}
                 >
                   <option value="">اختر نوع الشحن</option>
                   {shippingTypes.map((type) => (
@@ -808,9 +804,8 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                       governorate: "",
                     });
                   }}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    formErrors.governorate ? "border-red-500" : ""
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${formErrors.governorate ? "border-red-500" : ""
+                    }`}
                 >
                   <option value="">اختر المحافظة</option>
                   {governorates.map((gov) => (
@@ -846,9 +841,8 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                     });
                     setSelectedNeighborhood(selectedNeighborhood || null);
                   }}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    formErrors.neighborhood ? "border-red-500" : ""
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${formErrors.neighborhood ? "border-red-500" : ""
+                    }`}
                 >
                   <option value="">اختر الحي</option>
                   {neighborhoods.map((neighborhood) => (
@@ -879,9 +873,8 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                         area: "",
                       });
                     }}
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      formErrors.area ? "border-red-500" : ""
-                    }`}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${formErrors.area ? "border-red-500" : ""
+                      }`}
                   />
                   {formErrors.area && (
                     <p className="text-red-500 text-sm mt-1">{formErrors.area}</p>
@@ -903,9 +896,8 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                         street: "",
                       });
                     }}
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      formErrors.street ? "border-red-500" : ""
-                    }`}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${formErrors.street ? "border-red-500" : ""
+                      }`}
                   />
                   {formErrors.street && (
                     <p className="text-red-500 text-sm mt-1">{formErrors.street}</p>
@@ -929,9 +921,8 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                         architecture: "",
                       });
                     }}
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      formErrors.architecture ? "border-red-500" : ""
-                    }`}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${formErrors.architecture ? "border-red-500" : ""
+                      }`}
                   />
                   {formErrors.architecture && (
                     <p className="text-red-500 text-sm mt-1">{formErrors.architecture}</p>
@@ -953,9 +944,8 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                         apartment: "",
                       });
                     }}
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      formErrors.apartment ? "border-red-500" : ""
-                    }`}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${formErrors.apartment ? "border-red-500" : ""
+                      }`}
                   />
                   {formErrors.apartment && (
                     <p className="text-red-500 text-sm mt-1">{formErrors.apartment}</p>
@@ -1062,43 +1052,43 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                   rows="3"
                 ></textarea>
               </div>
-            {isLoggedIn && (
-              <div className="flex items-center space-x-2 mb-4">
-                <input
-                  type="checkbox"
-                  id="saveToProfile"
-                  checked={saveToProfile}
-                  onChange={(e) => setSaveToProfile(e.target.checked)}
-                  className="form-checkbox h-5 w-5 text-blue-600 mx-2"
-                />
-                <label htmlFor="saveToProfile" className="mr-2 font-bold">
-                  حفظ العنوان في الملف الشخصي
-                </label>
-              </div>
-            )}
-            <div className="font-bold text-lg">
-              {minCartPrice && totalAmount < minCartPrice && (
-                <div className="text-red-500 text-sm mb-2">
-                  الحد الأدنى للشراء هو {minCartPrice} ج.م
+              {isLoggedIn && (
+                <div className="flex items-center space-x-2 mb-4">
+                  <input
+                    type="checkbox"
+                    id="saveToProfile"
+                    checked={saveToProfile}
+                    onChange={(e) => setSaveToProfile(e.target.checked)}
+                    className="form-checkbox h-5 w-5 text-blue-600 mx-2"
+                  />
+                  <label htmlFor="saveToProfile" className="mr-2 font-bold">
+                    حفظ العنوان في الملف الشخصي
+                  </label>
                 </div>
               )}
-              <div>
-                المجموع: <span className="text-amazon-orange">{Math.round(totalAmount)} ج.م</span>
+              <div className="font-bold text-lg">
+                {minCartPrice && totalAmount < minCartPrice && (
+                  <div className="text-red-500 text-sm mb-2">
+                    الحد الأدنى للشراء هو {minCartPrice} ج.م
+                  </div>
+                )}
+                <div>
+                  المجموع: <span className="text-amazon-orange">{Math.round(totalAmount)} ج.م</span>
+                </div>
+                <div className="mb-2">
+                  تكلفة الشحن: <span className="text-amazon-orange">{calculateShippingCost()} ج.م</span>
+                </div>
+                <hr className="my-2" />
+                <div className="mb-4">
+                  الإجمالي مع الشحن:{" "}
+                  <span className="text-green-500">
+                    {Math.round(totalAmount + calculateShippingCost())} ج.م
+                  </span>
+                </div>
               </div>
-              <div className="mb-2">
-                تكلفة الشحن: <span className="text-amazon-orange">{calculateShippingCost()} ج.م</span>
-              </div>
-              <hr className="my-2" />
-              <div className="mb-4">
-                الإجمالي مع الشحن:{" "}
-                <span className="text-green-500">
-                  {Math.round(totalAmount + calculateShippingCost())} ج.م
-                </span>
-              </div>
-            </div>
-            {allCategoriesError && (
-              <div className="text-red-500 text-sm mb-2">ll{allCategoriesError}</div>
-            )}
+              {allCategoriesError && (
+                <div className="text-red-500 text-sm mb-2">ll{allCategoriesError}</div>
+              )}
             </form>
           </>
         )}
@@ -1107,7 +1097,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
       {/* Fixed bottom section - only show when cart is not empty */}
       {cart.length > 0 && (
         <div className="border-t border-gray-200 bg-white p-4 shadow-lg">
-          
+
           <button
             type="button"
             className="w-full bg-amazon hover:bg-amazon-orange text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105"
