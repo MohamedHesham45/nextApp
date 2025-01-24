@@ -224,12 +224,15 @@ const ProductCardHome = ({ product }) => {
     }, [cart, product._id]);
 
     const settings = {
-        infinite: true,       // Infinite loop
-        speed: 700,           // Transition speed
-        slidesToShow: 1,      // Number of slides to show
-        slidesToScroll: 1,    // Number of slides to scroll
-        autoplay: true,       // Enable autoplay
-        autoplaySpeed: 5000,  // Time between slides in ms
+        infinite: true,
+        speed: 700,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        autoplay: true,
+        autoplaySpeed: 5000,
+        dots: true,
+        arrows: false,
+        adaptiveHeight: true
     };
 
     const ViewContentEvent = async () => {
@@ -271,16 +274,21 @@ const ProductCardHome = ({ product }) => {
         <Link href={`/product/${product._id}`} onClick={ViewContentEvent}>
             <div className="flex-col md:flex-row justify-between flex gap-4 mx-4 py-12 hover:cursor-pointer">
                 <div className="flex bg-white shadow-lg hover:shadow-xl transition-shadow duration-300 flex-col md:flex-row relative group flex-1">
-                    <div className="relative w-full md:w-[300px] h-[300px] flex-shrink-0 overflow-hidden md:flex-1">
-
-                        <Slider {...settings}>
-                            {product.images.map((image, index) => (
-                                <div key={index}>
-                                    <img src={image.startsWith("/") ? image : `/${image}`} alt={`Product Image ${index + 1}`}
-                                        className="w-full h-[300px] transform group-hover:scale-110 transition-transform duration-300" />
-                                </div>
-                            ))}
-                        </Slider>
+                    <div className="relative w-full md:w-[300px] h-auto sm:h-[300px] flex-shrink-0 overflow-hidden md:flex-1">
+                        <div className="h-full">
+                            <Slider {...settings}>
+                                {product.images.map((image, index) => (
+                                    <div key={index} className="h-[300px]">
+                                        <img
+                                            src={image.startsWith("/") ? image : `/${image}`} 
+                                            // src="/123.jpg"
+                                            alt={`Product Image ${index + 1}`}
+                                            className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300"
+                                        />
+                                    </div>
+                                ))}
+                            </Slider>
+                        </div>
                         {product.quantity == 0 && (
                             <>
                                 <div className="absolute inset-0 bg-black bg-opacity-40"></div>

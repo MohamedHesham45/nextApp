@@ -5,7 +5,7 @@ export async function GET(request, { params }) {
   try {
     const userId = params.id;
 
-   
+
 
     const client = await clientPromise;
     const db = client.db("productDB");
