@@ -61,7 +61,7 @@ export async function POST(request) {
     const result = await db
       .collection("orders")
       .insertOne(newOrder);
-    await sendOrderEmail(customerDetails.email||"", "تفاصيل الطلب", newOrder);
+    // await sendOrderEmail(customerDetails.email||"", "تفاصيل الطلب", newOrder);
     return NextResponse.json({
       message: "Order placed successfully",
       orderId: result.insertedId,
