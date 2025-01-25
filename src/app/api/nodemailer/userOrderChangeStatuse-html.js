@@ -1,5 +1,5 @@
 function generateOrderStatusChangeEmailUserTemplate(orderData) {
-    const { customerDetails, orderItems, orderDate, status,totalPrice } = orderData;
+    const { customerDetails, orderItems, orderDate, status,totalPrice ,shippingCost} = orderData;
     const statusText = status === "Pending" ? "قيد التنفيذ" : status === "Delivered" ? "تم التوصيل" : status === "Shipped" ? "تم الشحن" : status === "Processing" ? "قيد المعالجة" : status === "Cancelled" ? "ملغي" : "منتهي";
     const itemsHtml = orderItems.map(item => `
         <tr>
@@ -121,7 +121,7 @@ function generateOrderStatusChangeEmailUserTemplate(orderData) {
                             ${itemsHtml}
                         </tbody>
                     </table>
-                    <p><strong>السعر الإجمالي:</strong> ${totalPrice.toFixed(2)}</p>
+                    <p><strong>السعر الإجمالي:</strong> ${parseFloat(totalPrice)+parseFloat(shippingCost)}</p>
                 </div>
                 <div class="footer">
                     <p>شكراً لتسوقكم معنا!</p>

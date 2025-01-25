@@ -123,20 +123,20 @@ export default function AdminPage() {
             images.append("images", image)
           }
         })
-        if (images.getAll("images").length > 0) {
-          const res = await fetch("/upload-images", {
-            method: "POST",
-            body: images
-          })
-          if(!res.ok) throw new Error("حدث خطأ أثناء رفع الصور حاول مرة أخرى")
-          const data=await res.json()
-        const checkImages=[]
-          data.files.forEach(file=>{
-            checkImages.push(file)
+        // if (images.getAll("images").length > 0) {
+        //   const res = await fetch("/upload-images", {
+        //     method: "POST",
+        //     body: images
+        //   })
+        //   if(!res.ok) throw new Error("حدث خطأ أثناء رفع الصور حاول مرة أخرى")
+        //   const data=await res.json()
+        // const checkImages=[]
+        //   data.files.forEach(file=>{
+        //     checkImages.push(file)
 
-            imagess.push(file)
-          })
-        }
+        //     imagess.push(file)
+        //   })
+        // }
         finalData.images = imagess
       }
       const method = editingProduct ? "PUT" : "POST";

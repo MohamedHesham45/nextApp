@@ -32,6 +32,7 @@ export async function POST(request) {
     const {
       customerDetails,
       orderItems,
+      shippingCost,
       totalPrice,
       userId,
       saveToProfile,
@@ -49,6 +50,7 @@ export async function POST(request) {
         userId,
       },
       orderItems,
+      shippingCost,
       totalPrice,
       orderDate: new Date(),
       status: "Pending",

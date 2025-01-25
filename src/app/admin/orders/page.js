@@ -116,7 +116,7 @@ export default function OrdersPage() {
   : order.status === "Shipped" ? "تم الشحن"
   : order.status === "Delivered" ? "تم التسليم"
   : "ملغى"}
-السعر الإجمالي: ${order.totalPrice.toFixed(2)} ج.م
+السعر الإجمالي: ${parseFloat(order.totalPrice)+parseFloat(order.shippingCost)} ج.م
 تاريخ الطلب: ${new Date(order.orderDate).toLocaleString("ar-EG")}
 
 تفاصيل العنوان:
@@ -447,10 +447,20 @@ ${order.orderItems.map(item => `- ${item.title}
                 </ul>
                 <hr/>
                 <p className="text-sm font-medium text-gray-900 mt-4 mb-8">
-                  السعر الإجمالي:   
+                  السعر :   
                   {selectedOrder.totalPrice.toFixed(
                     2
                   )} ج.م
+                </p>
+                <p className="text-sm font-medium text-gray-900 mt-4 mb-8">
+                  سعر التوصيل:   
+                  {selectedOrder.shippingCost.toFixed(
+                    2
+                  )} ج.م
+                </p>
+                <p className="text-sm font-medium text-gray-900 mt-4 mb-8">
+                  السعر الإجمالي:   
+                  {parseFloat(selectedOrder.totalPrice)+parseFloat(selectedOrder.shippingCost)} ج.م
                 </p>
                 <div className="mt-4 flex justify-between print:hidden">
                   <button

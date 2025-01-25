@@ -42,6 +42,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
   const [street, setStreet] = useState('')
   const [architecture, setArchitecture] = useState('')
   const [apartment, setApartment] = useState('')
+  const [productQuantityError,setProductQuantityError]=useState('')
   const sendMetaConversion = useMetaConversion();
 
   // Create refs for form fields
@@ -172,7 +173,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
   }, []);
 
   const calculateDiscountedPrice = (item) => {
-    return parseInt(item.price) * (1 - parseInt(item.discountPercentage) / 100);
+    return Math.round( parseInt(item.price) * (1 - parseInt(item.discountPercentage) / 100));
   };
 
   const calculateShippingCost = () => {
@@ -288,21 +289,25 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
     }
 
     // Replace toast with modal
+    /*
     if (totalAmount < minCartPrice) {
       setIsMinPriceModalOpen(true);
       return;
-    }
+    }*/
 
     const orderData = {
       customerDetails,
       orderItems: cart.map((item) => ({
         productId: item._id,
         title: item.title,
+        category:item.categoryId,
+        productQuantity:item.quantity,
         quantity: item.quantityCart,
         price: calculateDiscountedPrice(item),
         selectedImages: item.selectedImages,
       })),
-      totalPrice: totalAmount + shippingCost,
+      shippingCost:calculateShippingCost(),
+      totalPrice: totalAmount,
       userId: profile.userId || "",
       saveToProfile: saveToProfile,
     };
@@ -398,14 +403,25 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
   }, [cart]);
   const handleSaveEdit = () => {
     if (editingItem) {
+      let flag=false
       const updatedCart = cart.map((item) => {
         if (item._id === editingItem._id) {
+          if(item.quantity<editingItem.quantityCart){
+            flag=true
+            return item
+          }
           return { ...item, quantityCart: editingItem.quantityCart };
         }
         return item;
       });
-      setCart(updatedCart);
-      setEditingItem(null);
+      if(flag){
+
+        setProductQuantityError(`غير متاح هذه الكمية متاح الان`)
+      }else{
+
+        setCart(updatedCart);
+        setEditingItem(null);
+      }
     }
   };
 
@@ -516,7 +532,8 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                             <h3 className="font-semibold">{item.title}</h3>
                             <div className="flex items-center space-x-2">
                               <button
-                                onClick={() =>
+                                onClick={() =>{
+                                  setProductQuantityError('')
                                   setEditingItem({
                                     ...editingItem,
                                     quantityCart: Math.max(
@@ -525,18 +542,21 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                                     ),
                                   })
                                 }
+                              }
                                 className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 transition duration-300"
                               >
                                 -
                               </button>
                               <span>{editingItem.quantityCart}</span>
                               <button
-                                onClick={() =>
+                                onClick={() =>{
+                                  setProductQuantityError('')
                                   setEditingItem({
                                     ...editingItem,
                                     quantityCart: editingItem.quantityCart + 1,
                                   })
                                 }
+                              }
                                 className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 transition duration-300"
                               >
                                 +
@@ -560,6 +580,9 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                               </span>
                             </p>
                           )}
+                          <p className="text-sm font-bold ">
+                              الكمية المتوفرة :  <span className="text-green-600">{item.quantity}</span>
+                            </p>
                           <div className="grid grid-cols-3 gap-2">
                             <div className="relative">
                               <img
@@ -579,15 +602,24 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                               />
                             </div>
                           </div>
+                          {productQuantityError && (
+                  <p className="text-red-500 text-sm mt-1">{productQuantityError}</p>
+                )}
                           <div className="flex justify-end space-x-2">
                             <button
-                              onClick={handleSaveEdit}
+                              onClick={()=>{
+                                setProductQuantityError('')
+                                handleSaveEdit()
+                              }}
                               className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition duration-300 mx-2"
                             >
                               حفظ
                             </button>
                             <button
-                              onClick={handleCancelEdit}
+                              onClick={()=>{
+                                setProductQuantityError('')
+                                handleCancelEdit()
+                              }}
                               className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition duration-300"
                             >
                               الغاء
@@ -613,7 +645,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                                 : " text-green-600 font-bold"
                                 }`}
                             >
-                              {Math.round(item.price)} ج.م
+                              {item.price} ج.م
                             </p>
                             {item.discountPercentage > 0 && (
                               <p className="text-sm font-bold text-green-600">
@@ -1067,13 +1099,15 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                 </div>
               )}
               <div className="font-bold text-lg">
-                {minCartPrice && totalAmount < minCartPrice && (
+                {/* {minCartPrice && totalAmount < minCartPrice && (
                   <div className="text-red-500 text-sm mb-2">
                     الحد الأدنى للشراء هو {minCartPrice} ج.م
                   </div>
-                )}
+                )} */}
                 <div>
-                  المجموع: <span className="text-amazon-orange">{Math.round(totalAmount)} ج.م</span>
+                  المجموع: <span className="text-amazon-orange">{totalAmount.toFixed(
+                    2
+                  )} ج.م</span>
                 </div>
                 <div className="mb-2">
                   تكلفة الشحن: <span className="text-amazon-orange">{calculateShippingCost()} ج.م</span>
@@ -1082,7 +1116,9 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                 <div className="mb-4">
                   الإجمالي مع الشحن:{" "}
                   <span className="text-green-500">
-                    {Math.round(totalAmount + calculateShippingCost())} ج.م
+                    {(totalAmount + calculateShippingCost()).toFixed(
+                    2
+                  )} ج.م
                   </span>
                 </div>
               </div>

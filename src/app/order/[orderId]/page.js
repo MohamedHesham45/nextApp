@@ -122,11 +122,15 @@ export default function OrderPage({ params }) {
         setIsUpdating(true);
 
         try {
+            const newQuantity = parseInt(formData.quantity);
+            const quantityDifference = newQuantity - selectedItem.quantity;
+
             const updatedItems = order.orderItems.map(item => {
                 if (item.productId === selectedItem.productId) {
                     return {
                         ...item,
-                        quantity: parseInt(formData.quantity)
+                        quantity: newQuantity,
+                        quantityDifference: quantityDifference
                     };
                 }
                 return item;
@@ -136,8 +140,8 @@ export default function OrderPage({ params }) {
 
             const updatedOrder = {
                 ...order,
+                updateQuantity: true,
                 status: order.status || 'Pending',
-                // orderDate: order.orderDate,
                 orderDate: Date.now(),
                 orderItems: updatedItems,
                 totalPrice: newTotalPrice,

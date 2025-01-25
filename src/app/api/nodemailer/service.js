@@ -3,6 +3,7 @@ import nodemailer from "nodemailer";
 import generateOrderEmailSitaraMallTemplate from "./sitaraMallOrder.";
 import generateOrderEmailUserTemplate from "./userOrder-html";
 import generateOrderStatusChangeEmailUserTemplate from "./userOrderChangeStatuse-html";
+import generateOrderUpdateEmailSitaraMallTemplate from "./sitaraMallOrderUpdate";
 const transporter = nodemailer.createTransport({
     service: 'gmail', 
     auth: {
@@ -36,6 +37,23 @@ export async function sendOrderEmail(email, subject, orderData) {
     }
     await transporter.sendMail(mailOptionsSitaraMall);
 }
+export async function sendOrderUpdateEmail(email, subject, orderData) {
+    const mailOptionsSitaraMall = {
+        to: "mohmedadm733@gmail.com",
+        subject: "تعديل طلب رقم "+orderData._id,
+        html: generateOrderUpdateEmailSitaraMallTemplate(orderData),
+    };
+    if(email){
+        const mailOptionsUser = {
+            to: email, 
+            subject: subject,
+            html: generateOrderEmailUserTemplate(orderData),
+        };
+        await transporter.sendMail(mailOptionsUser);
+    }
+    await transporter.sendMail(mailOptionsSitaraMall);
+}
+
 
 export async function sendOrderStatusChangeEmail(email, subject, orderData) {
     const mailOptionsUser = {

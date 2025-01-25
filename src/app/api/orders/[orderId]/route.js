@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
-import { sendOrderStatusChangeEmail } from "../../nodemailer/service";
+import { sendOrderStatusChangeEmail, sendOrderUpdateEmail } from "../../nodemailer/service";
 
 export async function PATCH(request, { params }) {
   try {
@@ -31,7 +31,7 @@ export async function PATCH(request, { params }) {
     }
     const order = await db.collection("orders").findOne({ _id: new ObjectId(params.orderId) });
     if (order.customerDetails.email) {
-      await sendOrderStatusChangeEmail(order.customerDetails.email, "تحديث حالة طلبك", order);
+      // await sendOrderStatusChangeEmail(order.customerDetails.email, "تحديث حالة طلبك", order);
     }
 
     return NextResponse.json({
@@ -86,7 +86,44 @@ export async function PUT(request, { params }) {
       );
     }
 
-    delete updateData._id;
+    if (updateData) {
+      delete updateData._id;
+    }
+
+    // Handle product quantity updates if this is a quantity update
+    if (updateData.updateQuantity && updateData.orderItems) {
+      for (const item of updateData.orderItems) {
+        if (item.quantityDifference) {
+          const product = await db.collection("products").findOne({
+            _id: new ObjectId(item.productId)
+          });
+
+          if (product) {
+            const newProductQuantity = product.quantity - item.quantityDifference;
+
+            if (newProductQuantity < 0) {
+              return NextResponse.json(
+                { error: "Not enough stock available" },
+                { status: 400 }
+              );
+            }
+
+            await db.collection("products").updateOne(
+              { _id: new ObjectId(item.productId) },
+              { $set: { quantity: newProductQuantity } }
+            );
+          }
+        }
+      }
+
+      // Remove temporary fields before saving
+      delete updateData.updateQuantity;
+      updateData.orderItems = updateData.orderItems.map(item => {
+        const cleanItem = { ...item };
+        delete cleanItem.quantityDifference;
+        return cleanItem;
+      });
+    }
 
     const result = await db
       .collection("orders")
@@ -105,7 +142,7 @@ export async function PUT(request, { params }) {
     const updatedOrder = await db
       .collection("orders")
       .findOne({ _id: new ObjectId(params.orderId) });
-
+    // await sendOrderUpdateEmail(updatedOrder.customerDetails.email||"",'تعديل الطلب',updatedOrder)
     return NextResponse.json({
       message: "Order updated successfully",
       order: updatedOrder

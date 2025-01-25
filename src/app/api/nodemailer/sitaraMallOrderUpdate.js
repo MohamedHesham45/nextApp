@@ -1,4 +1,4 @@
-function generateOrderEmailSitaraMallTemplate(orderData) {
+function generateOrderUpdateEmailSitaraMallTemplate(orderData) {
     const { customerDetails, orderItems, orderDate, status,totalPrice,shippingCost } = orderData;
     const statusText = status === "Pending" ? "قيد التنفيذ" : status === "Delivered" ? "تم التوصيل" : status === "Shipped" ? "تم الشحن" : status === "Processing" ? "قيد المعالجة" : status === "Cancelled" ? "ملغي" : "منتهي";
     const itemsHtml = orderItems.map(item => `
@@ -18,7 +18,7 @@ function generateOrderEmailSitaraMallTemplate(orderData) {
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>تفاصيل الطلب الجديد</title>
+            <title>تعديل الطلب</title>
             <style>
                 body {
                     font-family: Arial, sans-serif;
@@ -85,7 +85,7 @@ function generateOrderEmailSitaraMallTemplate(orderData) {
         <body>
             <div class="container">
                 <div class="header">
-                    <h1>تقديم طلب جديد</h1>
+                    <h1>تعديل الطلب ${orderData._id}</h1>
                 </div>
                 <div class="content">
                     <p><strong>الاسم:</strong> ${customerDetails.name}</p>
@@ -133,4 +133,4 @@ function generateOrderEmailSitaraMallTemplate(orderData) {
     `;
 }
 
-export default generateOrderEmailSitaraMallTemplate;
+export default generateOrderUpdateEmailSitaraMallTemplate;
