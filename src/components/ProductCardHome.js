@@ -283,7 +283,7 @@ const ProductCardHome = ({ product }) => {
                                             src={image.startsWith("/") ? image : `/${image}`} 
                                             // src="/123.jpg"
                                             alt={`Product Image ${index + 1}`}
-                                            className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300"
+                                            className="w-full h-full transform group-hover:scale-110 transition-transform duration-300"
                                         />
                                     </div>
                                 ))}
