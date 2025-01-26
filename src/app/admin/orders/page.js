@@ -13,28 +13,28 @@ export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const {token,isLoaded,isLoggedIn,role,profile} = useAuth();
+  const { token, isLoaded, isLoggedIn, role, profile } = useAuth();
   const router = useRouter();
   const [selectedOrder, setSelectedOrder] =
     useState(null);
   const [isModalOpen, setIsModalOpen] =
     useState(false);
 
- 
 
-  useEffect(()=>{
-    if(token){
-      if(isLoaded){
-        if(isLoggedIn && role === 'user'){
+
+  useEffect(() => {
+    if (token) {
+      if (isLoaded) {
+        if (isLoggedIn && role === 'user') {
           router.push("/");
-        }else{
+        } else {
           fetchOrders();
         }
       }
-    }else{
+    } else {
       router.push("/");
     }
-    }, [isLoaded, role, router,token])
+  }, [isLoaded, role, router, token])
 
   const fetchOrders = async () => {
     try {
@@ -94,8 +94,8 @@ export default function OrdersPage() {
             : order
         )
       );
-      const status=newStatus === "Pending" ? "قيد الانتظار" : newStatus === "Processing" ? "قيد المعالجة" : newStatus === "Shipped" ? "تم الشحن" : newStatus === "Delivered" ? "تم التسليم" : "ملغى"
-      toast.success('تم تحديث حالة الطلب بنجاح إلى '+status)
+      const status = newStatus === "Pending" ? "قيد الانتظار" : newStatus === "Processing" ? "قيد المعالجة" : newStatus === "Shipped" ? "تم الشحن" : newStatus === "Delivered" ? "تم التسليم" : "ملغى"
+      toast.success('تم تحديث حالة الطلب بنجاح إلى ' + status)
     } catch (error) {
       console.error(
         "حدث خطأ أثناء تحديث حالة الطلب:",
@@ -112,11 +112,11 @@ export default function OrdersPage() {
 رقم الهاتف: ${order.customerDetails.phone}
 البريد الإلكتروني: ${order.customerDetails.email}
 الحالة: ${order.status === "Pending" ? "قيد الانتظار"
-  : order.status === "Processing" ? "قيد المعالجة"
-  : order.status === "Shipped" ? "تم الشحن"
-  : order.status === "Delivered" ? "تم التسليم"
-  : "ملغى"}
-السعر الإجمالي: ${parseFloat(order.totalPrice)+parseFloat(order.shippingCost)} ج.م
+        : order.status === "Processing" ? "قيد المعالجة"
+          : order.status === "Shipped" ? "تم الشحن"
+            : order.status === "Delivered" ? "تم التسليم"
+              : "ملغى"}
+السعر الإجمالي: ${parseFloat(order.totalPrice) + parseFloat(order.shippingCost)} ج.م
 تاريخ الطلب: ${new Date(order.orderDate).toLocaleString("ar-EG")}
 
 تفاصيل العنوان:
@@ -137,8 +137,8 @@ ${order.orderItems.map(item => `- ${item.title}
   الكمية: ${item.quantity}
   السعر: ${item.price.toFixed(2)} ج.م`).join('\n')}`;
 
-  navigator.clipboard.writeText(details);
-  alert("تم نسخ تفاصيل الطلب إلى الحافظة!");
+    navigator.clipboard.writeText(details);
+    alert("تم نسخ تفاصيل الطلب إلى الحافظة!");
   };
 
   if (loading) {
@@ -181,12 +181,12 @@ ${order.orderItems.map(item => `- ${item.title}
               {status === "Pending"
                 ? "قيد الانتظار"
                 : status === "Processing"
-                ? "قيد المعالجة"
-                : status === "Shipped"
-                ? "تم الشحن"
-                : status === "Delivered"
-                ? "تم التسليم"
-                : "ملغى"}
+                  ? "قيد المعالجة"
+                  : status === "Shipped"
+                    ? "تم الشحن"
+                    : status === "Delivered"
+                      ? "تم التسليم"
+                      : "ملغى"}
             </h2>
             <div className="overflow-x-auto">
               <table className="min-w-full bg-white">
@@ -235,7 +235,7 @@ ${order.orderItems.map(item => `- ${item.title}
                             2
                           )}
                         </td>
-                          <td className="border py-3 px-6 text-center">
+                        <td className="border py-3 px-6 text-center">
                           {new Date(
                             order.orderDate
                           ).toLocaleString("ar-EG")}
@@ -317,14 +317,14 @@ ${order.orderItems.map(item => `- ${item.title}
                 </p>
                 <p className="text-sm text-gray-500 mb-1">
                   الحالة : {selectedOrder.status === "Pending"
-                ? "قيد الانتظار"
-                : selectedOrder.status === "Processing"
-                ? "قيد المعالجة"
-                : selectedOrder.status === "Shipped"
-                ? "تم الشحن"
-                : selectedOrder.status === "Delivered"
-                ? "تم التسليم"
-                : "ملغى"}
+                    ? "قيد الانتظار"
+                    : selectedOrder.status === "Processing"
+                      ? "قيد المعالجة"
+                      : selectedOrder.status === "Shipped"
+                        ? "تم الشحن"
+                        : selectedOrder.status === "Delivered"
+                          ? "تم التسليم"
+                          : "ملغى"}
                 </p>
                 <p className="text-sm text-gray-500 mb-1">
                   التاريخ :{" "}
@@ -437,7 +437,7 @@ ${order.orderItems.map(item => `- ${item.title}
                           </p>
                           <p className="text-xs text-gray-500">
                             الكمية: {item.quantity}{" "}
-                             - السعر: 
+                            - السعر:
                             {item.price.toFixed(2)} ج.م
                           </p>
                         </div>
@@ -445,22 +445,22 @@ ${order.orderItems.map(item => `- ${item.title}
                     )
                   )}
                 </ul>
-                <hr/>
+                <hr />
                 <p className="text-sm font-medium text-gray-900 mt-4 mb-8">
-                  السعر :   
+                  السعر :
                   {selectedOrder.totalPrice.toFixed(
                     2
                   )} ج.م
                 </p>
                 <p className="text-sm font-medium text-gray-900 mt-4 mb-8">
-                  سعر التوصيل:   
+                  سعر التوصيل:
                   {selectedOrder.shippingCost.toFixed(
                     2
                   )} ج.م
                 </p>
                 <p className="text-sm font-medium text-gray-900 mt-4 mb-8">
-                  السعر الإجمالي:   
-                  {parseFloat(selectedOrder.totalPrice)+parseFloat(selectedOrder.shippingCost)} ج.م
+                  السعر الإجمالي:
+                  {parseFloat(selectedOrder.totalPrice) + parseFloat(selectedOrder.shippingCost)} ج.م
                 </p>
                 <div className="mt-4 flex justify-between print:hidden">
                   <button
