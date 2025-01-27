@@ -218,7 +218,7 @@ export default function UserOrdersPage() {
                   <span className="text-black">الإجمالي:</span>
                   <span className="text-amazon-orange">
                     {" "}
-                    {order.totalPrice.toFixed(2)} ج.م
+                    {parseFloat(order.totalPrice) + parseFloat(order.shippingCost)} ج.م
                   </span>
                 </p>
               </div>
