@@ -31,7 +31,7 @@ export async function PATCH(request, { params }) {
     }
     const order = await db.collection("orders").findOne({ _id: new ObjectId(params.orderId) });
     if (order.customerDetails.email) {
-      // await sendOrderStatusChangeEmail(order.customerDetails.email, "تحديث حالة طلبك", order);
+       await sendOrderStatusChangeEmail(order.customerDetails.email, "تحديث حالة طلبك", order);
     }
 
     return NextResponse.json({
@@ -142,7 +142,7 @@ export async function PUT(request, { params }) {
     const updatedOrder = await db
       .collection("orders")
       .findOne({ _id: new ObjectId(params.orderId) });
-    // await sendOrderUpdateEmail(updatedOrder.customerDetails.email||"",'تعديل الطلب',updatedOrder)
+     await sendOrderUpdateEmail(updatedOrder.customerDetails.email||"",'تعديل الطلب',updatedOrder)
     return NextResponse.json({
       message: "Order updated successfully",
       order: updatedOrder

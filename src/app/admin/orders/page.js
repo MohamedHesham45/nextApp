@@ -231,9 +231,7 @@ ${order.orderItems.map(item => `- ${item.title}
                         </td>
                         <td className="border py-3 px-6 text-center">
                           ج.م
-                          {order.totalPrice.toFixed(
-                            2
-                          )}
+                          {parseFloat(order.totalPrice) + parseFloat(order.shippingCost)}
                         </td>
                         <td className="border py-3 px-6 text-center">
                           {new Date(

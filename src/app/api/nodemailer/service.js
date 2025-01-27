@@ -39,7 +39,7 @@ export async function sendOrderEmail(email, subject, orderData) {
 }
 export async function sendOrderUpdateEmail(email, subject, orderData) {
     const mailOptionsSitaraMall = {
-        to: "mohmedadm733@gmail.com",
+        to: process.env.EMAIL_USER,
         subject: "تعديل طلب رقم "+orderData._id,
         html: generateOrderUpdateEmailSitaraMallTemplate(orderData),
     };

@@ -225,7 +225,7 @@ export default function UserOrdersPage() {
 
               <div className="mt-4 flex flex-row justify-between items-center">
                 <button
-                  onClick={() => handleViewDetails(order)}
+                  onClick={() => router.push(`/order/${order._id}`)}
                   className="bg-amazon hover:bg-amazon-blue text-white font-bold py-2 px-4 rounded"
                 >
                   عرض التفاصيل

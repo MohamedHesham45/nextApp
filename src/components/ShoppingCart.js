@@ -301,7 +301,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
         productId: item._id,
         title: item.title,
         category:item.categoryId,
-        productQuantity:item.quantity,
+        productQuantity:item.quantity-item.quantityCart,
         quantity: item.quantityCart,
         price: calculateDiscountedPrice(item),
         selectedImages: item.selectedImages,
