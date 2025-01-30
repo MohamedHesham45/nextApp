@@ -92,18 +92,18 @@ export default function Navbar() {
   const galleryConversionEvent = () => {
     var userAgent = navigator.userAgent;
 
-    fetch('https://api.ipify.org?format=json')
-      .then(response => response.json())
-      .then(async (data) => {
-        var ipAddress = data.ip;
-        await sendMetaConversion('ViewContent', {
-          content_name: 'Gallery View',
-          content_type: 'gallery',
-          content_category: 'Gallery',
-          value: 0,
-        }, ipAddress, userAgent);
-      })
-      .catch(error => console.error('Error fetching IP address:', error));
+    // fetch('https://api.ipify.org?format=json')
+    //   .then(response => response.json())
+    //   .then(async (data) => {
+    //     var ipAddress = data.ip;
+    //     await sendMetaConversion('ViewContent', {
+    //       content_name: 'Gallery View',
+    //       content_type: 'gallery',
+    //       content_category: 'Gallery',
+    //       value: 0,
+    //     }, ipAddress, userAgent);
+    //   })
+    //   .catch(error => console.error('Error fetching IP address:', error));
   }
   return (
     <>

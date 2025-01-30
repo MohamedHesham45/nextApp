@@ -78,36 +78,36 @@ const ProductCardHome = ({ product }) => {
 
             var userAgent = navigator.userAgent;
 
-            fetch('https://api.ipify.org?format=json')
-                .then(response => response.json())
-                .then(async (data) => {
-                    var ipAddress = data.ip;
-                    fbq('track', 'AddToWishlist', {
-                        product_name: product.title,
-                        product_category: product.category,
-                        product_ids: [product._id],
-                        product_image: "https://sitaramall.com/" + product.images[0],
-                        product_price: product.price,
-                        product_price_after_discount: product.priceAfterDiscount || product.price,
-                        product_quantity: product.quantity,
-                        product_images: product.images.map(image => "https://sitaramall.com/" + image),
-                        value: product.priceAfterDiscount || product.price,
-                        currency: 'EGP',
-                        ip_address: ipAddress,
-                        user_agent: userAgent
-                    });
-                    await sendMetaConversion('AddToWishlist', {
-                        product_name: product.title,
-                        product_category: product.category,
-                        product_ids: [product._id],
-                        product_image: "https://sitaramall.com/" + product.images[0],
-                        product_images: product.images.map(image => "https://sitaramall.com/" + image),
-                        product_price: product.price,
-                        product_price_after_discount: product.priceAfterDiscount || product.price,
-                        value: product.priceAfterDiscount || product.price,
-                    }, ipAddress, userAgent);
-                })
-                .catch(error => console.error('Error fetching IP address:', error));
+            // fetch('https://api.ipify.org?format=json')
+            //     .then(response => response.json())
+            //     .then(async (data) => {
+            //         var ipAddress = data.ip;
+            //         fbq('track', 'AddToWishlist', {
+            //             product_name: product.title,
+            //             product_category: product.category,
+            //             product_ids: [product._id],
+            //             product_image: "https://sitaramall.com/" + product.images[0],
+            //             product_price: product.price,
+            //             product_price_after_discount: product.priceAfterDiscount || product.price,
+            //             product_quantity: product.quantity,
+            //             product_images: product.images.map(image => "https://sitaramall.com/" + image),
+            //             value: product.priceAfterDiscount || product.price,
+            //             currency: 'EGP',
+            //             ip_address: ipAddress,
+            //             user_agent: userAgent
+            //         });
+            //         await sendMetaConversion('AddToWishlist', {
+            //             product_name: product.title,
+            //             product_category: product.category,
+            //             product_ids: [product._id],
+            //             product_image: "https://sitaramall.com/" + product.images[0],
+            //             product_images: product.images.map(image => "https://sitaramall.com/" + image),
+            //             product_price: product.price,
+            //             product_price_after_discount: product.priceAfterDiscount || product.price,
+            //             value: product.priceAfterDiscount || product.price,
+            //         }, ipAddress, userAgent);
+            //     })
+            //     .catch(error => console.error('Error fetching IP address:', error));
 
             toast.success('تم إضافة المنتج إلى المفضلة');
         }
@@ -143,37 +143,37 @@ const ProductCardHome = ({ product }) => {
             updatedCart = [...cart, itemToAdd];
 
             var userAgent = navigator.userAgent;
-            fetch('https://api.ipify.org?format=json')
-                .then(response => response.json())
-                .then(async (data) => {
-                    var ipAddress = data.ip;
-                    fbq('track', 'AddToCart', {
-                        product_name: product.title,
-                        product_category: product.category,
-                        product_ids: [product._id],
-                        product_image: "https://sitaramall.com/" + product.images[0],
-                        product_price: product.price,
-                        product_price_after_discount: product.priceAfterDiscount || product.price,
-                        product_quantity: product.quantity,
-                        product_images: product.images.map(image => "https://sitaramall.com/" + image),
-                        value: product.priceAfterDiscount || product.price,
-                        currency: 'EGP',
-                        ip_address: ipAddress,
-                        user_agent: userAgent
-                    });
+            // fetch('https://api.ipify.org?format=json')
+            //     .then(response => response.json())
+            //     .then(async (data) => {
+            //         var ipAddress = data.ip;
+            //         fbq('track', 'AddToCart', {
+            //             product_name: product.title,
+            //             product_category: product.category,
+            //             product_ids: [product._id],
+            //             product_image: "https://sitaramall.com/" + product.images[0],
+            //             product_price: product.price,
+            //             product_price_after_discount: product.priceAfterDiscount || product.price,
+            //             product_quantity: product.quantity,
+            //             product_images: product.images.map(image => "https://sitaramall.com/" + image),
+            //             value: product.priceAfterDiscount || product.price,
+            //             currency: 'EGP',
+            //             ip_address: ipAddress,
+            //             user_agent: userAgent
+            //         });
 
-                    await sendMetaConversion('AddToCart', {
-                        product_name: product.title,
-                        product_category: product.category,
-                        product_ids: [product._id],
-                        product_image: "https://sitaramall.com/" + product.images[0],
-                        product_images: product.images.map(image => "https://sitaramall.com/" + image),
-                        product_price: product.price,
-                        product_price_after_discount: product.priceAfterDiscount || product.price,
-                        value: product.priceAfterDiscount || product.price,
-                    }, ipAddress, userAgent);
-                })
-                .catch(error => console.error('Error fetching IP address:', error));
+            //         await sendMetaConversion('AddToCart', {
+            //             product_name: product.title,
+            //             product_category: product.category,
+            //             product_ids: [product._id],
+            //             product_image: "https://sitaramall.com/" + product.images[0],
+            //             product_images: product.images.map(image => "https://sitaramall.com/" + image),
+            //             product_price: product.price,
+            //             product_price_after_discount: product.priceAfterDiscount || product.price,
+            //             value: product.priceAfterDiscount || product.price,
+            //         }, ipAddress, userAgent);
+            //     })
+            //     .catch(error => console.error('Error fetching IP address:', error));
             toast.success('تم إضافة المنتج إلى السلة');
         }
 
@@ -237,37 +237,37 @@ const ProductCardHome = ({ product }) => {
 
     const ViewContentEvent = async () => {
         var userAgent = navigator.userAgent;
-        fetch('https://api.ipify.org?format=json')
-            .then(response => response.json())
-            .then(async (data) => {
-                var ipAddress = data.ip;
-                fbq('track', 'ViewContent', {
-                    product_name: product.title,
-                    product_category: product.category,
-                    product_ids: [product._id],
-                    product_image: "https://sitaramall.com/" + product.images[0],
-                    product_price: product.price,
-                    product_price_after_discount: product.priceAfterDiscount || product.price,
-                    product_quantity: product.quantity,
-                    product_images: product.images.map(image => "https://sitaramall.com/" + image),
-                    value: product.priceAfterDiscount || product.price,
-                    currency: 'EGP',
-                    ip_address: ipAddress,
-                    user_agent: userAgent
-                });
+        // fetch('https://api.ipify.org?format=json')
+        //     .then(response => response.json())
+        //     .then(async (data) => {
+        //         var ipAddress = data.ip;
+        //         fbq('track', 'ViewContent', {
+        //             product_name: product.title,
+        //             product_category: product.category,
+        //             product_ids: [product._id],
+        //             product_image: "https://sitaramall.com/" + product.images[0],
+        //             product_price: product.price,
+        //             product_price_after_discount: product.priceAfterDiscount || product.price,
+        //             product_quantity: product.quantity,
+        //             product_images: product.images.map(image => "https://sitaramall.com/" + image),
+        //             value: product.priceAfterDiscount || product.price,
+        //             currency: 'EGP',
+        //             ip_address: ipAddress,
+        //             user_agent: userAgent
+        //         });
 
-                await sendMetaConversion('ViewContent', {
-                    product_name: product.title,
-                    product_category: product.category,
-                    product_ids: [product._id],
-                    product_image: "https://sitaramall.com/" + product.images[0],
-                    product_images: product.images.map(image => "https://sitaramall.com/" + image),
-                    product_price: product.price,
-                    product_price_after_discount: product.priceAfterDiscount || product.price,
-                    value: product.priceAfterDiscount || product.price,
-                }, ipAddress, userAgent);
-            })
-            .catch(error => console.error('Error fetching IP address:', error));
+        //         await sendMetaConversion('ViewContent', {
+        //             product_name: product.title,
+        //             product_category: product.category,
+        //             product_ids: [product._id],
+        //             product_image: "https://sitaramall.com/" + product.images[0],
+        //             product_images: product.images.map(image => "https://sitaramall.com/" + image),
+        //             product_price: product.price,
+        //             product_price_after_discount: product.priceAfterDiscount || product.price,
+        //             value: product.priceAfterDiscount || product.price,
+        //         }, ipAddress, userAgent);
+        //     })
+        //     .catch(error => console.error('Error fetching IP address:', error));
     };
 
     return (

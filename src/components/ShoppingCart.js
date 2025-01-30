@@ -330,38 +330,38 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
         // You might want to add a function to clear the cart and update the parent component
         var userAgent = navigator.userAgent;
 
-        fetch('https://api.ipify.org?format=json')
-          .then(response => response.json())
-          .then(async (data) => {
-            var ipAddress = data.ip;
-            fbq('track', 'Purchase', {
-              order_products_data: orderData,
-              order_total_price: totalAmount + shippingCost,
-              currency: 'EGP',
-              user_name: customerDetails.name || "",
-              user_email: customerDetails.email || "",
-              user_phone: customerDetails.phone || "",
-              user_governorate: customerDetails.governorate || "",
-              user_neighborhood: customerDetails.neighborhood || "",
-              user_center_area: customerDetails.centerArea || "",
-              value: totalAmount + shippingCost,
-              ip_address: ipAddress,
-              user_agent: userAgent
-            });
-            await sendMetaConversion('Purchase', {
-              order_products_data: orderData,
-              order_total_price: totalAmount + shippingCost,
-              currency: 'EGP',
-              user_name: customerDetails.name || "",
-              user_email: customerDetails.email || "",
-              user_phone: customerDetails.phone || "",
-              user_governorate: customerDetails.governorate || "",
-              user_neighborhood: customerDetails.neighborhood || "",
-              user_center_area: customerDetails.centerArea || "",
-              value: totalAmount + shippingCost,
-            }, ipAddress, userAgent);
-          })
-          .catch(error => console.error('Error fetching IP address:', error));
+        // fetch('https://api.ipify.org?format=json')
+        //   .then(response => response.json())
+        //   .then(async (data) => {
+        //     var ipAddress = data.ip;
+        //     fbq('track', 'Purchase', {
+        //       order_products_data: orderData,
+        //       order_total_price: totalAmount + shippingCost,
+        //       currency: 'EGP',
+        //       user_name: customerDetails.name || "",
+        //       user_email: customerDetails.email || "",
+        //       user_phone: customerDetails.phone || "",
+        //       user_governorate: customerDetails.governorate || "",
+        //       user_neighborhood: customerDetails.neighborhood || "",
+        //       user_center_area: customerDetails.centerArea || "",
+        //       value: totalAmount + shippingCost,
+        //       ip_address: ipAddress,
+        //       user_agent: userAgent
+        //     });
+        //     await sendMetaConversion('Purchase', {
+        //       order_products_data: orderData,
+        //       order_total_price: totalAmount + shippingCost,
+        //       currency: 'EGP',
+        //       user_name: customerDetails.name || "",
+        //       user_email: customerDetails.email || "",
+        //       user_phone: customerDetails.phone || "",
+        //       user_governorate: customerDetails.governorate || "",
+        //       user_neighborhood: customerDetails.neighborhood || "",
+        //       user_center_area: customerDetails.centerArea || "",
+        //       value: totalAmount + shippingCost,
+        //     }, ipAddress, userAgent);
+        //   })
+        //   .catch(error => console.error('Error fetching IP address:', error));
 
         if (saveToProfile) {
           setProfile({

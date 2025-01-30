@@ -24,18 +24,18 @@ export default function MapLocation() {
   const locationConversionEvent = () => {
     var userAgent = navigator.userAgent;
 
-    fetch('https://api.ipify.org?format=json')
-      .then(response => response.json())
-      .then(async (data) => {
-        var ipAddress = data.ip;
-        await sendMetaConversion('FindLocation', {
-          content_name: 'Map View',
-          content_type: 'Map',
-          content_category: 'Map',
-          value: 0,
-        }, ipAddress, userAgent);
-      })
-      .catch(error => console.error('Error fetching IP address:', error));
+    // fetch('https://api.ipify.org?format=json')
+    //   .then(response => response.json())
+    //   .then(async (data) => {
+    //     var ipAddress = data.ip;
+    //     await sendMetaConversion('FindLocation', {
+    //       content_name: 'Map View',
+    //       content_type: 'Map',
+    //       content_category: 'Map',
+    //       value: 0,
+    //     }, ipAddress, userAgent);
+    //   })
+    //   .catch(error => console.error('Error fetching IP address:', error));
   }
 
   return (

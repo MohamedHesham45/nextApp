@@ -71,13 +71,13 @@ export default function Contact() {
 
       var userAgent = navigator.userAgent;
 
-      fetch('https://api.ipify.org?format=json')
-        .then(response => response.json())
-        .then(async (data) => {
-          var ipAddress = data.ip;
-          await sendMetaConversion('Contact', {}, ipAddress, userAgent);
-        })
-        .catch(error => console.error('Error fetching IP address:', error));
+      // fetch('https://api.ipify.org?format=json')
+      //   .then(response => response.json())
+      //   .then(async (data) => {
+      //     var ipAddress = data.ip;
+      //     await sendMetaConversion('Contact', {}, ipAddress, userAgent);
+      //   })
+      //   .catch(error => console.error('Error fetching IP address:', error));
 
 
       setSubmitResult({ success: true, message: result.message });

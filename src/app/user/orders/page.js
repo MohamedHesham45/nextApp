@@ -18,25 +18,25 @@ export default function UserOrdersPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const sendMetaConversion = useMetaConversion();
-  useEffect(() => {
-    const trackPageView = async () => {
-      const userAgent = navigator.userAgent;
-      try {
-        const ipResponse = await fetch('https://api.ipify.org?format=json');
-        const ipData = await ipResponse.json();
-        await sendMetaConversion('ViewContent', {
-          content_name: 'Orders Page View',
-          content_type: 'orders',
-          content_category: 'User Orders',
-          value: 0,
-        }, ipData.ip, userAgent);
-      } catch (error) {
-        console.error('Error tracking conversion:', error);
-      }
-    };
+  // useEffect(() => {
+  //   const trackPageView = async () => {
+  //     const userAgent = navigator.userAgent;
+  //     // try {
+  //     //   const ipResponse = await fetch('https://api.ipify.org?format=json');
+  //     //   const ipData = await ipResponse.json();
+  //     //   await sendMetaConversion('ViewContent', {
+  //     //     content_name: 'Orders Page View',
+  //     //     content_type: 'orders',
+  //     //     content_category: 'User Orders',
+  //     //     value: 0,
+  //     //   }, ipData.ip, userAgent);
+  //     // } catch (error) {
+  //     //   console.error('Error tracking conversion:', error);
+  //     // }
+  //   };
   
-    trackPageView();
-  }, []);
+  //   trackPageView();
+  // }, []);
   
 
   const fetchUserOrders = useCallback(async () => {
