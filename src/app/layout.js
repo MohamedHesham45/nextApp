@@ -91,15 +91,13 @@ export default function RootLayout({ children }) {
                   `,
                 }}
               />
-              <noscript><img height="1" width="1" style="display:none"
-                  src="https://www.facebook.com/tr?id=499787029388046&ev=PageView&noscript=1"
-                  /></noscript>
+              
               <noscript>
                     <img
                       height="1"
                       width="1"
                       style={{ display: "none" }} 
-                      src="https://www.facebook.com/tr?id=1145069563944043&ev=PageView&noscript=1"
+                      src="https://www.facebook.com/tr?id=499787029388046&ev=PageView&noscript=1"
                       />
                 </noscript>
               {/* End Meta Pixel Code */}
