@@ -278,12 +278,12 @@ const ProductCardHome = ({ product }) => {
                         <div className="h-full">
                             <Slider {...settings}>
                                 {product.images.map((image, index) => (
-                                    <div key={index} className="h-[300px]">
+                                    <div key={index} className=" sm:h-[300px]">
                                         <img
                                             src={image.startsWith("/") ? image : `/${image}`} 
-                                            // src="/123.jpg"
+                                            //src="/123.jpg"
                                             alt={`Product Image ${index + 1}`}
-                                            className="w-full h-full transform group-hover:scale-110 transition-transform duration-300"
+                                            className="w-full max-h-full transform group-hover:scale-110 transition-transform duration-300"
                                         />
                                     </div>
                                 ))}
@@ -354,7 +354,7 @@ const ProductCardHome = ({ product }) => {
                                     }
                                 }}
                                 className={`flex-1 bg-amazon-orange hover:bg-amazon-orange-dark  rounded-full transition-all duration-300  flex items-center justify-center gap-2 text-sm ${product.quantity === 0 || cartQuantity >= product.quantity ? 'opacity-50 cursor-not-allowed bg-gray-300  text-amazon-dark hover:bg-gray-300 ' : 'text-white hover:scale-105 hover:shadow-lg'}`}
-                                disabled={product.quantity === 0}
+                                disabled={product.quantity === 0||cartQuantity >= product.quantity}
                             >
                                 {!cartQuantity >= product.quantity ? <ShoppingCart className="h-4 w-4" /> : ""}
                                 {product.quantity === 0 ? "نفذت الكمية" : (cartQuantity >= product.quantity ? "انتهت الكمية المتاحة" : "اضف الى العربة")}

@@ -109,7 +109,7 @@ export default function FeaturedProducts() {
                   <img
                     src={product.images?.[0]?.startsWith('/') ? product.images?.[0] : `/${product.images?.[0]}`||"/123.jpg"}
                     alt={product.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    className="w-full max-h-full  transition-transform duration-500 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent flex items-center justify-center transition-all duration-300">
                     <div className="text-center transform transition-all duration-300 group-hover:scale-105">
