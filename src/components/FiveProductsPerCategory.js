@@ -7,6 +7,7 @@ import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import Link from "next/link";
 
 const FiveProductsPerCategory = () => {
   const [categories, setCategories] = useState([]);
@@ -72,15 +73,21 @@ const FiveProductsPerCategory = () => {
               className="featured-products-slider"
             >
               {category.products.map((product, index) => (
-                <SwiperSlide key={index}>
+                  <SwiperSlide key={index}>
                   <div className="bg-white shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl">
+                    <Link href={`/category/${product.categoryId}`}>
                     <div className="relative h-64">
-                      <img
-                    src={product.images?.[0]?.startsWith('/') ? product.images?.[0] : `/${product.images?.[0]}`||"/123.jpg"}
-                    alt={product.title}
-                        className="w-full max-h-full transition-transform duration-500 group-hover:scale-110"
-                      />
+                        <img
+                          src={
+                            product.images?.[0]?.startsWith("/")
+                              ? product.images?.[0]
+                              : `/${product.images?.[0]}` || "/123.jpg"
+                          }
+                          alt={product.title}
+                          className="w-full max-h-full transition-transform duration-500 group-hover:scale-110"
+                        />
                     </div>
+                      </Link>
                   </div>
                 </SwiperSlide>
               ))}
