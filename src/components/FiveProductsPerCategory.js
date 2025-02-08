@@ -19,7 +19,7 @@ const FiveProductsPerCategory = () => {
       try {
         setIsLoading(true);
         setError(null);
-        const response = await fetch("/api/products/home");
+        const response = await fetch("/api/products/home", { cache: "no-store" });
         if (!response.ok) {
           throw new Error("Failed to fetch categories");
         }
