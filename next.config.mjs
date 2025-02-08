@@ -15,7 +15,7 @@ const nextConfig = {
       {
         source: "/api/:path*",
         headers: [
-          { key: "Cache-Control", value: "no-store, no-cache, must-revalidate, proxy-revalidate" },
+          { key: "Cache-Control", value: "no-store, no-cache, must-revalidate, proxy-revalidate,max-age=0" },
           { key: "Surrogate-Control", value: "no-store" },
           {
             key: "Access-Control-Allow-Credentials",
