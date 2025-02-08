@@ -19,12 +19,17 @@ const FiveProductsPerCategory = () => {
       try {
         setIsLoading(true);
         setError(null);
-        const response = await fetch("/api/products/home", { cache: "no-store" });
+        const response = await fetch(`/api/products/home?t=${Date.now()}`, {
+          headers: {
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            Pragma: "no-cache",
+            Expires: "0",
+          },
+        });
         if (!response.ok) {
           throw new Error("Failed to fetch categories");
         }
         const data = await response.json();
-        console.log(data);
         setCategories(data);
       } catch (error) {
         setError(error.message);
