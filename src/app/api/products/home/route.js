@@ -12,6 +12,11 @@ function shuffleArray(array) {
 
 export async function GET(request) {
   try {
+    const headers = new Headers();
+    headers.append("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+    headers.append("Pragma", "no-cache");
+    headers.append("Expires", "0");
+    headers.append("Surrogate-Control", "no-store");
     const client = await clientPromise;
     const db = client.db("productDB");
 
@@ -57,7 +62,8 @@ export async function GET(request) {
         };
       })
     );
-    return NextResponse.json(productsWithCategories);
+    return new NextResponse(JSON.stringify(productsWithCategories), { headers });
+
   } catch (error) {
     console.error("Error in GET /api/products/home:", error);
     return NextResponse.json(
