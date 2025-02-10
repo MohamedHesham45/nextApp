@@ -21,7 +21,15 @@ export default function CategoryPage() {
         setDisplayCategory(categoryData.category.name.startsWith('ال') ? categoryData.category.name : `ال${categoryData.category.name}`);
 
 
-        const response = await fetch(`/api/products?categoryId=${category}`);
+        const response = await fetch(`/api/products?categoryId=${category}`,{
+          headers: {
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            Pragma: "no-cache",
+            Expires: "0",
+            "X-Force-Refresh": "true",
+            cache: 'no-store'
+          },
+        });
         if (!response.ok) {
           throw new Error("Failed to fetch category products");
         }

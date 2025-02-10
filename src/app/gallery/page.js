@@ -24,7 +24,15 @@ export default function Gallery() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/products");
+      const res = await fetch("/api/products",{
+        headers: {
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+          Pragma: "no-cache",
+          Expires: "0",
+          "X-Force-Refresh": "true",
+          cache: 'no-store'
+        },
+      });
       if (!res.ok) {
         throw new Error("Failed to fetch products");
       }
