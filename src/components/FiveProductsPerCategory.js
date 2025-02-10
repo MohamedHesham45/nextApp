@@ -19,11 +19,13 @@ const FiveProductsPerCategory = () => {
       try {
         setIsLoading(true);
         setError(null);
-        const response = await fetch(`/api/products/home?t=${Date.now()}`, {
+        const response = await fetch(`/api/products/home?t=${Date.now()}&rand=${Math.random()}`, {
           headers: {
             "Cache-Control": "no-cache, no-store, must-revalidate",
             Pragma: "no-cache",
             Expires: "0",
+            "X-Force-Refresh": "true",
+            cache: 'no-store'
           },
         });
         if (!response.ok) {
@@ -38,10 +40,10 @@ const FiveProductsPerCategory = () => {
         setIsLoading(false);
       }
     };
-  
+
     fetchCategoriesWithProducts();
   }, []);
-  
+
   if (isLoading) {
     return <LoadingSpinner />;
   }
@@ -78,10 +80,10 @@ const FiveProductsPerCategory = () => {
               className="featured-products-slider"
             >
               {category.products.map((product, index) => (
-                  <SwiperSlide key={index}>
+                <SwiperSlide key={index}>
                   <div className="bg-white shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl">
                     <Link href={`/category/${product.categoryId}`}>
-                    <div className="relative h-64">
+                      <div className="relative h-64">
                         <img
                           src={
                             product.images?.[0]?.startsWith("/")
@@ -91,8 +93,8 @@ const FiveProductsPerCategory = () => {
                           alt={product.title}
                           className="w-full max-h-full transition-transform duration-500 group-hover:scale-110"
                         />
-                    </div>
-                      </Link>
+                      </div>
+                    </Link>
                   </div>
                 </SwiperSlide>
               ))}
