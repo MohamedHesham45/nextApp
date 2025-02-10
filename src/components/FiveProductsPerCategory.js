@@ -1,5 +1,3 @@
-"use client";
-
 import { useCallback, useEffect, useState } from "react";
 import LoadingSpinner from "./LoadingSpinner";
 import { Swiper, SwiperSlide } from "swiper/react";
