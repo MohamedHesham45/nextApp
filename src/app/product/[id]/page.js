@@ -53,7 +53,6 @@ export function ProductDetails() {
       toast.success("تم تعديل الكمية");
     }
   };
-
   useEffect(() => {
     const existingItem = cart.find((item) => item._id === product?._id);
     if (existingItem) {
@@ -61,6 +60,8 @@ export function ProductDetails() {
     } else {
       setCartQuantity(0);
     }
+    
+    
   }, [cart, product?._id]);
 
   const handleAddToFavorite = (e, product) => {
@@ -274,6 +275,7 @@ export function ProductDetails() {
         }
         const data = await response.json();
         setProduct(data);
+        console.log(product);
       } catch (err) {
         setError(err.message);
         console.error("Error fetching product:", err);
@@ -305,13 +307,15 @@ export function ProductDetails() {
             <div className="space-y-4 md:space-y-6">
               <div className="relative group">
                 <img
-                  src={
+                  src=
+                  {
                     images[selectedImageIndex]?.startsWith("/")
                       ? images[selectedImageIndex]
                       : `/${images[selectedImageIndex]}`
                   }
+                  // "/123.jpg"
                   alt={`${product.title} - صورة ${selectedImageIndex + 1}`}
-                  className="w-full h-[250px] sm:h-[350px] md:h-[500px] rounded-2xl shadow-2xl transition-transform duration-300 group-hover:scale-[1.02]"
+                  className="w-full rounded-2xl shadow-2xl transition-transform duration-300 group-hover:scale-[1.02]"
                 />
                 {product.quantity === 0 && (
                   <span className="absolute top-4 right-4 sm:top-6 sm:right-6 bg-amazon-blue text-white text-xs sm:text-sm font-bold px-2 sm:px-4 py-1 sm:py-2 rounded-lg shadow-lg">
@@ -326,7 +330,7 @@ export function ProductDetails() {
               </div>
 
               {images.length > 1 && (
-                <div className="flex gap-2 sm:gap-4 overflow-x-auto pb-2">
+                <div className="flex gap-2 sm:gap-4 overflow-x-auto pb-2 hide-scrollbar">
                   {images.map((image, index) => (
                     <button
                       key={index}
@@ -437,11 +441,11 @@ export function ProductDetails() {
                     <div className="flex-1 flex items-center justify-center gap-2 sm:gap-4 rounded-full">
                       <button
                         onClick={(e) => handleAddToCart(e, product)}
-                        className={`bg-amazon-orange hover:bg-amazon-orange-dark text-white rounded-full transition-all duration-200 hover:shadow-xl flex items-center justify-center text-base sm:text-lg font-semibold ${product.quantity === 0
+                        className={`bg-amazon-orange hover:bg-amazon-orange-dark text-white rounded-full transition-all duration-200 hover:shadow-xl flex items-center justify-center text-base sm:text-lg font-semibold ${Number(product.quantity) === 0
                           ? "opacity-50 cursor-not-allowed"
                           : "hover:scale-105"
                           } px-3 py-2 sm:px-4 sm:py-3 md:px-6 md:py-4 w-full `}
-                        disabled={product.quantity === 0}
+                        disabled={Number(product.quantity) === 0}
                       >
                         <ShoppingCart className="h-5 w-5 sm:h-6 sm:w-6" />
                         اضف الى العربة
@@ -465,7 +469,7 @@ export function ProductDetails() {
                 </div>
               </div>
 
-              <button
+             {Number(product.quantity) > 0 && ( <button
                 className={`w-full bg-green-600 hover:bg-green-700 text-white py-3 sm:py-4 rounded-full transition-all duration-300 hover:shadow-xl text-base sm:text-lg font-semibold ${product.quantity === 0
                   ? "opacity-50 cursor-not-allowed "
                   : "hover:scale-105"
@@ -476,7 +480,7 @@ export function ProductDetails() {
                 }}
               >
                 اطلب الآن
-              </button>
+              </button>)}
             </div>
           </div>
         </div>
