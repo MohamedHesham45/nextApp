@@ -173,3 +173,11 @@ body {
   scrollbar-width:thin; /* Width of the scrollbar */
   scrollbar-color: #232f3e #eeeeee; /* Color of the scrollbar thumb and track */
 }
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
