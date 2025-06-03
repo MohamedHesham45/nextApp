@@ -162,7 +162,7 @@ export function ProductDetails() {
         }
         const data = await response.json();
         setProduct(data);
-        console.log(product);
+        console.log(data);
       } catch (err) {
         setError(err.message);
         console.error("Error fetching product:", err);
@@ -176,16 +176,33 @@ export function ProductDetails() {
     }
   }, [id]);
 
-  // Sharing functionality
+  // Enhanced sharing functionality with better image handling
   const shareUrl = product ? `https://sitaramall.com/product/${product._id}` : '';
   const shareTitle = product ? `${product.title} - سيتار مول` : '';
   const shareDescription = product ? product.description.replace(/<[^>]*>/g, '').substring(0, 150) + '...' : '';
-  const shareImage = product && product.images[0] ? 
-    (product.images[0].startsWith("/") ? 
-      `https://sitaramall.com${product.images[0]}` : 
-      `https://sitaramall.com/${product.images[0]}`) : '';
-
   
+  // Better image URL handling for sharing
+  const getAbsoluteImageUrl = (imageUrl) => {
+    if (!imageUrl) return 'https://sitaramall.com/default-product.jpg'; // fallback image
+    
+    // If it's already an absolute URL, return as is
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+      return imageUrl;
+    }
+    
+    // If it starts with /, just add domain
+    if (imageUrl.startsWith('/')) {
+      return `https://sitaramall.com${imageUrl}`;
+    }
+    
+    // Otherwise, add domain and /
+    return `https://sitaramall.com/${imageUrl}`;
+  };
+  
+  const shareImage = product && product.images && product.images[0] ? 
+    getAbsoluteImageUrl(product.images[0]) : 
+    'https://sitaramall.com/default-product.jpg';
+
   const sharePrice = product ? (product.discountPercentage > 0 ? 
     `السعر: ${Math.round(product.priceAfterDiscount)} جنيه (بدلاً من ${Math.round(product.price)} جنيه)` :
     `السعر: ${Math.round(product.price)} جنيه`) : '';
@@ -204,6 +221,52 @@ export function ProductDetails() {
       toast.error('فشل في نسخ الرابط');
     }
   };
+
+  // Function to dynamically update meta tags (for better social sharing)
+  useEffect(() => {
+    if (product) {
+      // Update document title
+      document.title = shareTitle;
+      
+      // Update or create meta tags
+      const updateMetaTag = (property, content) => {
+        let metaTag = document.querySelector(`meta[property="${property}"]`) || 
+                     document.querySelector(`meta[name="${property}"]`);
+        
+        if (metaTag) {
+          metaTag.setAttribute('content', content);
+        } else {
+          metaTag = document.createElement('meta');
+          metaTag.setAttribute('property', property);
+          metaTag.setAttribute('content', content);
+          document.head.appendChild(metaTag);
+        }
+      };
+
+      // Update Open Graph tags
+      updateMetaTag('og:title', shareTitle);
+      updateMetaTag('og:description', shareDescription);
+      updateMetaTag('og:image', shareImage);
+      updateMetaTag('og:url', shareUrl);
+      updateMetaTag('og:type', 'product');
+      updateMetaTag('og:site_name', 'سيتار مول');
+      updateMetaTag('og:image:width', '1200');
+      updateMetaTag('og:image:height', '630');
+      updateMetaTag('og:image:alt', product.title);
+      
+      // Update Twitter Card tags
+      updateMetaTag('twitter:card', 'summary_large_image');
+      updateMetaTag('twitter:title', shareTitle);
+      updateMetaTag('twitter:description', shareDescription);
+      updateMetaTag('twitter:image', shareImage);
+      updateMetaTag('twitter:image:alt', product.title);
+      
+      // Product specific tags
+      updateMetaTag('product:price:amount', product.priceAfterDiscount || product.price);
+      updateMetaTag('product:price:currency', 'EGP');
+      updateMetaTag('product:availability', product.quantity > 0 ? 'in stock' : 'out of stock');
+    }
+  }, [product, shareTitle, shareDescription, shareImage, shareUrl]);
 
   // Share Modal Component
   const ShareModal = () => (
@@ -233,7 +296,6 @@ export function ProductDetails() {
               <p className="text-sm font-semibold text-green-600 mt-1">{sharePrice}</p>
             </div>
           </div>
-          
         </div>
 
         {/* Share Buttons */}
@@ -320,22 +382,39 @@ export function ProductDetails() {
 
   return (
     <>
-      {/* Meta tags for rich sharing */}
+      {/* Enhanced Meta tags for rich social sharing */}
       <Head>
+        <title>{shareTitle}</title>
+        <meta name="description" content={shareDescription} />
+        
+        {/* Open Graph tags */}
         <meta property="og:title" content={shareTitle} />
         <meta property="og:description" content={shareDescription} />
         <meta property="og:image" content={shareImage} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content={product.title} />
         <meta property="og:url" content={shareUrl} />
         <meta property="og:type" content="product" />
         <meta property="og:site_name" content="سيتار مول" />
+        <meta property="og:locale" content="ar_EG" />
+        
+        {/* Product specific Open Graph tags */}
         <meta property="product:price:amount" content={product.priceAfterDiscount || product.price} />
         <meta property="product:price:currency" content="EGP" />
         <meta property="product:availability" content={product.quantity > 0 ? "in stock" : "out of stock"} />
+        <meta property="product:condition" content="new" />
         
+        {/* Twitter Card tags */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={shareTitle} />
         <meta name="twitter:description" content={shareDescription} />
         <meta name="twitter:image" content={shareImage} />
+        <meta name="twitter:image:alt" content={product.title} />
+        
+        {/* Additional meta tags */}
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href={shareUrl} />
       </Head>
 
       <div className="bg-gray-50">
