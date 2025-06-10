@@ -190,18 +190,16 @@ export function ProductDetails() {
       return imageUrl;
     }
     
-    // If it starts with /, just add domain
-    if (imageUrl.startsWith('/')) {
-      return `https://sitaramall.com${imageUrl}`;
-    }
+    // If it starts with /, remove the leading slash
+    const cleanPath = imageUrl.startsWith('/') ? imageUrl.slice(1) : imageUrl;
     
-    // Otherwise, add domain and /
-    return `https://sitaramall.com/${imageUrl}`;
+    // Construct absolute URL
+    return `${window.location.origin}/${cleanPath}`;
   };
   
   const shareImage = product && product.images && product.images[0] ? 
     getAbsoluteImageUrl(product.images[0]) : 
-    'https://sitaramall.com/default-product.jpg';
+    `${window.location.origin}/default-product.jpg`;
 
   const sharePrice = product ? (product.discountPercentage > 0 ? 
     `السعر: ${Math.round(product.priceAfterDiscount)} جنيه (بدلاً من ${Math.round(product.price)} جنيه)` :
@@ -225,6 +223,14 @@ export function ProductDetails() {
   // Function to dynamically update meta tags (for better social sharing)
   useEffect(() => {
     if (product) {
+      // Log for debugging
+      console.log('Updating meta tags with:', {
+        shareTitle,
+        shareDescription,
+        shareImage,
+        shareUrl
+      });
+
       // Update document title
       document.title = shareTitle;
       
@@ -235,26 +241,44 @@ export function ProductDetails() {
         
         if (metaTag) {
           metaTag.setAttribute('content', content);
+          console.log(`Updated ${property}:`, content);
         } else {
           metaTag = document.createElement('meta');
           metaTag.setAttribute(property.startsWith('og:') ? 'property' : 'name', property);
           metaTag.setAttribute('content', content);
           document.head.appendChild(metaTag);
+          console.log(`Created new ${property}:`, content);
         }
       };
 
       // Update icon tags
       const updateIconTag = (rel) => {
         let linkTag = document.querySelector(`link[rel="${rel}"]`);
+        const absoluteImageUrl = shareImage;
+        
+        console.log(`Updating ${rel} with:`, absoluteImageUrl);
+        
         if (linkTag) {
-          linkTag.setAttribute('href', shareImage);
+          linkTag.setAttribute('href', absoluteImageUrl);
         } else {
           linkTag = document.createElement('link');
           linkTag.setAttribute('rel', rel);
-          linkTag.setAttribute('href', shareImage);
+          linkTag.setAttribute('href', absoluteImageUrl);
           document.head.appendChild(linkTag);
         }
       };
+
+      // Remove existing icons first
+      const removeExistingIcons = () => {
+        const iconLinks = document.querySelectorAll('link[rel*="icon"], link[rel="apple-touch-icon"]');
+        iconLinks.forEach(link => {
+          console.log('Removing existing icon:', link.getAttribute('href'));
+          link.parentNode.removeChild(link);
+        });
+      };
+
+      // Remove existing icons before adding new ones
+      removeExistingIcons();
 
       // Update icons to use product image
       updateIconTag('icon');
@@ -283,6 +307,11 @@ export function ProductDetails() {
       updateMetaTag('product:price:amount', product.priceAfterDiscount || product.price);
       updateMetaTag('product:price:currency', 'EGP');
       updateMetaTag('product:availability', product.quantity > 0 ? 'in stock' : 'out of stock');
+
+      // Log final state
+      console.log('Meta tags update completed');
+      console.log('Current meta tags:', document.querySelectorAll('meta'));
+      console.log('Current icons:', document.querySelectorAll('link[rel*="icon"]'));
     }
   }, [product, shareTitle, shareDescription, shareImage, shareUrl]);
 
