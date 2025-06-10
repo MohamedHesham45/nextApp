@@ -237,11 +237,29 @@ export function ProductDetails() {
           metaTag.setAttribute('content', content);
         } else {
           metaTag = document.createElement('meta');
-          metaTag.setAttribute('property', property);
+          metaTag.setAttribute(property.startsWith('og:') ? 'property' : 'name', property);
           metaTag.setAttribute('content', content);
           document.head.appendChild(metaTag);
         }
       };
+
+      // Update icon tags
+      const updateIconTag = (rel) => {
+        let linkTag = document.querySelector(`link[rel="${rel}"]`);
+        if (linkTag) {
+          linkTag.setAttribute('href', shareImage);
+        } else {
+          linkTag = document.createElement('link');
+          linkTag.setAttribute('rel', rel);
+          linkTag.setAttribute('href', shareImage);
+          document.head.appendChild(linkTag);
+        }
+      };
+
+      // Update icons to use product image
+      updateIconTag('icon');
+      updateIconTag('shortcut icon');
+      updateIconTag('apple-touch-icon');
 
       // Update Open Graph tags
       updateMetaTag('og:title', shareTitle);

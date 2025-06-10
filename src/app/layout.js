@@ -35,9 +35,18 @@ import "slick-carousel/slick/slick-theme.css";
 
 export const metadata = {
   icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon.ico",
-    apple: "/favicon.ico",
+    icon: {
+      url: "/favicon.ico",
+      type: "image/x-icon"
+    },
+    shortcut: {
+      url: "/favicon.ico",
+      type: "image/x-icon"
+    },
+    apple: {
+      url: "/favicon.ico",
+      type: "image/x-icon"
+    },
     other: {
       rel: "apple-touch-icon-precomposed",
       url: "/favicon.ico",
