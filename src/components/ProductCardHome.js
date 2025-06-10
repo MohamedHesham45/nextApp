@@ -149,9 +149,7 @@ const ProductCardHome = ({ product }) => {
       : `السعر: ${Math.round(product.price)} جنيه`;
 
   // Custom share text for WhatsApp with call-to-action and image
-  const whatsappText = `🛍️ ${shareTitle}\n\n📝 ${shareDescription}\n\n💰 ${sharePrice}\n\n🖼️ صورة المنتج: ${shareImage}\n\n✨ ${
-    product.quantity > 10 ? "متوفر الآن" : "كمية محدودة - اطلب الآن"
-  }\n\n👆 اضغط على الرابط لعرض المنتج وإتمام الطلب:`;
+  const whatsappText = `🛍️ ${shareTitle}\n\n📝 ${shareDescription}\n\n💰 ${sharePrice}\n\n👆 اضغط على الرابط لعرض المنتج وإتمام الطلب: ${shareUrl}\n\n🖼️ صورة المنتج:`;
 
   // Copy link function
   const copyToClipboard = async () => {
@@ -204,8 +202,8 @@ const ProductCardHome = ({ product }) => {
         {/* Share Buttons */}
         <div className="grid grid-cols-2 gap-3 mb-4">
           <FacebookShareButton
-            url={shareUrl}
-            quote={`${shareTitle}\n\n${shareDescription}\n\n${sharePrice}\n\n🖼️ صورة المنتج:${shareImage}\n\n🛒 اضغط على الرابط للمشاهدة والطلب الآن!`}
+            url={shareImage}
+            quote={`${shareTitle}\n\n${shareDescription}\n\n${sharePrice}\n\n🛒 اضغط على الرابط للمشاهدة والطلب الآن ${shareUrl}\n\n 🖼️ صورة المنتج:`}
             hashtag="#سيتار_مول #عروض #تسوق_اونلاين"
             className="w-full"
           >
@@ -216,9 +214,9 @@ const ProductCardHome = ({ product }) => {
           </FacebookShareButton>
 
           <WhatsappShareButton
-            url={shareUrl}
+            url={shareImage}
             title={whatsappText}
-            separator="\n\n"
+            separator=""
             className="w-full"
           >
             <div className="flex items-center justify-center gap-2 p-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
@@ -228,8 +226,8 @@ const ProductCardHome = ({ product }) => {
           </WhatsappShareButton>
 
           <TwitterShareButton
-            url={shareUrl}
-            title={`${shareTitle}\n\n${shareDescription}\n\n${sharePrice}\n\n🖼️ صورة المنتج:${shareImage}\n\nاضغط للمشاهدة والطلب`}
+            url={shareImage}
+            title={`${shareTitle}\n\n${shareDescription}\n\n${sharePrice}\n\nاضغط للمشاهدة والطلب: ${shareUrl}`}
             hashtags={["سيتار_مول", "تسوق_اونلاين", "عروض"]}
             className="w-full"
           >
@@ -240,8 +238,8 @@ const ProductCardHome = ({ product }) => {
           </TwitterShareButton>
 
           <TelegramShareButton
-            url={shareUrl}
-            title={`${shareTitle}\n\n${shareDescription}\n\n${sharePrice}\n\n🖼️ صورة المنتج:{shareImage}\n\n🔥 ${
+            url={shareImage}
+            title={`${shareTitle}\n\n${shareDescription}\n\n${sharePrice}\n\nاضغط للمشاهدة والطلب: ${shareUrl}\n\n🔥 ${
               product.quantity > 10
                 ? "متوفر الآن - اطلب من الرابط"
                 : "كمية محدودة - اطلب الآن من الرابط"
