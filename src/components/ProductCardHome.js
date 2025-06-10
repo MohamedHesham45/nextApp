@@ -148,8 +148,8 @@ const ProductCardHome = ({ product }) => {
         )} جنيه (بدلاً من ${Math.round(product.price)} جنيه)`
       : `السعر: ${Math.round(product.price)} جنيه`;
 
-  // Custom share text for WhatsApp with call-to-action
-  const whatsappText = `🛍️ ${shareTitle}\n\n📝 ${shareDescription}\n\n💰 ${sharePrice}\n\n✨ ${
+  // Custom share text for WhatsApp with call-to-action and image
+  const whatsappText = `🛍️ ${shareTitle}\n\n📝 ${shareDescription}\n\n💰 ${sharePrice}\n\n🖼️ صورة المنتج: ${shareImage}\n\n✨ ${
     product.quantity > 10 ? "متوفر الآن" : "كمية محدودة - اطلب الآن"
   }\n\n👆 اضغط على الرابط لعرض المنتج وإتمام الطلب:`;
 
@@ -205,7 +205,7 @@ const ProductCardHome = ({ product }) => {
         <div className="grid grid-cols-2 gap-3 mb-4">
           <FacebookShareButton
             url={shareUrl}
-            quote={`${shareTitle}\n\n${shareDescription}\n\n${sharePrice}\n\n🛒 اضغط على الرابط للمشاهدة والطلب الآن!`}
+            quote={`${shareTitle}\n\n${shareDescription}\n\n${sharePrice}\n\n🖼️ صورة المنتج:${shareImage}\n\n🛒 اضغط على الرابط للمشاهدة والطلب الآن!`}
             hashtag="#سيتار_مول #عروض #تسوق_اونلاين"
             className="w-full"
           >
@@ -218,7 +218,7 @@ const ProductCardHome = ({ product }) => {
           <WhatsappShareButton
             url={shareUrl}
             title={whatsappText}
-            separator=" "
+            separator="\n\n"
             className="w-full"
           >
             <div className="flex items-center justify-center gap-2 p-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
@@ -229,7 +229,7 @@ const ProductCardHome = ({ product }) => {
 
           <TwitterShareButton
             url={shareUrl}
-            title={`${shareTitle} - ${shareDescription} - ${sharePrice} - اضغط للمشاهدة والطلب`}
+            title={`${shareTitle}\n\n${shareDescription}\n\n${sharePrice}\n\n🖼️ صورة المنتج:${shareImage}\n\nاضغط للمشاهدة والطلب`}
             hashtags={["سيتار_مول", "تسوق_اونلاين", "عروض"]}
             className="w-full"
           >
@@ -241,7 +241,7 @@ const ProductCardHome = ({ product }) => {
 
           <TelegramShareButton
             url={shareUrl}
-            title={`${shareTitle}\n\n${shareDescription}\n\n${sharePrice}\n\n🔥 ${
+            title={`${shareTitle}\n\n${shareDescription}\n\n${sharePrice}\n\n🖼️ صورة المنتج:{shareImage}\n\n🔥 ${
               product.quantity > 10
                 ? "متوفر الآن - اطلب من الرابط"
                 : "كمية محدودة - اطلب الآن من الرابط"
