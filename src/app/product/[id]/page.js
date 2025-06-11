@@ -20,9 +20,55 @@ import {
   TwitterIcon,
   TelegramIcon,
 } from 'react-share';
+import { fetchProductById } from "@/lib/products";
+
+export async function generateMetadata({ params }) {
+  const product = await fetchProductById(params.id);
+
+  if (!product) {
+    return {
+      title: "المنتج غير موجود - سيتار مول",
+      description: "هذا المنتج غير متوفر حالياً.",
+    };
+  }
+
+  const shareUrl = `https://sitaramall.com/product/${product._id}`;
+  const shareTitle = `${product.title} - سيتار مول`;
+  const shareDescription = product.description.replace(/<[^>]*>/g, '').substring(0, 150) + '...';
+  const shareImage = product.images && product.images[0]
+    ? `https://sitaramall.com/${product.images[0].replace(/^\//, '')}`
+    : 'https://sitaramall.com/default-product.jpg';
+
+  return {
+    title: shareTitle,
+    description: shareDescription,
+    openGraph: {
+      title: shareTitle,
+      description: shareDescription,
+      url: shareUrl,
+      images: [
+        {
+          url: shareImage,
+          width: 800,
+          height: 600,
+          alt: product.title,
+        },
+      ],
+      type: 'product',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: shareTitle,
+      description: shareDescription,
+      images: [shareImage],
+    },
+  };
+}
 
 export default function ProductPage() {
+  
   return (
+    
     <Suspense fallback={<LoadingSpinner />}>
       <ProductDetails />
     </Suspense>
@@ -181,20 +227,12 @@ export function ProductDetails() {
   const shareTitle = product ? `${product.title} - سيتار مول` : '';
   const shareDescription = product ? product.description.replace(/<[^>]*>/g, '').substring(0, 150) + '...' : '';
   
-  // Better image URL handling for sharing
   const getAbsoluteImageUrl = (imageUrl) => {
-    if (!imageUrl) return 'https://sitaramall.com/default-product.jpg'; // fallback image
+    if (!imageUrl) return 'https://sitaramall.com/default-product.jpg'; 
     
-    // If it's already an absolute URL, return as is
-    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
-      return imageUrl;
-    }
-    
-    // If it starts with /, remove the leading slash
     const cleanPath = imageUrl.startsWith('/') ? imageUrl.slice(1) : imageUrl;
     
-    // Construct absolute URL
-    return `${window.location.origin}/${cleanPath}`;
+    return `https://sitaramall.com/${cleanPath}`;
   };
   
   const shareImage = product && product.images && product.images[0] ? 
@@ -205,10 +243,8 @@ export function ProductDetails() {
     `السعر: ${Math.round(product.priceAfterDiscount)} جنيه (بدلاً من ${Math.round(product.price)} جنيه)` :
     `السعر: ${Math.round(product.price)} جنيه`) : '';
 
-  // Custom share text for WhatsApp with call-to-action
   const whatsappText = `🛍️ ${shareTitle}\n\n📝 ${shareDescription}\n\n💰 ${sharePrice}\n\n✨ ${product?.quantity > 10 ? 'متوفر الآن' : 'كمية محدودة - اطلب الآن'}\n\n👆 اضغط على الرابط لعرض المنتج وإتمام الطلب:`;
 
-  // Copy link function
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(shareUrl);
@@ -335,40 +371,7 @@ export function ProductDetails() {
   return (
     <>
       {/* Enhanced Meta tags for rich social sharing */}
-      <Head>
-        <title>{shareTitle}</title>
-        <meta name="description" content={shareDescription} />
-        
-        {/* Open Graph tags */}
-        <meta property="og:title" content={shareTitle} />
-        <meta property="og:description" content={shareDescription} />
-        <meta property="og:image" content={shareImage} />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content={product.title} />
-        <meta property="og:url" content={shareUrl} />
-        <meta property="og:type" content="product" />
-        <meta property="og:site_name" content="سيتار مول" />
-        <meta property="og:locale" content="ar_EG" />
-        
-        {/* Product specific Open Graph tags */}
-        <meta property="product:price:amount" content={product.priceAfterDiscount || product.price} />
-        <meta property="product:price:currency" content="EGP" />
-        <meta property="product:availability" content={product.quantity > 0 ? "in stock" : "out of stock"} />
-        <meta property="product:condition" content="new" />
-        
-        {/* Twitter Card tags */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={shareTitle} />
-        <meta name="twitter:description" content={shareDescription} />
-        <meta name="twitter:image" content={shareImage} />
-        <meta name="twitter:image:alt" content={product.title} />
-        
-        {/* Additional meta tags */}
-        <meta name="robots" content="index, follow" />
-        <link rel="canonical" href={shareUrl} />
-      </Head>
-
+      
       <div className="bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-16 py-8 md:py-16 direction-rtl min-h-screen">
           <div className="max-w-7xl mx-auto">
