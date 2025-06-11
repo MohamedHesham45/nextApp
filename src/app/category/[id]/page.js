@@ -5,7 +5,7 @@ import { fetchCategoryWithProducts } from "@/lib/products";
 
 export async function generateMetadata({ params }) {
   try {
-    const data = await fetchCategoryWithProducts(params.category);
+    const data = await fetchCategoryWithProducts(params.id);
     
     if (!data || !data.category) {
       return {
@@ -18,7 +18,7 @@ export async function generateMetadata({ params }) {
       data.category.name : 
       `ال${data.category.name}`;
 
-    const shareUrl = `https://sitaramall.com/category/${params.category}`;
+    const shareUrl = `https://sitaramall.com/category/${params.id}`;
     const shareTitle = `${categoryName} - سيتار مول`;
     const shareDescription = `تسوق ${categoryName} - اكتشف مجموعتنا الواسعة من المنتجات المميزة بأفضل الأسعار`;
     
@@ -62,7 +62,7 @@ export async function generateMetadata({ params }) {
 
 export default async function Page({ params }) {
   try {
-    const data = await fetchCategoryWithProducts(params.category);
+    const data = await fetchCategoryWithProducts(params.id);
 
     if (!data || !data.category) {
       return (

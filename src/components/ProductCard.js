@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Edit, Trash2 } from "lucide-react";
 import Slider from "react-slick";
+import DOMPurify from 'isomorphic-dompurify';
 
-import DOMPurify from 'dompurify';
 export const sanitizeHTML = (dirty) => {
+  if (typeof dirty !== 'string') return '';
   return DOMPurify.sanitize(dirty);
 };
 

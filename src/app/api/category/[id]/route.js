@@ -1,15 +1,27 @@
+import { fetchCategoryWithProducts } from "@/lib/products";
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
+
 export async function GET(request, { params }) {
   try {
-    const client = await clientPromise;
-    const db = client.db("productDB");
-    const category = await db.collection("categories").findOne({ _id: new ObjectId(params.id) });
-    return NextResponse.json({ message: "تم جلب الفئة بنجاح", category });
+    const { id } = params;
+    const data = await fetchCategoryWithProducts(id);
+
+    if (!data) {
+      return NextResponse.json(
+        { error: "Category not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(data);
   } catch (error) {
-    console.error("Error fetching category:", error);
-    return NextResponse.json({ message: "حدث خطأ أثناء جلب الفئة" }, { status: 500 });
+    console.error("Error in category API:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
 
