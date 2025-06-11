@@ -3,6 +3,7 @@
 import ProductCardHome from "@/components/ProductCardHome";
 import { useEffect, useState } from "react";
 import { Search, Share2, Copy, Check } from "lucide-react";
+import { useParams } from 'next/navigation';
 import {
   FacebookShareButton,
   WhatsappShareButton,
@@ -15,27 +16,78 @@ import {
 } from 'react-share';
 import { toast } from "react-hot-toast";
 
-export default function CategoryDetails({ initialCategory, initialProducts }) {
-  const [displayCategory, setDisplayCategory] = useState(initialCategory.name);
-  const [products, setProducts] = useState(initialProducts);
+export default function CategoryDetails() {
+  const { id } = useParams();
+  const [displayCategory, setDisplayCategory] = useState("");
+  const [products, setProducts] = useState([]);
+  const [category, setCategory] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [showShareModal, setShowShareModal] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Update display category with "ال" prefix if needed
-    setDisplayCategory(initialCategory.name.startsWith('ال') ? 
-      initialCategory.name : 
-      `ال${initialCategory.name}`
-    );
-    setProducts(initialProducts);
-  }, [initialCategory, initialProducts]);
+    const fetchCategoryData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const response = await fetch(`/api/category/${id}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch category data');
+        }
+        const data = await response.json();
+        
+        if (!data || !data.category) {
+          setError('Category not found');
+          return;
+        }
+
+        setCategory(data.category);
+        setDisplayCategory(data.category.name.startsWith('ال') ? 
+          data.category.name : 
+          `ال${data.category.name}`
+        );
+        setProducts(data.products || []);
+      } catch (error) {
+        console.error('Error fetching category data:', error);
+        setError('حدث خطأ أثناء تحميل البيانات');
+        toast.error('حدث خطأ أثناء تحميل البيانات');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchCategoryData();
+    }
+  }, [id]);
 
   useEffect(() => {
     // Scroll to top on page load
     window.scrollTo(0, 0);
   }, []);
+
+  // If loading, show loading state
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amazon-orange"></div>
+      </div>
+    );
+  }
+
+  // If error or no category found, show error state
+  if (error || !category) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
+        <div className="text-center py-10">
+          <h1 className="text-2xl font-bold text-gray-800">الفئة غير موجودة</h1>
+          <p className="text-gray-600 mt-2">عذراً، هذه الفئة غير متوفرة حالياً.</p>
+        </div>
+      </div>
+    );
+  }
 
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -43,7 +95,7 @@ export default function CategoryDetails({ initialCategory, initialProducts }) {
   });
 
   // Share functionality
-  const shareUrl = `https://sitaramall.com/category/${initialCategory._id}`;
+  const shareUrl = `https://sitaramall.com/category/${id}`;
   const shareTitle = `${displayCategory} - سيتار مول`;
   const shareDescription = `تسوق ${displayCategory} - اكتشف مجموعتنا الواسعة من المنتجات المميزة بأفضل الأسعار`;
   
@@ -205,11 +257,7 @@ export default function CategoryDetails({ initialCategory, initialProducts }) {
 
         {/* Content Section */}
         <div className="container mx-auto px-4 py-8">
-          {isLoading ? (
-            <div className="flex justify-center items-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amazon-orange"></div>
-            </div>
-          ) : products.length === 0 ? (
+          {products.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-center bg-white rounded-lg shadow-sm">
               <h2 className="text-2xl font-semibold text-gray-700 mb-3">
                 لا توجد منتجات في هذه الفئة

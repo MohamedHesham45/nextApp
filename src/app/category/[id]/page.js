@@ -60,31 +60,10 @@ export async function generateMetadata({ params }) {
   }
 }
 
-export default async function Page({ params }) {
-  try {
-    const data = await fetchCategoryWithProducts(params.id);
-
-    if (!data || !data.category) {
-      return (
-        <div className="text-center py-10">
-          <h1 className="text-2xl font-bold text-gray-800">الفئة غير موجودة</h1>
-          <p className="text-gray-600 mt-2">عذراً، هذه الفئة غير متوفرة حالياً.</p>
-        </div>
-      );
-    }
-
+export default async function Page() {
     return (
       <Suspense fallback={<LoadingSpinner />}>
-        <CategoryDetails initialCategory={data.category} initialProducts={data.products} />
+        <CategoryDetails />
       </Suspense>
-    );
-  } catch (error) {
-    console.error("Error fetching category data:", error);
-    return (
-      <div className="text-center py-10">
-        <h1 className="text-2xl font-bold text-gray-800">حدث خطأ</h1>
-        <p className="text-gray-600 mt-2">عذراً، حدث خطأ أثناء تحميل الفئة.</p>
-      </div>
-    );
-  }
+    ); 
 }
