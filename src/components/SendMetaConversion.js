@@ -63,8 +63,7 @@ const createMetaConversionSender = (profile) => {
                 console.error('Meta Conversion API error:', await response.text());
             } else {
                 const responseData = await response.json();
-                console.log('Meta Conversion API response:', responseData.sentPayload);
-                console.log(profile);
+               
 
             }
 

@@ -46,10 +46,21 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default function Page() {
+export default async function Page({ params }) {
+  const product = await fetchProductById(params.id);
+  
+  if (!product) {
+    return (
+      <div className="text-center py-10">
+        <h1 className="text-2xl font-bold text-gray-800">المنتج غير موجود</h1>
+        <p className="text-gray-600 mt-2">عذراً، هذا المنتج غير متوفر حالياً.</p>
+      </div>
+    );
+  }
+
   return (
     <Suspense fallback={<LoadingSpinner />}>
-      <ProductDetails />
+      <ProductDetails initialProduct={product} />
     </Suspense>
   );
 }

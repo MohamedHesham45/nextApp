@@ -207,7 +207,6 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
   }, {});
 
   const validateMinimumQuantities = () => {
-    console.log("here")
     const errors = {};
     Object.values(groupedCartItems).forEach((group) => {
       if (group.totalQuantity < group.category.minCount) {
