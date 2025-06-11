@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import Head from "next/head";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { Heart, ShoppingCart, Share2, Copy, Check } from "lucide-react";
 import { sanitizeHTML } from "@/components/ProductCard";
@@ -21,10 +20,10 @@ import {
   TelegramIcon,
 } from 'react-share';
 
-export default function ProductDetails({ initialProduct }) {
+export default function ProductDetails() {
   const { id } = useParams();
-  const [product, setProduct] = useState(initialProduct);
-  const [isLoading, setIsLoading] = useState(!initialProduct);
+  const [product, setProduct] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isCartVisible, setIsCartVisible] = useState(false);
@@ -33,30 +32,6 @@ export default function ProductDetails({ initialProduct }) {
   const { cart, setCart, favorite, setFavorite } = useCartFavorite();
   const [cartQuantity, setCartQuantity] = useState(0);
   const sendMetaConversion = useMetaConversion();
-
-  // Fetch category data if needed
-  useEffect(() => {
-    const fetchCategoryData = async () => {
-      if (!initialProduct.categoryId || typeof initialProduct.categoryId === 'string') {
-        try {
-          setIsLoading(true);
-          const response = await fetch(`/api/products/${id}`);
-          if (!response.ok) {
-            throw new Error("Failed to fetch product");
-          }
-          const data = await response.json();
-          setProduct(data);
-        } catch (err) {
-          setError(err.message);
-          console.error("Error fetching product:", err);
-        } finally {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    fetchCategoryData();
-  }, [id, initialProduct]);
 
   const handleQuantityChange = (e, change) => {
     e.preventDefault();
@@ -167,6 +142,30 @@ export default function ProductDetails({ initialProduct }) {
       setIsCartVisible(true);
     }
   };
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch(`/api/products/${id}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch product");
+        }
+        const data = await response.json();
+        setProduct(data);
+        console.log(data);
+      } catch (err) {
+        setError(err.message);
+        console.error("Error fetching product:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchProduct();
+    }
+  }, [id]);
 
   // Enhanced sharing functionality with better image handling
   const shareUrl = product ? `https://sitaramall.com/product/${product._id}` : '';
