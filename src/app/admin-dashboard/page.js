@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "@/app/context/AuthContext";
 import UserOrdersPage from "../user/orders/page";
 import OrdersPage from "../admin/orders/page";
 import AdminPage from "../admin/page";

@@ -9,6 +9,7 @@ import {
 export default function Footer() {
   const [whatsappNumber, setWhatsappNumber] = useState('');
   const [email, setEmail] = useState('');
+  const year = new Date().getFullYear();
  
   const fetchEmail = async () => {
     const response = await fetch('/api/customize?name=ايميل التواصل');
@@ -94,7 +95,7 @@ export default function Footer() {
         </div>
         <div className="border-t border-gray-700 mt-8 pt-4 text-center text-gray-400">
           <p>
-            &copy; 2023 Our Store. All rights
+            &copy; {year} Our Store. All rights
             reserved.
           </p>
         </div>

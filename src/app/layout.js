@@ -1,6 +1,7 @@
 import localFont from "next/font/local";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+// import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { AuthProvider } from "./context/AuthContext";
@@ -79,14 +80,14 @@ export default function RootLayout({ children }) {
   return (
     <AuthProvider>
       <CartFavoriteProvider>
-        <html lang="en">
+        <html lang="ar">
           <head>
             {/* <Head> */}
-              {/* Meta Pixel Code */}
-              <script
-                async
-                dangerouslySetInnerHTML={{
-                  __html: `
+            {/* Meta Pixel Code */}
+            <script
+              async
+              dangerouslySetInnerHTML={{
+                __html: `
                     !function(f,b,e,v,n,t,s)
                   {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
                   n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -98,26 +99,28 @@ export default function RootLayout({ children }) {
                   fbq('init', '3835132599966818');
                   fbq('track', 'PageView');
                   `,
-                }}
+              }}
+            />
+
+            <noscript>
+              <img
+                height="1"
+                width="1"
+                style={{ display: "none" }}
+                src="https://www.facebook.com/tr?id=3835132599966818&ev=PageView&noscript=1"
               />
-              
-              <noscript>
-                    <img
-                      height="1"
-                      width="1"
-                      style={{ display: "none" }} 
-                      src="https://www.facebook.com/tr?id=3835132599966818&ev=PageView&noscript=1"
-                      />
-                </noscript>
-              {/* End Meta Pixel Code */}
+            </noscript>
+            {/* End Meta Pixel Code */}
             {/* </Head> */}
           </head>
           <body
-          // className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+            // className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+            className="min-h-screen flex flex-col"
           >
             <Toaster position="top-right" />
             <Navbar />
-            <main className="pt-12">
+            {/* <main className="pt-12"> */}
+            <main className="pt-0 md:pt-12 flex-1">
               {" "}
               {/* Add padding-top to account for fixed navbar */}
               {children}
