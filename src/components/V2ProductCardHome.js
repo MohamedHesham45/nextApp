@@ -153,8 +153,8 @@ const V2ProductCardHome = ({ product }) => {
                                     <img
                                         src={
                                             img.startsWith("/")
-                                                ? `https://sitaramall.com${img}`
-                                                : `https://sitaramall.com/${img}`
+                                                ? `${img}`
+                                                : `/${img}`
                                         }
                                         alt={product.title}
                                         loading="lazy"
@@ -167,8 +167,8 @@ const V2ProductCardHome = ({ product }) => {
                                 src={
                                     product.images && product.images[0]
                                         ? product.images[0].startsWith("/")
-                                            ? `https://sitaramall.com${product.images[0]}`
-                                            : `https://sitaramall.com/${product.images[0]}`
+                                            ? `${product.images[0]}`
+                                            : `/${product.images[0]}`
                                         : "/placeholder.png"
                                 }
                                 alt={product.title}
@@ -266,8 +266,8 @@ const V2ProductCardHome = ({ product }) => {
                                     src={
                                         product.images && product.images[0]
                                             ? product.images[0].startsWith("/")
-                                                ? `https://sitaramall.com${product.images[0]}`
-                                                : `https://sitaramall.com/${product.images[0]}`
+                                                ? `${product.images[0]}`
+                                                : `/${product.images[0]}`
                                             : "/placeholder.png"
                                     }
                                     alt={product.title}

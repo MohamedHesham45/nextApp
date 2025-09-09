@@ -368,8 +368,8 @@ export default function CategoryDetails() {
                         src={
                           product.images && product.images[0]
                             ? product.images[0].startsWith("/")
-                              ? `https://sitaramall.com${product.images[0]}`
-                              : `https://sitaramall.com/${product.images[0]}`
+                              ? `{product.images[0]}`
+                              : `/${product.images[0]}`
                             : "/placeholder.png"
                         }
                         alt={product.title}
@@ -486,8 +486,8 @@ export default function CategoryDetails() {
                   src={
                     shareProduct.images && shareProduct.images[0]
                       ? shareProduct.images[0].startsWith("/")
-                        ? `https://sitaramall.com${shareProduct.images[0]}`
-                        : `https://sitaramall.com/${shareProduct.images[0]}`
+                        ? `${shareProduct.images[0]}`
+                        : `/${shareProduct.images[0]}`
                       : "/placeholder.png"
                   }
                   alt={shareProduct.title}
