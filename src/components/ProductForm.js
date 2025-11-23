@@ -196,7 +196,12 @@ const ProductForm = ({
 
     const url = URL.createObjectURL(file);
     const video = document.createElement("video");
+
     video.src = url;
+    video.muted = true;
+    video.playsInline = true;
+    video.style.display = "none";
+    document.body.appendChild(video);
 
     await new Promise((resolve) => {
       video.onloadedmetadata = () => {
@@ -207,6 +212,8 @@ const ProductForm = ({
         resolve();
       };
     });
+
+    video.currentTime = 0;
 
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
@@ -231,8 +238,6 @@ const ProductForm = ({
 
     recorder.start();
 
-    video.play();
-
     const draw = () => {
       if (!video.paused && !video.ended) {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -241,9 +246,7 @@ const ProductForm = ({
     };
     draw();
 
-    await new Promise((resolve) => {
-      video.onended = () => resolve();
-    });
+    await new Promise((resolve) => (video.onended = resolve));
 
     recorder.stop();
 
