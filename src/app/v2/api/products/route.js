@@ -82,6 +82,7 @@ export async function POST(request) {
       priceAfterDiscount,
       quantity,
       images,
+      video,
     } = await request.json();
 
     const client = await clientPromise;
@@ -92,11 +93,17 @@ export async function POST(request) {
       .findOne({ _id: new ObjectId(categoryId) });
 
     if (!existingCategory) {
-      return NextResponse.json({ message: "الفئة غير موجودة" }, { status: 404 });
+      return NextResponse.json(
+        { message: "الفئة غير موجودة" },
+        { status: 404 }
+      );
     }
 
     if (existingCategory.name !== category) {
-      return NextResponse.json({ message: "اسم الفئة لا يتطابق" }, { status: 400 });
+      return NextResponse.json(
+        { message: "اسم الفئة لا يتطابق" },
+        { status: 400 }
+      );
     }
 
     price = parseInt(price);
@@ -167,6 +174,7 @@ export async function POST(request) {
       discountPercentage,
       priceAfterDiscount,
       quantity,
+      video: video || null,
     };
 
     const result = await db.collection("products").insertOne(newProduct);

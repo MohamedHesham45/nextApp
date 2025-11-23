@@ -8,7 +8,7 @@ export default function SignUpModal({ isOpen, onClose, setModalType }) {
     name: "",
     email: "",
     // centerArea: "",
-    // governorate: "",  
+    // governorate: "",
     // neighborhood: "",
     // phone: "",
   });
@@ -32,7 +32,7 @@ export default function SignUpModal({ isOpen, onClose, setModalType }) {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/auth/signup", {
+      const response = await fetch("/v2/api/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -67,7 +67,6 @@ export default function SignUpModal({ isOpen, onClose, setModalType }) {
   };
 
   if (!isOpen) return null;
-
 
   return (
     <div
@@ -115,7 +114,10 @@ export default function SignUpModal({ isOpen, onClose, setModalType }) {
               />
             </div>
             <div>
-              <label htmlFor="password" className="block text-sm font-medium mb-1">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium mb-1"
+              >
                 كلمة السر
               </label>
               <div className="relative">
@@ -128,9 +130,9 @@ export default function SignUpModal({ isOpen, onClose, setModalType }) {
                   required
                   className="w-full px-3 py-2 border rounded-md"
                 />
-                <button 
+                <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)} 
+                  onClick={() => setShowPassword(!showPassword)}
                   className="absolute left-2 top-1/2 transform -translate-y-1/2"
                 >
                   {showPassword ? <EyeOff /> : <Eye />}
@@ -208,12 +210,11 @@ export default function SignUpModal({ isOpen, onClose, setModalType }) {
               إنشاء حساب
             </button>
           </form>
-
         )}
         <div className="mt-4 text-sm text-center">
           هل لديك حساب بالفعل؟{" "}
           <button
-            onClick={() => setModalType('sign-in')}
+            onClick={() => setModalType("sign-in")}
             className="text-blue-500 hover:underline"
           >
             تسجيل الدخول

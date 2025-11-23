@@ -12,12 +12,12 @@ import {
   Image,
   Phone,
   UserCheck,
+  Home,
 } from "lucide-react";
 import SignInModal from "@/app/(auth)/sign-in/[[...sign-in]]/page";
 import SignUpModal from "@/app/(auth)/sign-up/[[...sign-up]]/page";
 import { useAuth } from "@/app/context/AuthContext";
 import { useCartFavorite } from "@/app/context/cartFavoriteContext";
-import ProfileModal from "./ProfileModal";
 import ShoppingCartPage from "./ShoppingCart";
 import useMetaConversion from "./SendMetaConversion";
 import V2ProfileModal from "./V2ProfileModal";
@@ -92,7 +92,7 @@ export default function V2Navbar() {
 
         <nav className="container mx-auto px-6 h-16 flex justify-between items-center">
           <div className="text-xl font-semibold text-white order-2">
-            <Link href="/">ستارة مول</Link>
+            <Link href="/v2">ستارة مول</Link>
           </div>
 
           <div className="hidden md:flex items-center h-full order-1">
@@ -222,7 +222,7 @@ export default function V2Navbar() {
             {isLoggedIn ? (firstName || "مستخدم") : "الحساب"}
           </span>
         </button>
-        <Link href="/favorites" className="flex flex-col items-center text-xs relative">
+        <Link href="/v2/favorites" className="flex flex-col items-center text-xs relative">
           {numberOfFavoriteItems > 0 && (
             <span className="absolute -top-1 -right-2 text-[10px] bg-amazon-yellow text-amazon-dark-gray px-1 rounded-full">
               {numberOfFavoriteItems}
@@ -249,11 +249,15 @@ export default function V2Navbar() {
             <span>{link.label}</span>
           </Link>
         ))}
-        <Link href="/gallery" className="flex flex-col items-center text-xs">
+        <Link href="/v2" className="flex flex-col items-center text-xs">
+          <Home size={22} />
+          <span>الرئيسية</span>
+        </Link>
+        <Link href="/v2/gallery" className="flex flex-col items-center text-xs">
           <Image size={22} />
           <span>المعرض</span>
         </Link>
-        <Link href="/contact" className="flex flex-col items-center text-xs">
+        <Link href="/v2/contact" className="flex flex-col items-center text-xs">
           <Phone size={22} />
           <span>تواصل</span>
         </Link>

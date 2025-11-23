@@ -36,7 +36,7 @@ export function AuthProvider({ children }) {
   }, [storedProfile]);
   const verifyToken = async (storedToken) => {
     try {
-      const response = await fetch("/api/auth/verify-token", {
+      const response = await fetch("/v2/api/auth/verify-token", {
         method: "POST",
         body: JSON.stringify({ token: storedToken }),
       });
@@ -80,7 +80,6 @@ export function AuthProvider({ children }) {
     setEmail(null); // Clear email on logout
     setUserId(null); // Clear userId on logout
     setRole(null);
-
   };
 
   return (

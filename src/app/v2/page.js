@@ -3,13 +3,11 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { ChevronUp } from "lucide-react";
-import FeaturedProducts from "@/components/FeaturedProducts";
 import MapLocation from "@/components/MapLocation";
-import FiveProductsPerCategory from "@/components/FiveProductsPerCategory";
 import V2FiveProductsPerCategory from "@/components/V2FiveProductsPerCategory";
 
 export default function LandingPage() {
-  const [mounted, setMounted] = useState(false); // ✅ عشان نمنع hydration error
+  const [mounted, setMounted] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [mainImage, setMainImage] = useState("/123.jpg");
   const [whatsappNumber, setWhatsappNumber] = useState("");
@@ -25,17 +23,25 @@ export default function LandingPage() {
   }, [mounted]);
 
   const fetchCustomFields = async () => {
-    const response = await fetch("/api/customize?name=رقم الواتس");
-    if (!response.ok) throw new Error("Failed to fetch custom fields");
-    const data = await response.json();
-    setWhatsappNumber(data[0].value);
+    try {
+      const response = await fetch("/v2/api/customize?name=رقم الواتس");
+      if (!response.ok) throw new Error("Failed to fetch custom fields");
+      const data = await response.json();
+      const value = data[0]?.value || "";
+      setWhatsappNumber(value);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const fetchMainImage = async () => {
-    const res = await fetch("/api/customize?name=صوره الوجهه");
-    const data = await res.json();
-    if (data.length > 0) {
-      setMainImage(data[0].value);
+    try {
+      const res = await fetch("/v2/api/customize?name=صوره الوجهه");
+      const data = await res.json();
+      const value = data.length > 0 ? data[0].value : "/123.jpg";
+      setMainImage(value);
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -44,7 +50,9 @@ export default function LandingPage() {
   const handleClick = () => {
     const encodedMessage = encodeURIComponent(message);
     window.open(
-      `https://wa.me/${whatsappNumber || "201223821206"}?text=${encodedMessage}`,
+      `https://wa.me/${
+        whatsappNumber || "201223821206"
+      }?text=${encodedMessage}`,
       "_blank"
     );
   };
@@ -58,7 +66,6 @@ export default function LandingPage() {
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
-  // ✅ لو لسه ما اتعملش mount، منرجعش UI عشان مانعملش hydration mismatch
   if (!mounted) return null;
 
   return (
@@ -68,11 +75,7 @@ export default function LandingPage() {
         <section className="relative min-h-[40vh] flex flex-col items-center justify-center bg-white overflow-hidden md:p-6 text-center">
           <div className="relative w-40 h-40 md:w-52 md:h-52 rounded-full overflow-hidden shadow-lg border-4 border-amazon-yellow mb-6">
             <img
-              src={
-                mainImage?.startsWith("/")
-                  ? "/" + mainImage
-                  :  `/${mainImage}`
-              }
+              src={mainImage?.startsWith("/") ? mainImage : `/${mainImage}`}
               alt="ستارة مول"
               className="w-full h-full object-cover"
             />
@@ -105,13 +108,6 @@ export default function LandingPage() {
             <V2FiveProductsPerCategory />
           </div>
         </section>
-
-        {/* Featured Products (ممكن تفعلها بعدين لو عايز) */}
-        {/* <section className="bg-amazon-light-gray py-10">
-          <div className="container mx-auto px-6">
-            <FeaturedProducts />
-          </div>
-        </section> */}
 
         {/* Why Us Section */}
         <section className="bg-white direction-rtl">

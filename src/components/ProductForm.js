@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { XCircle } from "lucide-react";
-import dynamic from 'next/dynamic';
-import imageCompression from 'browser-image-compression';
+import dynamic from "next/dynamic";
+import imageCompression from "browser-image-compression";
 
-const ReactQuill = dynamic(() => import('react-quill'), {
+const ReactQuill = dynamic(() => import("react-quill"), {
   ssr: false,
-  loading: () => <p>Loading editor...</p>
+  loading: () => <p>Loading editor...</p>,
 });
 
 const modules = {
@@ -41,7 +41,14 @@ const formats = [
   "link",
 ];
 
-const ProductForm = ({ onSubmit, initialData, onCancel, categories, loadingSubmit, errorSubmit }) => {
+const ProductForm = ({
+  onSubmit,
+  initialData,
+  onCancel,
+  categories,
+  loadingSubmit,
+  errorSubmit,
+}) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [images, setImages] = useState([]);
@@ -50,10 +57,14 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories, loadingSubmi
   const [priceAfterDiscount, setPriceAfterDiscount] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [errors, setErrors] = useState({});
+  const [video, setVideo] = useState(null);
+  const [videoError, setVideoError] = useState("");
 
   useEffect(() => {
     if (initialData) {
-      const category = categories.find(cat => cat._id === initialData.categoryId._id)
+      const category = categories.find(
+        (cat) => cat._id === initialData.categoryId._id
+      );
       setTitle(initialData.title);
       setDescription(initialData.description);
       setImages(initialData.images || []);
@@ -61,7 +72,6 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories, loadingSubmi
       setPrice(initialData.price || "");
       setPriceAfterDiscount(initialData.priceAfterDiscount || "");
       setQuantity(initialData.quantity || 1);
-
     } else {
       setTitle("");
       setDescription("");
@@ -102,33 +112,38 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories, loadingSubmi
     images.forEach((image) => {
       formData.append(`images`, image);
     });
+    if (video) {
+      formData.append("video", video);
+    }
 
     try {
       await onSubmit(formData);
 
       var userAgent = navigator.userAgent;
 
-      fetch('https://api.ipify.org?format=json')
-          .then(response => response.json())
-          .then(async (data) => {
-              var ipAddress = data.ip;
-              fbq('trackCustom', 'AddProduct', {
-                  product_name: formData.title,
-                  product_category: formData.category,
-                  // product_ids: [product._id],
-                  product_image: "https://sitaramall.com/" + formData.images[0],
-                  product_price: formData.price,
-                  product_price_after_discount: formData.priceAfterDiscount || formData.price,
-                  product_quantity: formData.quantity,
-                  product_images: formData.images.map(image => "https://sitaramall.com/" + image),
-                  value: formData.priceAfterDiscount || formData.price,
-                  currency: 'EGP',
-                  ip_address: ipAddress,
-                  user_agent: userAgent
-              });
-          })
-          .catch(error => console.error('Error fetching IP address:', error));
-
+      fetch("https://api.ipify.org?format=json")
+        .then((response) => response.json())
+        .then(async (data) => {
+          var ipAddress = data.ip;
+          fbq("trackCustom", "AddProduct", {
+            product_name: formData.title,
+            product_category: formData.category,
+            // product_ids: [product._id],
+            product_image: "https://sitaramall.com/" + formData.images[0],
+            product_price: formData.price,
+            product_price_after_discount:
+              formData.priceAfterDiscount || formData.price,
+            product_quantity: formData.quantity,
+            product_images: formData.images.map(
+              (image) => "https://sitaramall.com/" + image
+            ),
+            value: formData.priceAfterDiscount || formData.price,
+            currency: "EGP",
+            ip_address: ipAddress,
+            user_agent: userAgent,
+          });
+        })
+        .catch((error) => console.error("Error fetching IP address:", error));
     } catch (error) {
       setErrors({ backend: errorSubmit });
     }
@@ -136,24 +151,27 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories, loadingSubmi
   const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files);
     const processedFiles = [];
-  
+
     for (let file of files) {
       try {
         const compressionOptions = {
-          maxSizeMB: 1, 
-          maxWidthOrHeight: 1920, 
-          useWebWorker: true, 
+          maxSizeMB: 1,
+          maxWidthOrHeight: 1920,
+          useWebWorker: true,
         };
-  
+
         if (file.size > compressionOptions.maxSizeMB * 1024 * 1024) {
-          const compressedFile = await imageCompression(file, compressionOptions);
-  
+          const compressedFile = await imageCompression(
+            file,
+            compressionOptions
+          );
+
           const renamedFile = new File(
             [compressedFile],
             "updated_image_" + new Date().getTime() + ".jpg",
             { type: compressedFile.type }
           );
-  
+
           processedFiles.push(renamedFile);
         } else {
           processedFiles.push(file);
@@ -162,10 +180,85 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories, loadingSubmi
         console.error("Error compressing file:", error);
       }
     }
-  
+
     setImages((prevImages) => [...prevImages, ...processedFiles]);
   };
-  
+  const handleVideoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setVideoError("");
+
+    if (!file.type.startsWith("video/")) {
+      setVideoError("يجب اختيار فيديو فقط");
+      return;
+    }
+
+    const url = URL.createObjectURL(file);
+    const video = document.createElement("video");
+    video.src = url;
+
+    await new Promise((resolve) => {
+      video.onloadedmetadata = () => {
+        if (video.duration > 300) {
+          setVideoError("المدة يجب أن تكون أقل من 5 دقائق");
+          return;
+        }
+        resolve();
+      };
+    });
+
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    const maxHeight = 480;
+    const scale = maxHeight / video.videoHeight;
+
+    canvas.width = video.videoWidth * scale;
+    canvas.height = maxHeight;
+
+    const stream = canvas.captureStream();
+    const recorder = new MediaRecorder(stream, {
+      mimeType: "video/webm",
+      videoBitsPerSecond: 700000,
+    });
+
+    const chunks = [];
+
+    recorder.ondataavailable = (event) => {
+      if (event.data.size > 0) chunks.push(event.data);
+    };
+
+    recorder.start();
+
+    video.play();
+
+    const draw = () => {
+      if (!video.paused && !video.ended) {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        requestAnimationFrame(draw);
+      }
+    };
+    draw();
+
+    await new Promise((resolve) => {
+      video.onended = () => resolve();
+    });
+
+    recorder.stop();
+
+    const compressedBlob = await new Promise((resolve) => {
+      recorder.onstop = () => resolve(new Blob(chunks, { type: "video/webm" }));
+    });
+
+    const compressedFile = new File(
+      [compressedBlob],
+      "compressed_" + Date.now() + ".webm",
+      { type: "video/webm" }
+    );
+
+    setVideo(compressedFile);
+  };
 
   const handleDeleteImage = (index) => {
     setImages((prevImages) => prevImages.filter((_, i) => i !== index));
@@ -175,7 +268,10 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories, loadingSubmi
     <div className="max-h-screen overflow-y-auto ">
       <form onSubmit={handleSubmit} className="direction-rtl my-8 mx-4">
         <div className="mb-4 ">
-          <label className="block text-gray-700 text-sm font-bold mb-2 " htmlFor="title">
+          <label
+            className="block text-gray-700 text-sm font-bold mb-2 "
+            htmlFor="title"
+          >
             العنوان
           </label>
           <input
@@ -184,14 +280,17 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories, loadingSubmi
             type="text"
             value={title}
             onChange={(e) => {
-              setTitle(e.target.value)
-              setErrors({ ...errors, title: null, backend: null })
+              setTitle(e.target.value);
+              setErrors({ ...errors, title: null, backend: null });
             }}
           />
           {errors.title && <p className="text-red-500">{errors.title}</p>}
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="description">
+          <label
+            className="block text-gray-700 text-sm font-bold mb-2"
+            htmlFor="description"
+          >
             الوصف
           </label>
           <div>
@@ -207,11 +306,16 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories, loadingSubmi
               className="h-full direction-rtl"
             />
           </div>
-          {errors.description && <p className="text-red-500">{errors.description}</p>}
+          {errors.description && (
+            <p className="text-red-500">{errors.description}</p>
+          )}
         </div>
         <div className="flex justify-between gap-2">
           <div className="mb-4 w-full">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="category">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="category"
+            >
               الفئه
             </label>
             <select
@@ -219,8 +323,8 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories, loadingSubmi
               id="category"
               value={JSON.stringify(category)}
               onChange={(e) => {
-                setCategory(JSON.parse(e.target.value))
-                setErrors({ ...errors, category: null, backend: null })
+                setCategory(JSON.parse(e.target.value));
+                setErrors({ ...errors, category: null, backend: null });
               }}
             >
               <option value="">حدد الفئة</option>
@@ -230,10 +334,15 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories, loadingSubmi
                 </option>
               ))}
             </select>
-            {errors.category && <p className="text-red-500">{errors.category}</p>}
+            {errors.category && (
+              <p className="text-red-500">{errors.category}</p>
+            )}
           </div>
           <div className="mb-4 w-full">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="quantity">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="quantity"
+            >
               الكمية
             </label>
             <input
@@ -247,7 +356,10 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories, loadingSubmi
         </div>
         <div className="flex justify-between gap-2">
           <div className="mb-4 w-full">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="price">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="price"
+            >
               السعر
             </label>
             <input
@@ -258,14 +370,17 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories, loadingSubmi
               step="1"
               value={price}
               onChange={(e) => {
-                setPrice(e.target.value)
-                setErrors({ ...errors, price: null, backend: null })
+                setPrice(e.target.value);
+                setErrors({ ...errors, price: null, backend: null });
               }}
             />
             {errors.price && <p className="text-red-500">{errors.price}</p>}
           </div>
           <div className="mb-4 w-full">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="priceAfterDiscount">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="priceAfterDiscount"
+            >
               السعر بعد التخفيض
             </label>
             <input
@@ -279,7 +394,10 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories, loadingSubmi
           </div>
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="images">
+          <label
+            className="block text-gray-700 text-sm font-bold mb-2"
+            htmlFor="images"
+          >
             اضافه صور
           </label>
           <input
@@ -288,19 +406,31 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories, loadingSubmi
             type="file"
             multiple
             onChange={(e) => {
-              handleImageUpload(e)
-              setErrors({ ...errors, images: null, backend: null })
+              handleImageUpload(e);
+              setErrors({ ...errors, images: null, backend: null });
             }}
           />
           {errors.images && <p className="text-red-500">{errors.images}</p>}
         </div>
         {images.length > 0 && (
           <div className="mb-4">
-            <p className="block text-gray-700 text-sm font-bold mb-2">Current Images:</p>
+            <p className="block text-gray-700 text-sm font-bold mb-2">
+              Current Images:
+            </p>
             <div className="flex flex-wrap">
               {images.map((image, index) => (
                 <div key={index} className="relative m-1">
-                  <img src={typeof image === 'string' ? image?.startsWith('/') ? image : `/${image}` : URL.createObjectURL(image)} alt={`Image ${index}`} className="w-20 h-20 object-cover" />
+                  <img
+                    src={
+                      typeof image === "string"
+                        ? image?.startsWith("/")
+                          ? image
+                          : `/${image}`
+                        : URL.createObjectURL(image)
+                    }
+                    alt={`Image ${index}`}
+                    className="w-20 h-20 object-cover"
+                  />
                   <button
                     type="button"
                     onClick={() => handleDeleteImage(index)}
@@ -313,14 +443,46 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories, loadingSubmi
             </div>
           </div>
         )}
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2">
+            إضافة فيديو (اختياري)
+          </label>
+
+          <input
+            type="file"
+            accept="video/*"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
+            onChange={handleVideoUpload}
+          />
+
+          {videoError && <p className="text-red-500">{videoError}</p>}
+
+          {video && (
+            <video
+              controls
+              src={
+                typeof video === "string"
+                  ? video?.startsWith("/")
+                    ? video
+                    : `/${video}`
+                  : URL.createObjectURL(video)
+              }
+              className="mt-2 w-40 rounded"
+            />
+          )}
+        </div>
+
         <div className="flex justify-end gap-2">
           <button
             className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             type="submit"
             disabled={loadingSubmit}
-
           >
-            {loadingSubmit ? "جاري التحديث..." : initialData ? "تحديث المنتج" : "إضافة المنتج"}
+            {loadingSubmit
+              ? "جاري التحديث..."
+              : initialData
+              ? "تحديث المنتج"
+              : "إضافة المنتج"}
           </button>
 
           <button
@@ -330,7 +492,6 @@ const ProductForm = ({ onSubmit, initialData, onCancel, categories, loadingSubmi
           >
             إلغاء
           </button>
-
         </div>
         {errors.backend && <p className="text-red-500">{errors.backend}</p>}
       </form>

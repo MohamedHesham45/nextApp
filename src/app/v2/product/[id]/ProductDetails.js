@@ -18,7 +18,7 @@ import {
   WhatsappIcon,
   TwitterIcon,
   TelegramIcon,
-} from 'react-share';
+} from "react-share";
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -97,7 +97,7 @@ export default function ProductDetails() {
       (item) =>
         item._id === product._id &&
         JSON.stringify(item.selectedImages) ===
-        JSON.stringify(itemToAdd.selectedImages)
+          JSON.stringify(itemToAdd.selectedImages)
     );
 
     let updatedCart;
@@ -128,7 +128,7 @@ export default function ProductDetails() {
       (item) =>
         item._id === product._id &&
         JSON.stringify(item.selectedImages) ===
-        JSON.stringify(itemToAdd.selectedImages)
+          JSON.stringify(itemToAdd.selectedImages)
     );
 
     let updatedCart;
@@ -147,7 +147,7 @@ export default function ProductDetails() {
     const fetchProduct = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(`/api/products/${id}`);
+        const response = await fetch(`/v2/api/products/${id}`);
         if (!response.ok) {
           throw new Error("Failed to fetch product");
         }
@@ -168,72 +168,92 @@ export default function ProductDetails() {
   }, [id]);
 
   // Enhanced sharing functionality with better image handling
-  const shareUrl = product ? `https://sitaramall.com/product/${product._id}` : '';
-  const shareTitle = product ? `${product.title} - سيتار مول` : '';
-  const shareDescription = product ? product.description.replace(/<[^>]*>/g, '').substring(0, 150) + '...' : '';
-  
+  const shareUrl = product
+    ? `https://sitaramall.com/product/${product._id}`
+    : "";
+  const shareTitle = product ? `${product.title} - سيتار مول` : "";
+  const shareDescription = product
+    ? product.description.replace(/<[^>]*>/g, "").substring(0, 150) + "..."
+    : "";
+
   const getAbsoluteImageUrl = (imageUrl) => {
-    if (!imageUrl) return 'https://sitaramall.com/favicon.icon'; 
-    
-    const cleanPath = imageUrl.startsWith('/') ? imageUrl.slice(1) : imageUrl;
-    
+    if (!imageUrl) return "https://sitaramall.com/favicon.icon";
+
+    const cleanPath = imageUrl.startsWith("/") ? imageUrl.slice(1) : imageUrl;
+
     return `https://sitaramall.com/${cleanPath}`;
   };
-  
-  const shareImage = product && product.images && product.images[0] ? 
-    getAbsoluteImageUrl(product.images[0]) : 
-    `https://sitaramall.com/favicon.icon`;
 
-  const sharePrice = product ? (product.discountPercentage > 0 ? 
-    `السعر: ${Math.round(product.priceAfterDiscount)} جنيه (بدلاً من ${Math.round(product.price)} جنيه)` :
-    `السعر: ${Math.round(product.price)} جنيه`) : '';
+  const shareImage =
+    product && product.images && product.images[0]
+      ? getAbsoluteImageUrl(product.images[0])
+      : `https://sitaramall.com/favicon.icon`;
 
-  const whatsappText = `🛍️ ${shareTitle}\n\n📝 ${shareDescription}\n\n💰 ${sharePrice}\n\n✨ ${product?.quantity > 10 ? 'متوفر الآن' : 'كمية محدودة - اطلب الآن'}\n\n👆 اضغط على الرابط لعرض المنتج وإتمام الطلب:`;
+  const sharePrice = product
+    ? product.discountPercentage > 0
+      ? `السعر: ${Math.round(
+          product.priceAfterDiscount
+        )} جنيه (بدلاً من ${Math.round(product.price)} جنيه)`
+      : `السعر: ${Math.round(product.price)} جنيه`
+    : "";
+
+  const whatsappText = `🛍️ ${shareTitle}\n\n📝 ${shareDescription}\n\n💰 ${sharePrice}\n\n✨ ${
+    product?.quantity > 10 ? "متوفر الآن" : "كمية محدودة - اطلب الآن"
+  }\n\n👆 اضغط على الرابط لعرض المنتج وإتمام الطلب:`;
 
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
-      toast.success('تم نسخ الرابط');
+      toast.success("تم نسخ الرابط");
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      toast.error('فشل في نسخ الرابط');
+      toast.error("فشل في نسخ الرابط");
     }
   };
 
   // Share Modal Component
   const ShareModal = () => (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 "dir="rtl">
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 "
+      dir="rtl"
+    >
       <div className="bg-white rounded-lg max-w-md w-full p-6">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold">مشاركة المنتج</h3>
-          <button 
+          <button
             onClick={() => setShowShareModal(false)}
             className="text-gray-500 hover:text-gray-700 text-xl"
           >
             ×
           </button>
         </div>
-        
+
         {/* Product Preview */}
         <div className="mb-4 p-3 bg-gray-50 rounded-lg">
           <div className="flex gap-3">
-            <img 
-              src={shareImage} 
+            <img
+              src={shareImage}
               alt={product?.title}
               className="w-16 h-16 object-cover rounded"
             />
             <div className="flex-1">
-              <h4 className="font-medium text-sm line-clamp-1">{product?.title}</h4>
-              <p className="text-xs text-gray-600 line-clamp-2">{shareDescription}</p>
-              <p className="text-sm font-semibold text-green-600 mt-1">{sharePrice}</p>
+              <h4 className="font-medium text-sm line-clamp-1">
+                {product?.title}
+              </h4>
+              <p className="text-xs text-gray-600 line-clamp-2">
+                {shareDescription}
+              </p>
+              <p className="text-sm font-semibold text-green-600 mt-1">
+                {sharePrice}
+              </p>
             </div>
           </div>
         </div>
 
         {/* Share Buttons */}
         <div className="grid grid-cols-2 gap-3 mb-4">
-          <FacebookShareButton 
+          <FacebookShareButton
             url={shareUrl}
             quote={`${shareTitle}\n\n${shareDescription}\n\n${sharePrice}\n\n🛒 اضغط على الرابط للمشاهدة والطلب الآن!`}
             hashtag="#سيتار_مول #عروض #تسوق_اونلاين"
@@ -245,7 +265,7 @@ export default function ProductDetails() {
             </div>
           </FacebookShareButton>
 
-          <WhatsappShareButton 
+          <WhatsappShareButton
             url={shareUrl}
             title={whatsappText}
             separator=" "
@@ -257,10 +277,10 @@ export default function ProductDetails() {
             </div>
           </WhatsappShareButton>
 
-          <TwitterShareButton 
+          <TwitterShareButton
             url={shareUrl}
             title={`${shareTitle} - ${shareDescription} - ${sharePrice} - اضغط للمشاهدة والطلب`}
-            hashtags={['سيتار_مول', 'تسوق_اونلاين', 'عروض']}
+            hashtags={["سيتار_مول", "تسوق_اونلاين", "عروض"]}
             className="w-full"
           >
             <div className="flex items-center justify-center gap-2 p-3 bg-blue-400 text-white rounded-lg hover:bg-blue-500 transition-colors">
@@ -269,9 +289,13 @@ export default function ProductDetails() {
             </div>
           </TwitterShareButton>
 
-          <TelegramShareButton 
+          <TelegramShareButton
             url={shareUrl}
-            title={`${shareTitle}\n\n${shareDescription}\n\n${sharePrice}\n\n🔥 ${product?.quantity > 10 ? 'متوفر الآن - اطلب من الرابط' : 'كمية محدودة - اطلب الآن من الرابط'}`}
+            title={`${shareTitle}\n\n${shareDescription}\n\n${sharePrice}\n\n🔥 ${
+              product?.quantity > 10
+                ? "متوفر الآن - اطلب من الرابط"
+                : "كمية محدودة - اطلب الآن من الرابط"
+            }`}
             className="w-full"
           >
             <div className="flex items-center justify-center gap-2 p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
@@ -284,10 +308,10 @@ export default function ProductDetails() {
         {/* Copy Link */}
         <div className="border-t pt-4">
           <div className="flex gap-2">
-            <input 
-              type="text" 
-              value={shareUrl} 
-              readOnly 
+            <input
+              type="text"
+              value={shareUrl}
+              readOnly
               className="flex-1 p-2 border rounded-lg bg-gray-50 text-sm"
             />
             <button
@@ -295,7 +319,7 @@ export default function ProductDetails() {
               className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center gap-1"
             >
               {copied ? <Check size={16} /> : <Copy size={16} />}
-              <span className="text-sm">{copied ? 'تم النسخ' : 'نسخ'}</span>
+              <span className="text-sm">{copied ? "تم النسخ" : "نسخ"}</span>
             </button>
           </div>
         </div>
@@ -316,7 +340,7 @@ export default function ProductDetails() {
   return (
     <>
       {/* Enhanced Meta tags for rich social sharing */}
-      
+
       <div className="bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-16 py-8 md:py-16 direction-rtl min-h-screen">
           <div className="max-w-7xl mx-auto">
@@ -350,9 +374,10 @@ export default function ProductDetails() {
                       <button
                         key={index}
                         onMouseEnter={() => setSelectedImageIndex(index)}
-                        className={`relative flex-shrink-0 w-16 h-16 sm:w-24 sm:h-24 rounded-lg overflow-hidden ${selectedImageIndex === index
-                          ? "ring-4 ring-amazon-blue"
-                          : "ring-2 ring-gray-200 hover:ring-blue-300"
+                        className={`relative flex-shrink-0 w-16 h-16 sm:w-24 sm:h-24 rounded-lg overflow-hidden ${
+                          selectedImageIndex === index
+                            ? "ring-4 ring-amazon-blue"
+                            : "ring-2 ring-gray-200 hover:ring-blue-300"
                         } transition-all duration-200`}
                       >
                         <img
@@ -414,16 +439,26 @@ export default function ProductDetails() {
                       <span className={`text-xl  `}>
                         {product.quantity > 10 ? (
                           <span className="text-green-500">
-                            متبقي <span className="font-bold">{product.quantity}</span> - اطلب الان
+                            متبقي{" "}
+                            <span className="font-bold">
+                              {product.quantity}
+                            </span>{" "}
+                            - اطلب الان
                           </span>
                         ) : (
                           <span className="text-red-500">
-                            تبقي <span className="font-bold">{product.quantity}</span> فقط - اطلب الان
+                            تبقي{" "}
+                            <span className="font-bold">
+                              {product.quantity}
+                            </span>{" "}
+                            فقط - اطلب الان
                           </span>
                         )}
                       </span>
                     ) : (
-                      <span className="text-red-500 text-lg font-bold">غير متاح الان</span>
+                      <span className="text-red-500 text-lg font-bold">
+                        غير متاح الان
+                      </span>
                     )}
                   </span>
                 </p>
@@ -443,9 +478,10 @@ export default function ProductDetails() {
                         </span>
                         <button
                           onClick={(e) => handleQuantityChange(e, 1)}
-                          className={`w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white text-gray-700 rounded-full transition-all duration-200 shadow-sm text-lg sm:text-xl font-semibold ${cartQuantity >= product.quantity
-                            ? "opacity-50 cursor-not-allowed"
-                            : "hover:bg-amazon-orange hover:text-white"
+                          className={`w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white text-gray-700 rounded-full transition-all duration-200 shadow-sm text-lg sm:text-xl font-semibold ${
+                            cartQuantity >= product.quantity
+                              ? "opacity-50 cursor-not-allowed"
+                              : "hover:bg-amazon-orange hover:text-white"
                           }`}
                           disabled={cartQuantity >= product.quantity}
                         >
@@ -456,9 +492,10 @@ export default function ProductDetails() {
                       <div className="flex-1 flex items-center justify-center gap-2 sm:gap-4 rounded-full">
                         <button
                           onClick={(e) => handleAddToCart(e, product)}
-                          className={`bg-amazon-orange hover:bg-amazon-orange-dark text-white rounded-full transition-all duration-200 hover:shadow-xl flex items-center justify-center text-base sm:text-lg font-semibold ${Number(product.quantity) === 0
-                            ? "opacity-50 cursor-not-allowed"
-                            : "hover:scale-105"
+                          className={`bg-amazon-orange hover:bg-amazon-orange-dark text-white rounded-full transition-all duration-200 hover:shadow-xl flex items-center justify-center text-base sm:text-lg font-semibold ${
+                            Number(product.quantity) === 0
+                              ? "opacity-50 cursor-not-allowed"
+                              : "hover:scale-105"
                           } px-3 py-2 sm:px-4 sm:py-3 md:px-6 md:py-4 w-full `}
                           disabled={Number(product.quantity) === 0}
                         >
@@ -469,19 +506,21 @@ export default function ProductDetails() {
                     )}
                     <button
                       onClick={(e) => handleAddToFavorite(e, product)}
-                      className={`p-4 sm:p-5 bg-white hover:bg-red-50 text-gray-400 hover:text-red-500 rounded-full shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl border-2 border-gray-100 hover:border-red-500 ${favorite.some((item) => item._id === product._id)
-                        ? "text-red-500 border-red-500"
-                        : "text-gray-400 border-gray-100"
+                      className={`p-4 sm:p-5 bg-white hover:bg-red-50 text-gray-400 hover:text-red-500 rounded-full shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl border-2 border-gray-100 hover:border-red-500 ${
+                        favorite.some((item) => item._id === product._id)
+                          ? "text-red-500 border-red-500"
+                          : "text-gray-400 border-gray-100"
                       }`}
                     >
                       <Heart
-                        className={`h-6 w-6 sm:h-7 sm:w-7 stroke-2 ${favorite.some((item) => item._id === product._id)
-                          ? "fill-red-500"
-                          : ""
+                        className={`h-6 w-6 sm:h-7 sm:w-7 stroke-2 ${
+                          favorite.some((item) => item._id === product._id)
+                            ? "fill-red-500"
+                            : ""
                         }`}
                       />
                     </button>
-                    
+
                     {/* Share Button */}
                     <button
                       onClick={() => setShowShareModal(true)}
@@ -494,9 +533,10 @@ export default function ProductDetails() {
 
                 {Number(product.quantity) > 0 && (
                   <button
-                    className={`w-full bg-green-600 hover:bg-green-700 text-white py-3 sm:py-4 rounded-full transition-all duration-300 hover:shadow-xl text-base sm:text-lg font-semibold ${product.quantity === 0
-                      ? "opacity-50 cursor-not-allowed "
-                      : "hover:scale-105"
+                    className={`w-full bg-green-600 hover:bg-green-700 text-white py-3 sm:py-4 rounded-full transition-all duration-300 hover:shadow-xl text-base sm:text-lg font-semibold ${
+                      product.quantity === 0
+                        ? "opacity-50 cursor-not-allowed "
+                        : "hover:scale-105"
                     }`}
                     disabled={product.quantity === 0}
                     onClick={(e) => {
@@ -514,10 +554,10 @@ export default function ProductDetails() {
           isVisible={isCartVisible}
           setIsVisible={setIsCartVisible}
         />
-        
+
         {/* Share Modal */}
         {showShareModal && <ShareModal />}
       </div>
     </>
   );
-} 
+}

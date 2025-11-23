@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/navigation";
 import { Trash2, Edit, Plus } from "lucide-react";
-import { toast } from 'react-hot-toast';
+import { toast } from "react-hot-toast";
 
 export default function Governorates() {
   const [governorates, setGovernorates] = useState([]);
@@ -24,21 +24,20 @@ export default function Governorates() {
   });
   const [errors, setErrors] = useState({});
 
-  const { isLoggedIn, isLoaded,token ,role} = useAuth();
+  const { isLoggedIn, isLoaded, token, role } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if(token){
-
+    if (token) {
       if (isLoaded) {
-        if (isLoggedIn && role==='user') {
+        if (isLoggedIn && role === "user") {
           router.push("/");
         }
       }
-    }else{
+    } else {
       router.push("/");
     }
-  }, [isLoaded, isLoggedIn, router,token]);
+  }, [isLoaded, isLoggedIn, router, token]);
 
   useEffect(() => {
     fetchData();
@@ -47,8 +46,8 @@ export default function Governorates() {
   const fetchData = async () => {
     try {
       const [governoratesRes, shippingTypesRes] = await Promise.all([
-        fetch("/api/governorate"),
-        fetch("/api/shippingType"),
+        fetch("/v2/api/governorate"),
+        fetch("/v2/api/shippingType"),
       ]);
 
       const governoratesData = await governoratesRes.json();
@@ -64,7 +63,7 @@ export default function Governorates() {
   };
   const validateForm = () => {
     const newErrors = {};
-  
+
     if (modalMode === "addShipping") {
       if (!formData.shippingTypeId) {
         newErrors.shippingTypeId = "يرجى اختيار نوع الشحن.";
@@ -80,10 +79,10 @@ export default function Governorates() {
         newErrors.nameEn = "يرجى إدخال الاسم بالإنجليزية.";
       }
     }
-  
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -91,7 +90,7 @@ export default function Governorates() {
     try {
       let response;
       if (modalMode === "add") {
-        response = await fetch("/api/governorate", {
+        response = await fetch("/v2/api/governorate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -99,28 +98,31 @@ export default function Governorates() {
             nameEn: formData.nameEn,
           }),
         });
-        toast.success('تم إضافة المحافظة بنجاح')
+        toast.success("تم إضافة المحافظة بنجاح");
       } else if (modalMode === "addShipping") {
-        response = await fetch(`/api/governorate/${selectedGovernorate._id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            shippingPrices: [
-              {
-                shippingTypeId: formData.shippingTypeId,
-                price: parseFloat(formData.price),
-              },
-            ],
-          }),
-        });
+        response = await fetch(
+          `/v2/api/governorate/${selectedGovernorate._id}`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              shippingPrices: [
+                {
+                  shippingTypeId: formData.shippingTypeId,
+                  price: parseFloat(formData.price),
+                },
+              ],
+            }),
+          }
+        );
       }
       if (!response.ok) throw new Error("Operation failed");
       await fetchData();
-      toast.success('تم إضافة أو تعديل السعر بنجاح')
+      toast.success("تم إضافة أو تعديل السعر بنجاح");
       closeModal();
     } catch (error) {
-      setError("حدث خطأ أثناء إضافة أو تعديل المحافظة")
-      toast.error('حدث خطأ أثناء إضافة أو تعديل المحافظة')
+      setError("حدث خطأ أثناء إضافة أو تعديل المحافظة");
+      toast.error("حدث خطأ أثناء إضافة أو تعديل المحافظة");
     } finally {
       setSubmitLoading(false);
     }
@@ -141,18 +143,18 @@ export default function Governorates() {
     setSubmitLoading(true);
     try {
       const response = await fetch(
-        `/api/governorate/${selectedGovernorate._id}`,
+        `/v2/api/governorate/${selectedGovernorate._id}`,
         {
-            method: "DELETE",
+          method: "DELETE",
         }
       );
       if (!response.ok) throw new Error("Failed to delete");
       await fetchData();
-      toast.success('تم حذف المحافظة بنجاح')
+      toast.success("تم حذف المحافظة بنجاح");
       closeModal();
     } catch (error) {
-      setError("حدث خطأ أثناء حذف المحافظة")
-      toast.error('حدث خطأ أثناء حذف المحافظة')
+      setError("حدث خطأ أثناء حذف المحافظة");
+      toast.error("حدث خطأ أثناء حذف المحافظة");
     } finally {
       setSubmitLoading(false);
     }
@@ -205,7 +207,9 @@ export default function Governorates() {
             <tbody>
               {governorates.map((governorate) => (
                 <tr key={governorate._id}>
-                  <td className="border p-2 text-center">{governorate.nameAr}</td>
+                  <td className="border p-2 text-center">
+                    {governorate.nameAr}
+                  </td>
                   {shippingTypes.map((type) => {
                     const price = governorate.shippingPrices.find(
                       (sp) => sp.shippingTypeId === type._id
@@ -255,7 +259,8 @@ export default function Governorates() {
                     تأكيد الحذف
                   </h2>
                   <p className="text-right mb-4">
-                    هل أنت متأكد من حذف المحافظة "{selectedGovernorate?.nameAr}"؟
+                    هل أنت متأكد من حذف المحافظة "{selectedGovernorate?.nameAr}
+                    "؟
                   </p>
                   <div className="flex justify-start gap-2">
                     <button
@@ -263,7 +268,7 @@ export default function Governorates() {
                       className="px-4 py-2 bg-red-600 text-white rounded"
                       disabled={submitLoading}
                     >
-                      {submitLoading ? "جاري الحذف ..." : 'حذف'}
+                      {submitLoading ? "جاري الحذف ..." : "حذف"}
                     </button>
                     <button
                       onClick={closeModal}
@@ -282,26 +287,27 @@ export default function Governorates() {
                       ? "إضافة سعر شحن"
                       : "تعديل المحافظة"}
                   </h2>
-                  <form onSubmit={(e) => {
-                          e.preventDefault();
-                          if (validateForm()) {
-                            handleSubmit(e);
-                          }
-                      }}
-                    >
-                      {modalMode === "addShipping" ? (
-                        <>
-                          <div className="mb-4">
-                            <label className="block text-right mb-2">
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      if (validateForm()) {
+                        handleSubmit(e);
+                      }
+                    }}
+                  >
+                    {modalMode === "addShipping" ? (
+                      <>
+                        <div className="mb-4">
+                          <label className="block text-right mb-2">
                             نوع الشحن
                           </label>
                           <select
                             value={formData.shippingTypeId}
-                            onChange={(e) =>{
+                            onChange={(e) => {
                               setFormData({
                                 ...formData,
                                 shippingTypeId: e.target.value,
-                              })
+                              });
                               setErrors({
                                 ...errors,
                                 shippingTypeId: "",
@@ -327,15 +333,17 @@ export default function Governorates() {
                           <input
                             type="number"
                             value={formData.price}
-                            onChange={(e) =>{
-                              setFormData({ ...formData, price: e.target.value })
+                            onChange={(e) => {
+                              setFormData({
+                                ...formData,
+                                price: e.target.value,
+                              });
                               setErrors({
                                 ...errors,
                                 price: "",
                               });
                             }}
                             className="w-full p-2 border rounded text-right"
-                            
                           />
                           {errors.price && (
                             <p className="text-red-500 text-right">
@@ -353,15 +361,17 @@ export default function Governorates() {
                           <input
                             type="text"
                             value={formData.nameAr}
-                            onChange={(e) =>{
-                              setFormData({ ...formData, nameAr: e.target.value })
+                            onChange={(e) => {
+                              setFormData({
+                                ...formData,
+                                nameAr: e.target.value,
+                              });
                               setErrors({
                                 ...errors,
                                 nameAr: "",
                               });
                             }}
                             className="w-full p-2 border rounded text-right"
-                            
                           />
                           {errors.nameAr && (
                             <p className="text-red-500 text-right">
@@ -376,15 +386,17 @@ export default function Governorates() {
                           <input
                             type="text"
                             value={formData.nameEn}
-                            onChange={(e) =>{
-                              setFormData({ ...formData, nameEn: e.target.value })
+                            onChange={(e) => {
+                              setFormData({
+                                ...formData,
+                                nameEn: e.target.value,
+                              });
                               setErrors({
                                 ...errors,
                                 nameEn: "",
                               });
                             }}
                             className="w-full p-2 border rounded text-right"
-                            
                           />
                           {errors.nameEn && (
                             <p className="text-red-500 text-right">
@@ -400,7 +412,9 @@ export default function Governorates() {
                         className="px-4 py-2 bg-blue-600 text-white rounded"
                         disabled={submitLoading}
                       >
-                        {submitLoading ? "جاري الحفظ ..." : modalMode === "add"
+                        {submitLoading
+                          ? "جاري الحفظ ..."
+                          : modalMode === "add"
                           ? "إضافة"
                           : modalMode === "addShipping"
                           ? "إضافة السعر"

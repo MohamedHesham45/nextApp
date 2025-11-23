@@ -1,4 +1,3 @@
-import localFont from "next/font/local";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 // import Navbar from "@/components/Navbar";
@@ -14,6 +13,9 @@ import { CartFavoriteProvider } from "./context/cartFavoriteContext";
 import { Toaster } from "react-hot-toast";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import V2Navbar from "@/components/V2Navbar";
+import { headers } from "next/headers";
+import ConditionalLayout from "./ConditionalLayout";
 // import Head from "next/head";
 
 // import "leaflet/dist/leaflet.css";
@@ -118,18 +120,16 @@ export default function RootLayout({ children }) {
             className="min-h-screen flex flex-col"
           >
             <Toaster position="top-right" />
-            <Navbar />
             {/* <main className="pt-12"> */}
-            <main className="pt-0 md:pt-12 flex-1">
+            <main>
               {" "}
               {/* Add padding-top to account for fixed navbar */}
-              {children}
+            <ConditionalLayout>{children}</ConditionalLayout>
               <WhatsAppButton
                 phoneNumber="201223821206" // Replace with your actual WhatsApp number
                 message="Hello! I have a question about your products." // Customize this message
               />
             </main>
-            <Footer />
           </body>
         </html>
       </CartFavoriteProvider>
