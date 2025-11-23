@@ -11,12 +11,12 @@ export default function LandingPage() {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [activePanel, setActivePanel] = useState(0);
   const [panels, setPanels] = useState([]);
-  const [mainImage, setMainImage] = useState("/123.jpg");
+  const [mainImage, setMainImage] = useState("/1736196830699.jpg");
   const [whatsappNumber, setWhatsappNumber] = useState("");
 
   useEffect(() => {
     fetchCustomFields();
-  }, [])
+  }, []);
   const fetchCustomFields = async () => {
     const response = await fetch("/api/customize?name=رقم الواتس");
     if (!response.ok) throw new Error("Failed to fetch custom fields");
@@ -27,14 +27,14 @@ export default function LandingPage() {
   const message = "Hello! I have a question about your products.";
 
   const handleClick = () => {
-    const encodedMessage =
-      encodeURIComponent(message);
+    const encodedMessage = encodeURIComponent(message);
     window.open(
-      `https://wa.me/${whatsappNumber || "201223821206"}?text=${encodedMessage}`,
+      `https://wa.me/${
+        whatsappNumber || "201223821206"
+      }?text=${encodedMessage}`,
       "_blank"
     );
   };
-
 
   useEffect(() => {
     const fetchPanels = async () => {
@@ -64,15 +64,25 @@ export default function LandingPage() {
 
   // Common panel styles
   const getPanelStyles = (index, isMobile = false) => ({
-    baseClasses: `flex-1 relative cursor-pointer group transition-all duration-300 ${activePanel === index ? 'bg-amazon-dark' : 'bg-amazon hover:bg-amazon-dark'
-      }`,
+    baseClasses: `flex-1 relative cursor-pointer group transition-all duration-300 ${
+      activePanel === index
+        ? "bg-amazon-dark"
+        : "bg-amazon hover:bg-amazon-dark"
+    }`,
     imageClasses: "absolute inset-0 w-full h-full object-cover",
-    overlayClasses: `absolute inset-0 ${isMobile ? 'opacity-30 group-hover:opacity-50' : 'opacity-20 group-hover:opacity-40'} transition-opacity duration-300`,
-    titleClasses: `font-bold transition-colors duration-300 ${activePanel === index ? 'text-amazon-yellow' : 'text-white group-hover:text-amazon-yellow'
-      }`,
+    overlayClasses: `absolute inset-0 ${
+      isMobile
+        ? "opacity-30 group-hover:opacity-50"
+        : "opacity-20 group-hover:opacity-40"
+    } transition-opacity duration-300`,
+    titleClasses: `font-bold transition-colors duration-300 ${
+      activePanel === index
+        ? "text-amazon-yellow"
+        : "text-white group-hover:text-amazon-yellow"
+    }`,
     indicatorClasses: isMobile
       ? "absolute bottom-0 left-0 right-0 h-1.5 bg-amazon-yellow"
-      : "absolute left-0 top-0 bottom-0 w-1 bg-amazon-yellow"
+      : "absolute left-0 top-0 bottom-0 w-1 bg-amazon-yellow",
   });
 
   const renderPanel = (panel, index, isMobile = false) => {
@@ -87,16 +97,30 @@ export default function LandingPage() {
       >
         <div className={styles.overlayClasses}>
           <img
-            src={panel.image?.startsWith('/') ? panel.image : `/${panel.image}`}
+            src={panel.image?.startsWith("/") ? panel.image : `/${panel.image}`}
             alt={panel.title}
             className={styles.imageClasses}
           />
         </div>
-        <div className={`relative h-full p-6 flex flex-col justify-center ${isMobile ? 'items-center text-center' : 'direction-rtl'}`}>
-          <h3 className={`${styles.titleClasses} ${isMobile ? 'text-xl mb-2' : 'text-xl mb-2'}`}>
+        <div
+          className={`relative h-full p-6 flex flex-col justify-center ${
+            isMobile ? "items-center text-center" : "direction-rtl"
+          }`}
+        >
+          <h3
+            className={`${styles.titleClasses} ${
+              isMobile ? "text-xl mb-2" : "text-xl mb-2"
+            }`}
+          >
             {panel.title}
           </h3>
-          <p className={`text-sm ${isMobile ? 'text-white/90 max-w-[150px] line-clamp-2' : 'text-white/80'}`}>
+          <p
+            className={`text-sm ${
+              isMobile
+                ? "text-white/90 max-w-[150px] line-clamp-2"
+                : "text-white/80"
+            }`}
+          >
             {panel.subtitle}
           </p>
         </div>
@@ -110,15 +134,26 @@ export default function LandingPage() {
       <main>
         <section className="relative h-screen bg-amazon overflow-hidden">
           <div className="absolute inset-0 flex flex-col md:flex-row">
-            {panels.length > 0 && <div className="md:hidden flex h-48 bg-amazon">
-              <div className="flex w-full">
-                {panels.map((panel, index) => renderPanel(panel, index, true))}
+            {panels.length > 0 && (
+              <div className="md:hidden flex h-48 bg-amazon">
+                <div className="flex w-full">
+                  {panels.map((panel, index) =>
+                    renderPanel(panel, index, true)
+                  )}
+                </div>
               </div>
-            </div>}
+            )}
             <div className="flex-1 md:w-3/4 relative">
               <div className="absolute inset-0">
                 <img
-                  src={panels[activePanel]?.image?.startsWith('/') ? panels[activePanel]?.image : `/${panels[activePanel]?.image}` || mainImage?.startsWith('/') ? mainImage : `/${mainImage}`}
+                  src={
+                    panels[activePanel]?.image?.startsWith("/")
+                      ? panels[activePanel]?.image
+                      : `/${panels[activePanel]?.image}` ||
+                        mainImage?.startsWith("/")
+                      ? mainImage
+                      : `/${mainImage}`
+                  }
                   alt={panels[activePanel]?.title || "ستارة مول"}
                   className="w-full h-full object-cover transition-transform duration-700"
                 />
@@ -152,9 +187,11 @@ export default function LandingPage() {
                 </div>
               </div>
             </div>
-            {panels.length > 0 && <div className="hidden md:flex md:w-1/4 flex-col">
-              {panels.map((panel, index) => renderPanel(panel, index))}
-            </div>}
+            {panels.length > 0 && (
+              <div className="hidden md:flex md:w-1/4 flex-col">
+                {panels.map((panel, index) => renderPanel(panel, index))}
+              </div>
+            )}
           </div>
         </section>
 
@@ -185,51 +222,38 @@ export default function LandingPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <Link href="/gallery">
                 <div className="bg-white p-6 rounded-lg shadow-md text-center transform hover:scale-105 transition duration-300 h-full">
-                  <div className="text-4xl mb-4">
-                    🏆
-                  </div>
+                  <div className="text-4xl mb-4">🏆</div>
                   <h3 className="text-xl font-semibold mb-2">
                     منتجات ذات جودة عالية
                   </h3>
                   <p className="text-gray-600">
-                    نحن نقدم فقط أفضل المنتجات ذات
-                    الجودة لعملائنا.
+                    نحن نقدم فقط أفضل المنتجات ذات الجودة لعملائنا.
                   </p>
                 </div>
               </Link>
               <Link href="/delivery-types">
                 <div className="bg-white p-6 rounded-lg shadow-md text-center transform hover:scale-105 transition duration-300 hover:cursor-pointer">
-                  <div className="text-4xl mb-4">
-                    🚚
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2">
-                    أسعار الشحن
-                  </h3>
-                  <p className="text-gray-600">
-                    اعرف سعر الشحن لمحافظتك
-                  </p>
+                  <div className="text-4xl mb-4">🚚</div>
+                  <h3 className="text-xl font-semibold mb-2">أسعار الشحن</h3>
+                  <p className="text-gray-600">اعرف سعر الشحن لمحافظتك</p>
                 </div>
               </Link>
-              <div className="bg-white p-6 rounded-lg shadow-md text-center transform hover:scale-105 hover:cursor-pointer transition duration-300"
+              <div
+                className="bg-white p-6 rounded-lg shadow-md text-center transform hover:scale-105 hover:cursor-pointer transition duration-300"
                 onClick={handleClick}
               >
-                <div className="text-4xl mb-4">
-                  🎧
-                </div>
+                <div className="text-4xl mb-4">🎧</div>
                 <h3 className="text-xl font-semibold mb-2">
-                  دعم على مدار الساعة طوال أيام
-                  الأسبوع
+                  دعم على مدار الساعة طوال أيام الأسبوع
                 </h3>
                 <p className="text-gray-600">
-                  فريق دعم العملاء لدينا موجود
-                  دائمًا لمساعدتك.
+                  فريق دعم العملاء لدينا موجود دائمًا لمساعدتك.
                 </p>
               </div>
             </div>
           </div>
           <MapLocation />
         </section>
-
       </main>
 
       {showScrollTop && (
@@ -244,7 +268,6 @@ export default function LandingPage() {
     </div>
   );
 }
-
 
 // "use client";
 
@@ -346,8 +369,6 @@ export default function LandingPage() {
 //             <FeaturedProducts />
 //           </div>
 //         </section> */}
-
-
 
 //         {/* Why Us Section */}
 //         <section className="bg-white direction-rtl">

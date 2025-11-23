@@ -9,7 +9,7 @@ import V2FiveProductsPerCategory from "@/components/V2FiveProductsPerCategory";
 export default function LandingPage() {
   const [mounted, setMounted] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const [mainImage, setMainImage] = useState("/123.jpg");
+  const [mainImage, setMainImage] = useState("/1736196830699.jpg");
   const [whatsappNumber, setWhatsappNumber] = useState("");
 
   useEffect(() => {

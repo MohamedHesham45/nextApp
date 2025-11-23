@@ -21,7 +21,11 @@ export default function BuyTypePage() {
     name: "",
   });
 
-  const { isLoggedIn, isLoaded, token, role } = useAuth();
+  const auth = useAuth();
+  const isLoggedIn = auth?.isLoggedIn || false;
+  const token = auth?.token || null;
+  const isLoaded = auth?.isLoaded || false;
+  const role = auth?.role || null;
   const router = useRouter();
 
   useEffect(() => {

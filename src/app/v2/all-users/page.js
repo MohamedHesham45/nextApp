@@ -18,7 +18,10 @@ export default function AllUsers() {
   const [editingUserId, setEditingUserId] = useState(null);
   const [editingRole, setEditingRole] = useState("");
   const [errorSubmit, setErrorSubmit] = useState(false);
-  const { isLoggedIn, isLoaded, token } = useAuth();
+  const auth = useAuth();
+  const isLoggedIn = auth?.isLoggedIn || false;
+  const token = auth?.token || null;
+  const isLoaded = auth?.isLoaded || false;
   const router = useRouter();
 
   useEffect(() => {

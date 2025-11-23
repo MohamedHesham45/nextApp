@@ -9,7 +9,11 @@ import { useAuth } from "../context/AuthContext";
 import { toast } from "react-hot-toast";
 
 export default function AdminPage() {
-  const { token, isLoaded, role, isLoggedIn } = useAuth();
+  const auth = useAuth();
+  const isLoggedIn = auth?.isLoggedIn || false;
+  const token = auth?.token || null;
+  const isLoaded = auth?.isLoaded || false;
+  const role = auth?.role || null;
   const router = useRouter();
   const [products, setProducts] = useState([]);
   const [editingProduct, setEditingProduct] = useState(null);

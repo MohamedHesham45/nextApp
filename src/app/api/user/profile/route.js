@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
+export const dynamic = "force-dynamic";
 
 export async function GET(request) {
   try {
@@ -11,14 +12,22 @@ export async function GET(request) {
     if (role) {
       query.role = role;
     }
-    query = { $and: [{ role: { $exists: true } }, { role: { $ne: "super-admin" } }] };
+    query = {
+      $and: [{ role: { $exists: true } }, { role: { $ne: "super-admin" } }],
+    };
     const profiles = await db.collection("profiles").find(query).toArray();
     if (!profiles || profiles.length === 0) {
       return NextResponse.json({ error: "Profile not found" }, { status: 404 });
     }
-    return NextResponse.json({ message: "Profile fetched successfully", profiles });
+    return NextResponse.json({
+      message: "Profile fetched successfully",
+      profiles,
+    });
   } catch (error) {
     console.error("Error fetching profile:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
