@@ -457,7 +457,7 @@ const ProductForm = ({
 
           {videoError && <p className="text-red-500">{videoError}</p>}
 
-          {video && (
+          {/* {video && (
             <video
               controls
               src={
@@ -469,7 +469,7 @@ const ProductForm = ({
               }
               className="mt-2 w-40 rounded"
             />
-          )}
+          )} */}
         </div>
 
         <div className="flex justify-end gap-2">
