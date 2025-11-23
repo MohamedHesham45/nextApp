@@ -121,8 +121,9 @@ export default function AdminPage() {
       const imagess = [];
       const images = new FormData();
       const checkImages = [];
-      const videoFile = productData.get("video");
 
+      const videoFile = productData.get("video");
+      console.log("video file", videoFile);
       const videoForm = new FormData();
       let newVideoPath = null;
       if (videoFile && typeof videoFile !== "string") {

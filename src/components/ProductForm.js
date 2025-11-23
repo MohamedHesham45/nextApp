@@ -99,7 +99,7 @@ const ProductForm = ({
       setErrors(newErrors);
       return;
     }
-
+    console.log("sub file", video);
     const formData = new FormData();
 
     formData.append("title", title);
@@ -258,6 +258,7 @@ const ProductForm = ({
     );
 
     setVideo(compressedFile);
+    console.log("compressedFile", compressedFile);
   };
 
   const handleDeleteImage = (index) => {
