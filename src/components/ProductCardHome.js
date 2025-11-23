@@ -56,7 +56,7 @@ const ProductCardHome = ({ product }) => {
       (item) =>
         item._id === product._id &&
         JSON.stringify(item.selectedImages) ===
-          JSON.stringify(itemToAdd.selectedImages)
+        JSON.stringify(itemToAdd.selectedImages)
     );
 
     let updatedCart;
@@ -144,8 +144,8 @@ const ProductCardHome = ({ product }) => {
   const sharePrice =
     product.discountPercentage > 0
       ? `السعر: ${Math.round(
-          product.priceAfterDiscount
-        )} جنيه (بدلاً من ${Math.round(product.price)} جنيه)`
+        product.priceAfterDiscount
+      )} جنيه (بدلاً من ${Math.round(product.price)} جنيه)`
       : `السعر: ${Math.round(product.price)} جنيه`;
 
   // Custom share text for WhatsApp with call-to-action and image
@@ -340,30 +340,34 @@ const ProductCardHome = ({ product }) => {
                   }}
                 />
                 {product.discountPercentage > 0 ? (
-                  <div className="flex justify-between items-center text-sm font-medium">
+                  <div className="flex flex-col text-sm md:text-base font-medium text-right space-y-1">
                     <span className="text-gray-500">
                       قبل الخصم:{" "}
                       <span className="text-red-500 line-through">
-                        {Math.round(product.price)}
+                        {Math.round(product.price)} جنيه
                       </span>
                     </span>
                     <span className="text-gray-500">
                       بعد الخصم:{" "}
                       <span className="text-green-600 font-bold">
-                        {Math.round(product.priceAfterDiscount)}
+                        {Math.round(product.priceAfterDiscount)} جنيه
                       </span>
+                    </span>
+                    <span className="text-xs font-bold text-red-600">
+                      خصم {Math.round(product.discountPercentage)}%
                     </span>
                   </div>
                 ) : (
-                  <div className="flex justify-between items-center text-sm font-medium">
+                  <div className="flex flex-col text-sm md:text-base font-medium text-right">
                     <span className="text-gray-500">
                       السعر:{" "}
                       <span className="text-green-600 font-bold">
-                        {Math.round(product.price)}
+                        {Math.round(product.price)} جنيه
                       </span>
                     </span>
                   </div>
                 )}
+
                 <div className="flex justify-start items-center text-sm pt-4">
                   <span className="text-gray-500">
                     {product.quantity > 0 ? (
@@ -404,11 +408,10 @@ const ProductCardHome = ({ product }) => {
                       handleAddToCart(e, product);
                     }
                   }}
-                  className={`flex-1 bg-amazon-orange hover:bg-amazon-orange-dark  rounded-full transition-all duration-300  flex items-center justify-center gap-2 text-sm ${
-                    product.quantity === 0 || cartQuantity >= product.quantity
+                  className={`flex-1 bg-amazon-orange hover:bg-amazon-orange-dark  rounded-full transition-all duration-300  flex items-center justify-center gap-2 text-sm ${product.quantity === 0 || cartQuantity >= product.quantity
                       ? "opacity-50 cursor-not-allowed bg-gray-300  text-amazon-dark hover:bg-gray-300 "
                       : "text-white hover:scale-105 hover:shadow-lg"
-                  }`}
+                    }`}
                   disabled={
                     product.quantity === 0 || cartQuantity >= product.quantity
                   }
@@ -421,8 +424,8 @@ const ProductCardHome = ({ product }) => {
                   {product.quantity === 0
                     ? "نفذت الكمية"
                     : cartQuantity >= product.quantity
-                    ? "انتهت الكمية المتاحة"
-                    : "اضف الى العربة"}
+                      ? "انتهت الكمية المتاحة"
+                      : "اضف الى العربة"}
                 </button>
 
                 <button
@@ -430,18 +433,16 @@ const ProductCardHome = ({ product }) => {
                     e.stopPropagation();
                     handleAddToFavorite(e, product);
                   }}
-                  className={`p-3 bg-white hover:bg-red-50 ${
-                    favorite.some((item) => item._id === product._id)
+                  className={`p-3 bg-white hover:bg-red-50 ${favorite.some((item) => item._id === product._id)
                       ? "text-red-500 border-red-500"
                       : "text-gray-400 border-gray-100"
-                  } rounded-full shadow-md transition-all duration-300 hover:scale-105 hover:shadow-lg border-2 hover:border-red-500`}
+                    } rounded-full shadow-md transition-all duration-300 hover:scale-105 hover:shadow-lg border-2 hover:border-red-500`}
                 >
                   <Heart
-                    className={`h-5 w-5 stroke-2 ${
-                      favorite.some((item) => item._id === product._id)
+                    className={`h-5 w-5 stroke-2 ${favorite.some((item) => item._id === product._id)
                         ? "fill-red-500"
                         : ""
-                    }`}
+                      }`}
                   />
                 </button>
 

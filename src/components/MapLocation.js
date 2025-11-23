@@ -39,8 +39,8 @@ export default function MapLocation() {
   }
 
   return (
-    <div className="bg-amazon-light-gray">
-    <section className="mb-16 container mx-auto px-6 bg-amazon-light-gray">
+    <div className="bg-white">
+    <section className="mb-16 container mx-auto px-6 bg-white">
       <h2 className="text-3xl font-bold mb-8 text-center">
         Find Us
       </h2>

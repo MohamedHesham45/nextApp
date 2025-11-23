@@ -24,7 +24,7 @@ export default function Gallery() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/products",{
+      const res = await fetch("/api/products", {
         headers: {
           "Cache-Control": "no-cache, no-store, must-revalidate",
           Pragma: "no-cache",
@@ -58,7 +58,7 @@ export default function Gallery() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-       <LoadingSpinner/>
+        <LoadingSpinner />
       </div>
     );
   }

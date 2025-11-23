@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "@/app/context/AuthContext";
 import UserOrdersPage from "../user/orders/page";
 import OrdersPage from "../admin/orders/page";
 import AdminPage from "../admin/page";
@@ -90,24 +90,27 @@ export default function AdminDashboard() {
 
   return (
     <div className="flex min-h-screen flex-col md:flex-row direction-rtl">
-      <div className="w-full md:w-64 bg-gray-100 p-5 border-l border-gray-300">
-        <ul className="list-none p-0">
-          {Object.entries(componentsMap).map(([key, { label }]) => (
-            <li
-              key={key}
-              className={`my-2 cursor-pointer hover:text-amazon-blue hover:bg-gray-200 p-2 rounded ${selectedComponent === key ? "bg-amazon-blue text-white" : ""
-                }`}
-              onClick={() => setSelectedComponent(key)}
-            >
-              {label}
-            </li>
-          ))}
-        </ul>
-      </div>
+  {/* Sidebar */}
+  <div className="w-full md:w-64 bg-gray-100 p-2 md:p-5 border-b md:border-l border-gray-300">
+    <ul className="flex overflow-x-auto md:flex-col list-none p-0 gap-2 md:gap-0">
+      {Object.entries(componentsMap).map(([key, { label }]) => (
+        <li
+          key={key}
+          className={`cursor-pointer whitespace-nowrap hover:text-amazon-blue hover:bg-gray-200 p-2 rounded 
+            ${selectedComponent === key ? "bg-amazon-blue text-white" : ""}`}
+          onClick={() => setSelectedComponent(key)}
+        >
+          {label}
+        </li>
+      ))}
+    </ul>
+  </div>
 
-      <div className="flex-1 p-5">
-        {renderComponent()}
-      </div>
-    </div>
+  {/* Content */}
+  <div className="flex-1 p-5">
+    {renderComponent()}
+  </div>
+</div>
+
   );
 }
