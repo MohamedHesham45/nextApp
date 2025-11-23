@@ -1,7 +1,4 @@
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-// import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { AuthProvider } from "./context/AuthContext";
 import "swiper/css";
@@ -13,8 +10,6 @@ import { CartFavoriteProvider } from "./context/cartFavoriteContext";
 import { Toaster } from "react-hot-toast";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import V2Navbar from "@/components/V2Navbar";
-import { headers } from "next/headers";
 import ConditionalLayout from "./ConditionalLayout";
 // import Head from "next/head";
 
@@ -40,15 +35,15 @@ export const metadata = {
   icons: {
     icon: {
       url: "/favicon.ico",
-      type: "image/x-icon"
+      type: "image/x-icon",
     },
     shortcut: {
       url: "/favicon.ico",
-      type: "image/x-icon"
+      type: "image/x-icon",
     },
     apple: {
       url: "/favicon.ico",
-      type: "image/x-icon"
+      type: "image/x-icon",
     },
     other: {
       rel: "apple-touch-icon-precomposed",
@@ -123,8 +118,7 @@ export default function RootLayout({ children }) {
             {/* <main className="pt-12"> */}
             <main>
               {" "}
-              {/* Add padding-top to account for fixed navbar */}
-            <ConditionalLayout>{children}</ConditionalLayout>
+              <ConditionalLayout>{children}</ConditionalLayout>
               <WhatsAppButton
                 phoneNumber="201223821206" // Replace with your actual WhatsApp number
                 message="Hello! I have a question about your products." // Customize this message

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import ProductList from "@/components/ProductList";
 import ProductForm from "@/components/ProductForm";
 import LoadingSpinner from "@/components/LoadingSpinner";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "@/app/context/AuthContext";
 import { toast } from "react-hot-toast";
 
 export default function AdminPage() {
@@ -28,7 +28,7 @@ export default function AdminPage() {
   const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await fetch("/v2/api/products");
+      const res = await fetch("/api/products");
       if (!res.ok) {
         throw new Error("Failed to fetch products");
       }

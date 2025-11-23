@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { Edit, LogOut } from "lucide-react";
 import { useAuth } from "@/app/context/AuthContext";
 
-
 const V2ProfileModal = ({ isOpen, onRequestClose }) => {
   const [formData, setFormData] = useState({
     centerArea: "",
@@ -24,8 +23,6 @@ const V2ProfileModal = ({ isOpen, onRequestClose }) => {
     setFormData(profile);
   }, [profile]);
 
-
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -42,7 +39,9 @@ const V2ProfileModal = ({ isOpen, onRequestClose }) => {
       const data = await response.json();
       setGovernorates(data);
 
-      const savedGovernorate = data.find(gov => gov.nameAr === formData.governorate);
+      const savedGovernorate = data.find(
+        (gov) => gov.nameAr === formData.governorate
+      );
       if (savedGovernorate) {
         setSelectedGovernorate(savedGovernorate);
       }
@@ -84,16 +83,13 @@ const V2ProfileModal = ({ isOpen, onRequestClose }) => {
     };
     try {
       setIsLoading(true);
-      const response = await fetch(
-        `/api/user/profile/${profile.userId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(filteredData),
-        }
-      );
+      const response = await fetch(`/api/user/profile/${profile.userId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(filteredData),
+      });
       if (!response.ok) {
         throw new Error(`Error updating profile: ${response.statusText}`);
       }
@@ -120,27 +116,26 @@ const V2ProfileModal = ({ isOpen, onRequestClose }) => {
         className="bg-white p-6 rounded-md shadow-2xl w-full md:w-2/3 lg:w-2/3 relative max-h-[80vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-
-        {!isEditing && (<div
-          className="cursor-pointer absolute top-4 left-3"
-          onClick={() => setIsEditing(true)}
-        >
-          <div className="absolute top-4 left-1 flex gap-1">
-            <button onClick={() => setIsEditing(true)}>
-              <Edit size={24} className="text-blue-500 hover:text-blue-600" />
-            </button>
-            <button
-              onClick={() => {
-                logout();
-                onRequestClose(); // close modal after logout
-              }}
-            >
-              <LogOut size={24} className="text-red-500 hover:text-red-600" />
-            </button>
-
+        {!isEditing && (
+          <div
+            className="cursor-pointer absolute top-4 left-3"
+            onClick={() => setIsEditing(true)}
+          >
+            <div className="absolute top-4 left-1 flex gap-1">
+              <button onClick={() => setIsEditing(true)}>
+                <Edit size={24} className="text-blue-500 hover:text-blue-600" />
+              </button>
+              <button
+                onClick={() => {
+                  logout("v2");
+                  onRequestClose(); // close modal after logout
+                }}
+              >
+                <LogOut size={24} className="text-red-500 hover:text-red-600" />
+              </button>
+            </div>
           </div>
-
-        </div>)}
+        )}
         <div className="flex flex-col items-center justify-center">
           <h2 className="text-2xl font-bold mb-4">الملف الشخصي</h2>
           <div className="pb-4 text-5xl font-bold rounded-full bg-amazon text-white w-24 h-24 flex items-center justify-center">
@@ -179,7 +174,6 @@ const V2ProfileModal = ({ isOpen, onRequestClose }) => {
               />
             </div>
             <div className="flex gap-2">
-
               <div className="w-1/2">
                 <label
                   htmlFor="phone"
@@ -198,7 +192,10 @@ const V2ProfileModal = ({ isOpen, onRequestClose }) => {
                 />
               </div>
               <div className="w-1/2">
-                <label htmlFor="centerArea" className="block text-sm font-medium mb-1">
+                <label
+                  htmlFor="centerArea"
+                  className="block text-sm font-medium mb-1"
+                >
                   المدينة
                 </label>
                 <input
@@ -214,7 +211,10 @@ const V2ProfileModal = ({ isOpen, onRequestClose }) => {
             </div>
             <div className="flex gap-2">
               <div className="w-1/2">
-                <label htmlFor="governorate" className="block text-sm font-medium mb-1">
+                <label
+                  htmlFor="governorate"
+                  className="block text-sm font-medium mb-1"
+                >
                   المحافظة
                 </label>
                 <select
@@ -222,10 +222,12 @@ const V2ProfileModal = ({ isOpen, onRequestClose }) => {
                   name="governorate"
                   value={formData.governorate}
                   onChange={(e) => {
-                    const selected = governorates.find(gov => gov.nameAr === e.target.value);
+                    const selected = governorates.find(
+                      (gov) => gov.nameAr === e.target.value
+                    );
                     setSelectedGovernorate(selected);
                     handleChange({
-                      target: { name: 'governorate', value: e.target.value }
+                      target: { name: "governorate", value: e.target.value },
                     });
                   }}
                   required
@@ -240,7 +242,10 @@ const V2ProfileModal = ({ isOpen, onRequestClose }) => {
                 </select>
               </div>
               <div className="w-1/2">
-                <label htmlFor="neighborhood" className="block text-sm font-medium mb-1">
+                <label
+                  htmlFor="neighborhood"
+                  className="block text-sm font-medium mb-1"
+                >
                   الحي
                 </label>
                 <select
@@ -273,38 +278,62 @@ const V2ProfileModal = ({ isOpen, onRequestClose }) => {
             <div className="flex flex-wrap gap-3 md:gap-4">
               <div className="bg-gray-50 p-3 md:p-4 rounded-lg flex-grow basis-full md:basis-[calc(50%-0.5rem)]">
                 <p className="flex justify-between items-center">
-                  <span className="text-gray-600 text-sm md:text-base">الاسم:</span>
-                  <span className="font-semibold text-sm md:text-base">{formData.name}</span>
+                  <span className="text-gray-600 text-sm md:text-base">
+                    الاسم:
+                  </span>
+                  <span className="font-semibold text-sm md:text-base">
+                    {formData.name}
+                  </span>
                 </p>
               </div>
               <div className="bg-gray-50 p-3 md:p-4 rounded-lg flex-grow basis-full md:basis-[calc(50%-0.5rem)]">
                 <p className="flex justify-between items-center">
-                  <span className="text-gray-600 text-sm md:text-base">البريد الإلكتروني:</span>
-                  <span className="font-semibold text-sm md:text-base">{formData.email}</span>
+                  <span className="text-gray-600 text-sm md:text-base">
+                    البريد الإلكتروني:
+                  </span>
+                  <span className="font-semibold text-sm md:text-base">
+                    {formData.email}
+                  </span>
                 </p>
               </div>
               <div className="bg-gray-50 p-3 md:p-4 rounded-lg flex-grow basis-full md:basis-[calc(50%-0.5rem)]">
                 <p className="flex justify-between items-center">
-                  <span className="text-gray-600 text-sm md:text-base">رقم الهاتف:</span>
-                  <span className="font-semibold text-sm md:text-base">{formData.phone}</span>
+                  <span className="text-gray-600 text-sm md:text-base">
+                    رقم الهاتف:
+                  </span>
+                  <span className="font-semibold text-sm md:text-base">
+                    {formData.phone}
+                  </span>
                 </p>
               </div>
               <div className="bg-gray-50 p-3 md:p-4 rounded-lg flex-grow basis-full md:basis-[calc(50%-0.5rem)]">
                 <p className="flex justify-between items-center">
-                  <span className="text-gray-600 text-sm md:text-base">المدينة:</span>
-                  <span className="font-semibold text-sm md:text-base">{formData.centerArea}</span>
+                  <span className="text-gray-600 text-sm md:text-base">
+                    المدينة:
+                  </span>
+                  <span className="font-semibold text-sm md:text-base">
+                    {formData.centerArea}
+                  </span>
                 </p>
               </div>
               <div className="bg-gray-50 p-3 md:p-4 rounded-lg flex-grow basis-full md:basis-[calc(50%-0.5rem)]">
                 <p className="flex justify-between items-center">
-                  <span className="text-gray-600 text-sm md:text-base">الحي:</span>
-                  <span className="font-semibold text-sm md:text-base">{formData.neighborhood}</span>
+                  <span className="text-gray-600 text-sm md:text-base">
+                    الحي:
+                  </span>
+                  <span className="font-semibold text-sm md:text-base">
+                    {formData.neighborhood}
+                  </span>
                 </p>
               </div>
               <div className="bg-gray-50 p-3 md:p-4 rounded-lg flex-grow basis-full md:basis-[calc(50%-0.5rem)]">
                 <p className="flex justify-between items-center">
-                  <span className="text-gray-600 text-sm md:text-base">المحافظة:</span>
-                  <span className="font-semibold text-sm md:text-base">{formData.governorate}</span>
+                  <span className="text-gray-600 text-sm md:text-base">
+                    المحافظة:
+                  </span>
+                  <span className="font-semibold text-sm md:text-base">
+                    {formData.governorate}
+                  </span>
                 </p>
               </div>
             </div>

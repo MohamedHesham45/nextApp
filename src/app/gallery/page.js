@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Search, Filter, X } from "lucide-react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "@/app/context/AuthContext";
 import { useCartFavorite } from "../context/cartFavoriteContext";
 import ProductCardHome from "@/components/ProductCardHome";
 import LoadingSpinner from "@/components/LoadingSpinner";
@@ -30,7 +30,7 @@ export default function Gallery() {
           Pragma: "no-cache",
           Expires: "0",
           "X-Force-Refresh": "true",
-          cache: 'no-store'
+          cache: "no-store",
         },
       });
       if (!res.ok) {
@@ -46,14 +46,19 @@ export default function Gallery() {
     }
   };
 
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch =
+      product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || product.category === selectedCategory;
+    const matchesCategory =
+      selectedCategory === "all" || product.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
-  const categories = ["all", ...new Set(products.map(product => product.category))];
+  const categories = [
+    "all",
+    ...new Set(products.map((product) => product.category)),
+  ];
 
   if (loading) {
     return (
@@ -115,7 +120,11 @@ export default function Gallery() {
         </div>
       </div>
 
-      <div className={`fixed inset-y-0 right-0 w-64 bg-white shadow-2xl transform transition-transform duration-300 z-50 ${showFilters ? 'translate-x-0' : 'translate-x-full'}`}>
+      <div
+        className={`fixed inset-y-0 right-0 w-64 bg-white shadow-2xl transform transition-transform duration-300 z-50 ${
+          showFilters ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
         <div className="p-6">
           <div className="flex justify-between items-center mb-6 border-b border-amazon-light-gray pb-4">
             <button onClick={() => setShowFilters(false)}>
@@ -125,18 +134,21 @@ export default function Gallery() {
           </div>
           <div className="space-y-4">
             <div>
-              <h4 className="text-sm font-medium text-amazon-dark-gray mb-2">الفئات</h4>
+              <h4 className="text-sm font-medium text-amazon-dark-gray mb-2">
+                الفئات
+              </h4>
               <div className="space-y-2">
                 {categories.map((category) => (
                   <button
                     key={category}
                     onClick={() => setSelectedCategory(category)}
-                    className={`block w-full text-right px-3 py-2 rounded-lg transition-all duration-200 ${selectedCategory === category
-                      ? 'bg-amazon-yellow/10 text-amazon-orange font-medium'
-                      : 'hover:bg-amazon-light-gray'
-                      }`}
+                    className={`block w-full text-right px-3 py-2 rounded-lg transition-all duration-200 ${
+                      selectedCategory === category
+                        ? "bg-amazon-yellow/10 text-amazon-orange font-medium"
+                        : "hover:bg-amazon-light-gray"
+                    }`}
                   >
-                    {category === 'all' ? 'جميع الفئات' : category}
+                    {category === "all" ? "جميع الفئات" : category}
                   </button>
                 ))}
               </div>
@@ -155,4 +167,3 @@ export default function Gallery() {
     </div>
   );
 }
-

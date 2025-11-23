@@ -182,7 +182,7 @@ export default function V2Navbar() {
                       الملف الشخصي
                     </button>
                     <button
-                      onClick={logout}
+                      onClick={() => logout('v2')}
                       className="flex items-center w-full px-4 py-2 text-sm text-red-500 hover:bg-amazon-light-gray transition"
                     >
                       <LogOut size={16} className="mr-2" />

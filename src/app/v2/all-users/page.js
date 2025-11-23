@@ -2,7 +2,7 @@
 
 import LoadingSpinner from "@/components/LoadingSpinner";
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { Trash2, Edit } from "lucide-react";
 import { toast } from "react-hot-toast";

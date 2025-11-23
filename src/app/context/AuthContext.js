@@ -44,13 +44,13 @@ export function AuthProvider({ children }) {
         const data = await response.json();
         setStoredProfile(data);
         return data;
-      }else{
+      } else {
         localStorage.removeItem("authToken");
         localStorage.removeItem("userProfile");
       }
     } catch (error) {
       console.error("Error verifying token:", error);
-    }finally{
+    } finally {
       setIsLoaded(true);
     }
   };
@@ -67,9 +67,9 @@ export function AuthProvider({ children }) {
     setRole(profile.role || null);
     setIsLoaded(true);
   };
-  
-  const logout = () => {
-    router.push("/"); // Navigate to the root route after logout
+
+  const logout = (v = "") => {
+    router.push("/" + v); // Navigate to the root route after logout
     localStorage.removeItem("authToken");
     localStorage.removeItem("userProfile");
 
@@ -80,7 +80,6 @@ export function AuthProvider({ children }) {
     setEmail(null); // Clear email on logout
     setUserId(null); // Clear userId on logout
     setRole(null);
-
   };
 
   return (

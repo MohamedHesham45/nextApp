@@ -195,7 +195,7 @@ export default function Navbar() {
                       الملف الشخصي
                     </button>
                     <button
-                      onClick={logout}
+                      onClick={() => logout('')}
                       className="flex items-center w-full px-4 py-2 text-sm text-red-500 hover:bg-amazon-light-gray transition"
                     >
                       <LogOut size={16} className="mr-2" />
@@ -286,7 +286,7 @@ export default function Navbar() {
             {isLoggedIn && (
               <button
                 onClick={() => {
-                  logout()
+                  logout('')
                   setIsMenuOpen(false)
                 }}
                 className="flex items-center w-full py-2 text-sm text-red-500 hover:text-red-400 transition-colors"
