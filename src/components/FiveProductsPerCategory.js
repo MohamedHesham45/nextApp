@@ -17,15 +17,18 @@ const FiveProductsPerCategory = () => {
       try {
         setIsLoading(true);
         setError(null);
-        const response = await fetch(`/api/products/home?t=${Date.now()}&rand=${Math.random()}`, {
-          headers: {
-            "Cache-Control": "no-cache, no-store, must-revalidate",
-            Pragma: "no-cache",
-            Expires: "0",
-            "X-Force-Refresh": "true",
-            cache: 'no-store'
-          },
-        });
+        const response = await fetch(
+          `/v2/api/products/home?t=${Date.now()}&rand=${Math.random()}`,
+          {
+            headers: {
+              "Cache-Control": "no-cache, no-store, must-revalidate",
+              Pragma: "no-cache",
+              Expires: "0",
+              "X-Force-Refresh": "true",
+              cache: "no-store",
+            },
+          }
+        );
         if (!response.ok) {
           throw new Error("Failed to fetch categories");
         }
@@ -80,7 +83,7 @@ const FiveProductsPerCategory = () => {
               {category.products.map((product, index) => (
                 <SwiperSlide key={index}>
                   <div className="bg-white shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl">
-                    <Link href={`/category/${product.categoryId}`}>
+                    <Link href={`/v2/category/${product.categoryId}`}>
                       <div className="relative h-64">
                         <img
                           src={

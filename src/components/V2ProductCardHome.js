@@ -152,7 +152,7 @@ const V2ProductCardHome = ({ product }) => {
         <meta name="twitter:description" content={shareDescription} />
         <meta name="twitter:image" content={shareImage} />
       </Head>
-      <Link href={`/v2/product/${product._id}`}>
+      <Link href={`/product/${product._id}`}>
         <div className="relative aspect-[3/4] bg-white overflow-hidden shadow-sm flex items-center justify-center group">
           {/* Image carousel if more than one image */}
           <div className="w-full h-full ">
@@ -182,26 +182,19 @@ const V2ProductCardHome = ({ product }) => {
               />
             )}
           </div>
-
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-row gap-1 sm:gap-5 z-10">
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 flex flex-row gap-1 sm:gap-5 z-10">
             {/* Favorite */}
             <button
               onClick={(e) => {
                 e.preventDefault();
                 handleAddToFavorite(e, product);
               }}
-              className={`relative w-7 h-7 sm:w-12 sm:h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full transition-all duration-300 transform hover:scale-110 active:scale-95
-    ${
-      favorite.some((item) => item._id === product._id)
-        ? "bg-gradient-to-tr from-pink-500 to-red-500 text-white shadow-lg shadow-pink-400/40"
-        : "bg-white/90 text-gray-700 shadow-md hover:bg-gradient-to-tr hover:from-pink-400 hover:to-red-400 hover:text-white"
-    }`}
+              className={`relative w-7 h-7 sm:w-12 sm:h-12 md:w-14 md:h-14 flex items-center justify-center  transition-all duration-300 transform hover:scale-110`}
             >
-              <Heart className="w-4 h-4 sm:w-6 sm:h-6 md:w-7 md:h-7" />
-              {favorite.some((item) => item._id === product._id) && (
-                <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full animate-pulse">
-                  ♥
-                </span>
+              {favorite.some((item) => item._id === product._id) ? (
+                <Heart className="w-4 h-4 sm:w-6 sm:h-6 md:w-7 md:h-7  text-red-500" />
+              ) : (
+                <Heart className="w-4 h-4 sm:w-6 sm:h-6 md:w-7 md:h-7 text-white hover:fill-red-500 hover:text-red-500" />
               )}
             </button>
 
@@ -211,15 +204,14 @@ const V2ProductCardHome = ({ product }) => {
                 e.preventDefault();
                 handleAddToCart(e, product);
               }}
-              className={`w-7 h-7 sm:w-12 sm:h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full transition-all duration-300 transform hover:scale-110 active:scale-95
-    ${
-      cartQuantity > 0
-        ? "bg-gradient-to-tr from-amazon-orange to-amazon-orange-dark text-white shadow-lg shadow-orange-400/40"
-        : "bg-white/90 text-gray-700 shadow-md hover:bg-gradient-to-tr hover:from-amazon-orange hover:to-amazon-orange-dark hover:text-white"
-    }`}
+              className={`w-7 h-7 sm:w-12 sm:h-12 md:w-14 md:h-14 flex items-center justify-center transition-all duration-300 transform hover:scale-110 `}
               disabled={product.quantity === 0}
             >
-              <ShoppingBag className="w-4 h-4 sm:w-6 sm:h-6 md:w-7 md:h-7" />
+              {cart.some((item) => item._id === product._id) ? (
+                <ShoppingBag className="w-4 h-4 sm:w-6 sm:h-6 md:w-7 md:h-7 text-yellow-500 " />
+              ) : (
+                <ShoppingBag className="w-4 h-4 sm:w-6 sm:h-6 md:w-7 md:h-7 text-white hover:fill-yellow-500" />
+              )}
             </button>
 
             {/* Share */}
@@ -228,12 +220,11 @@ const V2ProductCardHome = ({ product }) => {
                 e.preventDefault();
                 setShowShareModal(true);
               }}
-              className="w-7 h-7 sm:w-12 sm:h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full bg-white/90 text-blue-600 shadow-md transition-all duration-300 transform hover:scale-110 active:scale-95 hover:bg-gradient-to-tr hover:from-blue-400 hover:to-indigo-500 hover:text-white"
+              className="w-7 h-7 sm:w-12 sm:h-12 md:w-14 md:h-14 flex items-center justify-center  transition-all duration-300 transform hover:scale-110 "
             >
-              <Send className="w-4 h-4 sm:w-6 sm:h-6 md:w-7 md:h-7" />
+              <Send className="w-4 h-4 sm:w-6 sm:h-6 md:w-7 md:h-7 text-white hover:text-blue-600" />
             </button>
           </div>
-
           {/* Out of stock overlay */}
           {product.quantity === 0 && (
             <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center z-20">
@@ -244,7 +235,7 @@ const V2ProductCardHome = ({ product }) => {
           )}
           {/* Discount badge */}
           {product.discountPercentage > 0 && (
-            <span className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-md shadow-lg z-10">
+            <span className="absolute top-2 left-2  text-red-700 text-sm md:text-lg font-bold px-2 py-1  z-10">
               خصم {Math.round(product.discountPercentage)}%
             </span>
           )}

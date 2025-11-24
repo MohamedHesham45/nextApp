@@ -42,7 +42,7 @@ export async function GET(request) {
 
     const productsWithCategories = await Promise.all(
       products.map(async (category) => {
-        let shuffledProducts = shuffleArray(category.products).slice(0, 9); // خلط وأخذ 10 فقط
+        let shuffledProducts = shuffleArray(category.products).slice(0, 10); // خلط وأخذ 10 فقط
 
         const products = await Promise.all(
           shuffledProducts.map(async (product) => {

@@ -24,11 +24,7 @@ export default function ShippingTypes() {
     description: "",
   });
 
-  const auth = useAuth();
-  const isLoggedIn = auth?.isLoggedIn || false;
-  const token = auth?.token || null;
-  const isLoaded = auth?.isLoaded || false;
-  const role = auth?.role || null;
+  const { isLoggedIn, isLoaded, token, role } = useAuth();
   const router = useRouter();
 
   useEffect(() => {

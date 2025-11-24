@@ -56,7 +56,7 @@ const ProductCardHome = ({ product }) => {
       (item) =>
         item._id === product._id &&
         JSON.stringify(item.selectedImages) ===
-        JSON.stringify(itemToAdd.selectedImages)
+          JSON.stringify(itemToAdd.selectedImages)
     );
 
     let updatedCart;
@@ -144,12 +144,14 @@ const ProductCardHome = ({ product }) => {
   const sharePrice =
     product.discountPercentage > 0
       ? `السعر: ${Math.round(
-        product.priceAfterDiscount
-      )} جنيه (بدلاً من ${Math.round(product.price)} جنيه)`
+          product.priceAfterDiscount
+        )} جنيه (بدلاً من ${Math.round(product.price)} جنيه)`
       : `السعر: ${Math.round(product.price)} جنيه`;
 
   // Custom share text for WhatsApp with call-to-action and image
-  const whatsappText = `🛍️ ${shareTitle}\n\n📝 ${shareDescription}\n\n💰 ${sharePrice}\n\n✨ ${product?.quantity > 10 ? 'متوفر الآن' : 'كمية محدودة - اطلب الآن'}\n\n👆 اضغط على الرابط لعرض المنتج وإتمام الطلب:`;
+  const whatsappText = `🛍️ ${shareTitle}\n\n📝 ${shareDescription}\n\n💰 ${sharePrice}\n\n✨ ${
+    product?.quantity > 10 ? "متوفر الآن" : "كمية محدودة - اطلب الآن"
+  }\n\n👆 اضغط على الرابط لعرض المنتج وإتمام الطلب:`;
 
   // Copy link function
   const copyToClipboard = async () => {
@@ -239,7 +241,11 @@ const ProductCardHome = ({ product }) => {
 
           <TelegramShareButton
             url={shareUrl}
-            title={`${shareTitle}\n\n${shareDescription}\n\n${sharePrice}\n\n🔥 ${product?.quantity > 10 ? 'متوفر الآن - اطلب من الرابط' : 'كمية محدودة - اطلب الآن من الرابط'}`}
+            title={`${shareTitle}\n\n${shareDescription}\n\n${sharePrice}\n\n🔥 ${
+              product?.quantity > 10
+                ? "متوفر الآن - اطلب من الرابط"
+                : "كمية محدودة - اطلب الآن من الرابط"
+            }`}
             className="w-full"
           >
             <div className="flex items-center justify-center gap-2 p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
@@ -297,7 +303,7 @@ const ProductCardHome = ({ product }) => {
         <meta name="twitter:description" content={shareDescription} />
         <meta name="twitter:image" content={shareImage} />
       </Head>
-      <Link href={`/product/${product._id}`} onClick={ViewContentEvent}>
+      <Link href={`/v2/product/${product._id}`} onClick={ViewContentEvent}>
         <div className="flex-col md:flex-row justify-between flex gap-4 mx-4 py-12">
           <div className="flex bg-white shadow-lg hover:shadow-xl transition-shadow duration-300 flex-col md:flex-row relative group flex-1">
             <div className="relative w-full md:w-[300px] h-auto sm:h-[300px] flex-shrink-0 overflow-hidden md:flex-1">
@@ -408,10 +414,11 @@ const ProductCardHome = ({ product }) => {
                       handleAddToCart(e, product);
                     }
                   }}
-                  className={`flex-1 bg-amazon-orange hover:bg-amazon-orange-dark  rounded-full transition-all duration-300  flex items-center justify-center gap-2 text-sm ${product.quantity === 0 || cartQuantity >= product.quantity
+                  className={`flex-1 bg-amazon-orange hover:bg-amazon-orange-dark  rounded-full transition-all duration-300  flex items-center justify-center gap-2 text-sm ${
+                    product.quantity === 0 || cartQuantity >= product.quantity
                       ? "opacity-50 cursor-not-allowed bg-gray-300  text-amazon-dark hover:bg-gray-300 "
                       : "text-white hover:scale-105 hover:shadow-lg"
-                    }`}
+                  }`}
                   disabled={
                     product.quantity === 0 || cartQuantity >= product.quantity
                   }
@@ -424,8 +431,8 @@ const ProductCardHome = ({ product }) => {
                   {product.quantity === 0
                     ? "نفذت الكمية"
                     : cartQuantity >= product.quantity
-                      ? "انتهت الكمية المتاحة"
-                      : "اضف الى العربة"}
+                    ? "انتهت الكمية المتاحة"
+                    : "اضف الى العربة"}
                 </button>
 
                 <button
@@ -433,16 +440,18 @@ const ProductCardHome = ({ product }) => {
                     e.stopPropagation();
                     handleAddToFavorite(e, product);
                   }}
-                  className={`p-3 bg-white hover:bg-red-50 ${favorite.some((item) => item._id === product._id)
+                  className={`p-3 bg-white hover:bg-red-50 ${
+                    favorite.some((item) => item._id === product._id)
                       ? "text-red-500 border-red-500"
                       : "text-gray-400 border-gray-100"
-                    } rounded-full shadow-md transition-all duration-300 hover:scale-105 hover:shadow-lg border-2 hover:border-red-500`}
+                  } rounded-full shadow-md transition-all duration-300 hover:scale-105 hover:shadow-lg border-2 hover:border-red-500`}
                 >
                   <Heart
-                    className={`h-5 w-5 stroke-2 ${favorite.some((item) => item._id === product._id)
+                    className={`h-5 w-5 stroke-2 ${
+                      favorite.some((item) => item._id === product._id)
                         ? "fill-red-500"
                         : ""
-                      }`}
+                    }`}
                   />
                 </button>
 

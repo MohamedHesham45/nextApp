@@ -9,11 +9,7 @@ import { useAuth } from "@/app/context/AuthContext";
 import { toast } from "react-hot-toast";
 
 export default function AdminPage() {
-  const auth = useAuth();
-  const isLoggedIn = auth?.isLoggedIn || false;
-  const token = auth?.token || null;
-  const isLoaded = auth?.isLoaded || false;
-  const role = auth?.role || null;
+  const { token, isLoaded, role, isLoggedIn } = useAuth();
   const router = useRouter();
   const [products, setProducts] = useState([]);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -28,7 +24,7 @@ export default function AdminPage() {
   const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/products");
+      const res = await fetch("/v2/api/products");
       if (!res.ok) {
         throw new Error("Failed to fetch products");
       }
@@ -177,8 +173,8 @@ export default function AdminPage() {
       }
       const method = editingProduct ? "PUT" : "POST";
       const url = editingProduct
-        ? `/v2/api/products/${editingProduct._id}`
-        : "/v2/api/products";
+        ? `/api/products/${editingProduct._id}`
+        : "/api/products";
 
       const res = await fetch(url, {
         method,

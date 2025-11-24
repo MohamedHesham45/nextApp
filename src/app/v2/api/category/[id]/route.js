@@ -6,61 +6,22 @@ import { ObjectId } from "mongodb";
 export async function GET(request, { params }) {
   try {
     const { id } = params;
+    const data = await fetchCategoryWithProducts(id);
 
-    // validate id
-    if (!ObjectId.isValid(id)) {
-      return NextResponse.json({ error: "Invalid category id" }, { status: 400 });
+    if (!data) {
+      return NextResponse.json(
+        { error: "Category not found" },
+        { status: 404 }
+      );
     }
 
-    const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get("page") || "1", 10);
-    const limit = parseInt(searchParams.get("limit") || "12", 10);
-    const search = (searchParams.get("search") || "").trim();
-
-    const client = await clientPromise;
-    const db = client.db("productDB");
-
-    // find category first
-    const category = await db.collection("categories").findOne({ _id: new ObjectId(id) });
-    if (!category) {
-      return NextResponse.json({ error: "Category not found" }, { status: 404 });
-    }
-
-    // build product query:
-    // match products where categoryId equals the id string OR equals the ObjectId(id)
-    const categoryObjectId = new ObjectId(id);
-    const categoryMatcher = { $or: [{ categoryId: id }, { categoryId: categoryObjectId }] };
-
-    // if search provided, require title or description match
-    const andClauses = [categoryMatcher];
-    if (search) {
-      const regex = { $regex: search, $options: "i" };
-      andClauses.push({ $or: [{ title: regex }, { description: regex }] });
-    }
-
-    const finalQuery = andClauses.length > 1 ? { $and: andClauses } : categoryMatcher;
-
-    const totalProducts = await db.collection("products").countDocuments(finalQuery);
-
-    const products = await db
-      .collection("products")
-      .find(finalQuery)
-      .sort({ _id: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .toArray();
-
-    return NextResponse.json({
-      category,
-      products,
-      totalProducts,
-      page,
-      limit,
-      hasMore: page * limit < totalProducts,
-    });
+    return NextResponse.json(data);
   } catch (error) {
-    console.error("Error in category GET:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    console.error("Error in category API:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
 

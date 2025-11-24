@@ -85,8 +85,8 @@ export default function Navbar() {
 
   const roleLinks = isLoggedIn
     ? role === "admin"
-      ? [{ href: "/admin-dashboard", label: "لوحة التحكم" }]
-      : [{ href: "/user/orders", label: "إدارة الطلبات" }]
+      ? [{ href: "/v2/admin-dashboard", label: "لوحة التحكم" }]
+      : [{ href: "/v2/user/orders", label: "إدارة الطلبات" }]
     : [];
 
   const galleryConversionEvent = () => {
@@ -113,11 +113,11 @@ export default function Navbar() {
       >
         <nav className="container mx-auto px-6 h-16 flex justify-between items-center">
           <div className="text-xl font-semibold text-white order-2" >
-            <Link href="/">ستارة مول</Link>
+            <Link href="/v2">ستارة مول</Link>
           </div>
           <div className="hidden md:flex  items-center h-full order-1">
             <Link
-              href="/gallery"
+              href="/v2/gallery"
               className="relative text-white hover:text-amazon-yellow transition group order-6 mx-4"
               onClick={galleryConversionEvent}
             >
@@ -125,7 +125,7 @@ export default function Navbar() {
               <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-amazon-yellow group-hover:w-full transition-all duration-300"></span>
             </Link>
             <Link
-              href="/contact"
+              href="/v2/contact"
               className="relative text-white hover:text-amazon-yellow transition group order-5 mx-4"
             >
               <span className="block pb-1">تواصل معنا</span>
@@ -151,7 +151,7 @@ export default function Navbar() {
               <span className="block pb-1 absolute top-[-12px] right-[3px] text-sm bg-amazon-yellow text-amazon-dark-gray px-1 rounded-full">{numberOfCartItems}</span>
               <ShoppingCart />
             </button>
-            <Link href="/favorites" className="relative text-white hover:text-amazon-yellow transition group order-2 px-4">
+            <Link href="/v2/favorites" className="relative text-white hover:text-amazon-yellow transition group order-2 px-4">
               {numberOfFavoriteItems > 0 && (
                 <span className="block pb-1 absolute top-[-12px] right-[3px] text-sm bg-amazon-yellow text-amazon-dark-gray px-1 rounded-full">
                   {numberOfFavoriteItems}
@@ -195,7 +195,7 @@ export default function Navbar() {
                       الملف الشخصي
                     </button>
                     <button
-                      onClick={() => logout('')}
+                      onClick={() => logout('v2')}
                       className="flex items-center w-full px-4 py-2 text-sm text-red-500 hover:bg-amazon-light-gray transition"
                     >
                       <LogOut size={16} className="mr-2" />
@@ -269,7 +269,7 @@ export default function Navbar() {
               </Link>
             ))}
             <Link
-              href="/gallery"
+              href="/v2/gallery"
               className="relative block text-white hover:text-amazon-yellow transition-colors group"
               onClick={() => setIsMenuOpen(false)}
             >
@@ -277,7 +277,7 @@ export default function Navbar() {
               <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-amazon-yellow group-hover:w-full transition-all duration-300"></span>
             </Link>
             <Link
-              href="/contact"
+              href="/v2/contact"
               className="block py-2 text-white hover:text-amazon-yellow transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
@@ -286,7 +286,7 @@ export default function Navbar() {
             {isLoggedIn && (
               <button
                 onClick={() => {
-                  logout('')
+                  logout('v2')
                   setIsMenuOpen(false)
                 }}
                 className="flex items-center w-full py-2 text-sm text-red-500 hover:text-red-400 transition-colors"

@@ -34,10 +34,9 @@ export default function UserOrdersPage() {
   //     //   console.error('Error tracking conversion:', error);
   //     // }
   //   };
-  
+
   //   trackPageView();
   // }, []);
-  
 
   const fetchUserOrders = useCallback(async () => {
     if (!userId) return;
@@ -49,9 +48,6 @@ export default function UserOrdersPage() {
       }
       const data = await response.json();
       setOrders(data);
-
-      
-
     } catch (err) {
       console.error("Error fetching orders:", err);
       setError("Failed to load orders. Please try again later.");
@@ -110,7 +106,8 @@ export default function UserOrdersPage() {
       ${order.orderItems
         .map(
           (item) =>
-            `- ${item.title} (Quantity: ${item.quantity
+            `- ${item.title} (Quantity: ${
+              item.quantity
             }, Price: ج.م${item.price.toFixed(2)})`
         )
         .join("\n")}
@@ -156,7 +153,9 @@ export default function UserOrdersPage() {
 
       {orders.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-center">
-          <h2 className="text-2xl font-semibold text-gray-600 mb-2">قائمة الطلبات فارغة</h2>
+          <h2 className="text-2xl font-semibold text-gray-600 mb-2">
+            قائمة الطلبات فارغة
+          </h2>
           <p className="text-gray-500">لم تقم بإجراء أي طلبات حتى الآن.</p>
         </div>
       ) : (
@@ -169,37 +168,43 @@ export default function UserOrdersPage() {
               <div className="flex flex-row justify-between items-center mb-4 direction-rtl">
                 <h2 className="text-xl font-semibold">طلب رقم #{order._id}</h2>
                 <span
-                  className={`px-2 py-1 rounded-full text-sm ${order.status === "Delivered"
-                    ? "bg-green-200 text-green-800"
-                    : order.status === "Shipped"
+                  className={`px-2 py-1 rounded-full text-sm ${
+                    order.status === "Delivered"
+                      ? "bg-green-200 text-green-800"
+                      : order.status === "Shipped"
                       ? "bg-blue-200 text-blue-800"
                       : order.status === "Processing"
-                        ? "bg-yellow-200 text-yellow-800"
-                        : order.status === "Pending"
-                          ? "bg-gray-200 text-gray-800"
-                          : "bg-black text-white"
-                    }`}
+                      ? "bg-yellow-200 text-yellow-800"
+                      : order.status === "Pending"
+                      ? "bg-gray-200 text-gray-800"
+                      : "bg-black text-white"
+                  }`}
                 >
                   {order.status === "Delivered"
                     ? "تم التوصيل"
                     : order.status === "Shipped"
-                      ? "تم الشحن"
-                      : order.status === "Processing"
-                        ? "قيد المعالجة"
-                        : order.status === "Pending"
-                          ? "قيد الانتظار"
-                          : order.status === "Cancelled"
-                            ? "ملغي"
-                            : order.status}
+                    ? "تم الشحن"
+                    : order.status === "Processing"
+                    ? "قيد المعالجة"
+                    : order.status === "Pending"
+                    ? "قيد الانتظار"
+                    : order.status === "Cancelled"
+                    ? "ملغي"
+                    : order.status}
                 </span>
               </div>
               {order.orderItems.map((item, index) => (
-                <div key={index} className="flex flex-row items-center gap-2 my-4">
+                <div
+                  key={index}
+                  className="flex flex-row items-center gap-2 my-4"
+                >
                   <div className="flex flex-row items-center gap-2 my-4">
                     <img
-                      src={item?.selectedImages?.[0]?.startsWith('/')
-                        ? item.selectedImages[0]
-                        : `/${item.selectedImages[0]}`}
+                      src={
+                        item?.selectedImages?.[0]?.startsWith("/")
+                          ? item.selectedImages[0]
+                          : `/${item.selectedImages[0]}`
+                      }
                       alt={item?.title || "Order image"}
                       className="w-20 h-20 rounded-md object-cover"
                     />
@@ -218,7 +223,9 @@ export default function UserOrdersPage() {
                   <span className="text-black">الإجمالي:</span>
                   <span className="text-amazon-orange">
                     {" "}
-                    {parseFloat(order.totalPrice) + parseFloat(order.shippingCost)} ج.م
+                    {parseFloat(order.totalPrice) +
+                      parseFloat(order.shippingCost)}{" "}
+                    ج.م
                   </span>
                 </p>
               </div>
@@ -267,14 +274,14 @@ export default function UserOrdersPage() {
                 {selectedOrder.status === "Delivered"
                   ? "تم التوصيل"
                   : selectedOrder.status === "Shipped"
-                    ? "تم الشحن"
-                    : selectedOrder.status === "Processing"
-                      ? "قيد المعالجة"
-                      : selectedOrder.status === "Pending"
-                        ? "قيد الانتظار"
-                        : selectedOrder.status === "Cancelled"
-                          ? "ملغي"
-                          : selectedOrder.status}
+                  ? "تم الشحن"
+                  : selectedOrder.status === "Processing"
+                  ? "قيد المعالجة"
+                  : selectedOrder.status === "Pending"
+                  ? "قيد الانتظار"
+                  : selectedOrder.status === "Cancelled"
+                  ? "ملغي"
+                  : selectedOrder.status}
               </p>
               <p className="text-sm text-gray-500 mb-1">
                 التاريخ:{" "}
@@ -287,7 +294,11 @@ export default function UserOrdersPage() {
                 {selectedOrder.orderItems.map((item, index) => (
                   <li key={index} className="flex items-center space-x-2">
                     <img
-                      src={item.selectedImages?.[0]?.startsWith('/') ? item.selectedImages[0] : `/${item.selectedImages[0]}` || "/placeholder.png"}
+                      src={
+                        item.selectedImages?.[0]?.startsWith("/")
+                          ? item.selectedImages[0]
+                          : `/${item.selectedImages[0]}` || "/placeholder.png"
+                      }
                       alt={item.title}
                       width={50}
                       height={50}

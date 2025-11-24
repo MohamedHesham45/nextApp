@@ -11,7 +11,7 @@ export default function ConditionalLayout({ children }) {
 
   return (
     <>
-      {isV2 ? <V2Navbar /> : <Navbar />}
+      {!isV2 ? <V2Navbar /> : <Navbar />}
       <main className="pt-0 md:pt-12 flex-1">{children}</main>
       <Footer />
     </>

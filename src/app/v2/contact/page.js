@@ -91,7 +91,7 @@ export default function Contact() {
               href={`tel:${whatsappNumber}`}
               className="text-3xl font-bold hover:text-white transition duration-300 ease-in-out transform hover:scale-105 inline-block"
             >
-              +{whatsappNumber}
+              {whatsappNumber}
             </a>
           </div>
         </div>

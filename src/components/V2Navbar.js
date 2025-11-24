@@ -73,40 +73,47 @@ export default function V2Navbar() {
 
   const roleLinks = isLoggedIn
     ? role === "admin"
-      ? [{ href: "/v2/admin-dashboard", label: "لوحة التحكم", icon: <LayoutDashboard size={22} /> }]
-      : [{ href: "/v2/user/orders", label: "إدارة الطلبات", icon: <ClipboardList size={22} /> }]
+      ? [
+          {
+            href: "/admin-dashboard",
+            label: "لوحة التحكم",
+            icon: <LayoutDashboard size={22} />,
+          },
+        ]
+      : [
+          {
+            href: "/user/orders",
+            label: "إدارة الطلبات",
+            icon: <ClipboardList size={22} />,
+          },
+        ]
     : [];
-
-  const galleryConversionEvent = () => {
-    var userAgent = navigator.userAgent;
-    // Meta pixel conversion can be added here
-  };
 
   return (
     <>
       {/* Desktop Navbar only */}
       <header
-        className={`bg-amazon shadow md:fixed md:h-16 w-full z-50 transition-transform duration-300 hidden md:block ${visible ? "translate-y-0" : "-translate-y-full"
-          }`}
+        className={`bg-amazon shadow md:fixed md:h-16 w-full z-50 transition-transform duration-300 hidden md:block ${
+          visible ? "translate-y-0" : "-translate-y-full"
+        }`}
       >
-
         <nav className="container mx-auto px-6 h-16 flex justify-between items-center">
           <div className="text-xl font-semibold text-white order-2">
-            <Link href="/v2">ستارة مول</Link>
+            <Link href="/">ستارة مول</Link>
           </div>
 
           <div className="hidden md:flex items-center h-full order-1">
-            <Link
-              href="/v2/gallery"
+            {/* <Link
+              href="/gallery"
               className="relative text-white hover:text-amazon-yellow transition group order-6 mx-4"
               onClick={galleryConversionEvent}
             >
               <span className="block pb-1">المعرض</span>
               <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-amazon-yellow group-hover:w-full transition-all duration-300"></span>
-            </Link>
+            </Link> */}
 
             <Link
-              href="/v2/contact"
+              href="/contact"
               className="relative text-white hover:text-amazon-yellow transition group order-5 mx-4"
             >
               <span className="block pb-1">تواصل معنا</span>
@@ -128,7 +135,6 @@ export default function V2Navbar() {
               onClick={() => setIsCartVisible(!isCartVisible)}
               className="relative text-white hover:text-amazon-yellow transition group order-3 px-4"
             >
-
               <span className="block pb-1 absolute top-[-12px] right-[3px] text-sm bg-amazon-yellow text-amazon-dark-gray px-1 rounded-full">
                 {numberOfCartItems}
               </span>
@@ -137,7 +143,7 @@ export default function V2Navbar() {
             </button>
 
             <Link
-              href="/v2/favorites"
+              href="/favorites"
               className="relative text-white hover:text-amazon-yellow transition group order-2 px-4"
             >
               {numberOfFavoriteItems > 0 && (
@@ -182,7 +188,7 @@ export default function V2Navbar() {
                       الملف الشخصي
                     </button>
                     <button
-                      onClick={() => logout('v2')}
+                      onClick={() => logout("")}
                       className="flex items-center w-full px-4 py-2 text-sm text-red-500 hover:bg-amazon-light-gray transition"
                     >
                       <LogOut size={16} className="mr-2" />
@@ -216,13 +222,17 @@ export default function V2Navbar() {
             }
           }}
         >
-          <UserCheck size={22} className={` text-amazon-yellow ${isLoggedIn ? "" : "hidden"}`} />
+          <UserCheck
+            size={22}
+            className={` text-amazon-yellow ${isLoggedIn ? "" : "hidden"}`}
+          />
           <User size={22} className={` ${isLoggedIn ? "hidden" : ""}`} />
-          <span>
-            {isLoggedIn ? (firstName || "مستخدم") : "الحساب"}
-          </span>
+          <span>{isLoggedIn ? firstName || "مستخدم" : "الحساب"}</span>
         </button>
-        <Link href="/v2/favorites" className="flex flex-col items-center text-xs relative">
+        <Link
+          href="/favorites"
+          className="flex flex-col items-center text-xs relative"
+        >
           {numberOfFavoriteItems > 0 && (
             <span className="absolute -top-1 -right-2 text-[10px] bg-amazon-yellow text-amazon-dark-gray px-1 rounded-full">
               {numberOfFavoriteItems}
@@ -236,28 +246,32 @@ export default function V2Navbar() {
           className="flex flex-col items-center text-xs relative"
         >
           {/* {numberOfCartItems > 0 && ( */}
-            <span className="absolute -top-1 -right-2 text-[10px] bg-amazon-yellow text-amazon-dark-gray px-1 rounded-full">
-              {numberOfCartItems}
-            </span>
+          <span className="absolute -top-1 -right-2 text-[10px] bg-amazon-yellow text-amazon-dark-gray px-1 rounded-full">
+            {numberOfCartItems}
+          </span>
           {/* )} */}
           <ShoppingCart size={22} />
           <span>السلة</span>
         </button>
         {roleLinks.map((link) => (
-          <Link key={link.href} href={link.href} className="flex flex-col items-center text-xs">
+          <Link
+            key={link.href}
+            href={link.href}
+            className="flex flex-col items-center text-xs"
+          >
             {link.icon}
             <span>{link.label}</span>
           </Link>
         ))}
-        <Link href="/v2" className="flex flex-col items-center text-xs">
+        <Link href="/" className="flex flex-col items-center text-xs">
           <Home size={22} />
           <span>الرئيسية</span>
         </Link>
-        <Link href="/v2/gallery" className="flex flex-col items-center text-xs">
+        {/* <Link href="/gallery" className="flex flex-col items-center text-xs">
           <Image size={22} />
           <span>المعرض</span>
-        </Link>
-        <Link href="/v2/contact" className="flex flex-col items-center text-xs">
+        </Link> */}
+        <Link href="/contact" className="flex flex-col items-center text-xs">
           <Phone size={22} />
           <span>تواصل</span>
         </Link>
@@ -278,8 +292,14 @@ export default function V2Navbar() {
           setModalType={setModalType}
         />
       )}
-      <V2ProfileModal isOpen={isProfileModalOpen} onRequestClose={closeProfileModal} />
-      <ShoppingCartPage isVisible={isCartVisible} setIsVisible={setIsCartVisible} />
+      <V2ProfileModal
+        isOpen={isProfileModalOpen}
+        onRequestClose={closeProfileModal}
+      />
+      <ShoppingCartPage
+        isVisible={isCartVisible}
+        setIsVisible={setIsCartVisible}
+      />
     </>
   );
 }

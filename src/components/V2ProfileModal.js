@@ -127,7 +127,7 @@ const V2ProfileModal = ({ isOpen, onRequestClose }) => {
               </button>
               <button
                 onClick={() => {
-                  logout("v2");
+                  logout("");
                   onRequestClose(); // close modal after logout
                 }}
               >

@@ -9,7 +9,11 @@ import { useAuth } from "@/app/context/AuthContext";
 import { toast } from "react-hot-toast";
 
 export default function AdminPage() {
-  const { token, isLoaded, role, isLoggedIn } = useAuth();
+  const auth = useAuth();
+  const isLoggedIn = auth?.isLoggedIn || false;
+  const token = auth?.token || null;
+  const isLoaded = auth?.isLoaded || false;
+  const role = auth?.role || null;
   const router = useRouter();
   const [products, setProducts] = useState([]);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -24,7 +28,7 @@ export default function AdminPage() {
   const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/products");
+      const res = await fetch("v2/api/products");
       if (!res.ok) {
         throw new Error("Failed to fetch products");
       }
@@ -89,6 +93,15 @@ export default function AdminPage() {
         },
         body: JSON.stringify({ filenames: product.images }),
       });
+      if (product.video) {
+        await fetch("/remove-videos", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ filenames: [product.video] }),
+        });
+      }
 
       fetchProducts();
       toast.success("تم حذف المنتج بنجاح");
@@ -108,6 +121,29 @@ export default function AdminPage() {
       const imagess = [];
       const images = new FormData();
       const checkImages = [];
+
+      const videoFile = productData.get("video");
+      console.log("video file", videoFile);
+      const videoForm = new FormData();
+      let newVideoPath = null;
+      if (videoFile && typeof videoFile !== "string") {
+        videoForm.append("video", videoFile);
+
+        const res = await fetch("/upload-video", {
+          method: "POST",
+          body: videoForm,
+        });
+
+        if (!res.ok) throw new Error("فشل رفع الفيديو");
+
+        const data = await res.json();
+        newVideoPath = data.file;
+
+        finalData.video = newVideoPath;
+      } else {
+        finalData.video = videoFile;
+      }
+
       productData.forEach((value, key) => {
         if (key != "images") {
           finalData[key] = value;
@@ -162,6 +198,15 @@ export default function AdminPage() {
             },
             body: JSON.stringify({ filenames: checkImages }),
           });
+          if (newVideoPath) {
+            await fetch("/remove-videos", {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ filenames: [newVideoPath] }),
+            });
+          }
         }
         throw new Error(errorData.message || "حدث خطأ أثناء إضافة المنتج");
       }

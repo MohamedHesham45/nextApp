@@ -23,7 +23,11 @@ export default function Neighborhoods() {
   const [errors, setErrors] = useState([]);
   const [selectedGovernorate, setSelectedGovernorate] = useState("");
 
-  const { isLoggedIn, isLoaded, token, role } = useAuth();
+  const auth = useAuth();
+  const isLoggedIn = auth?.isLoggedIn || false;
+  const token = auth?.token || null;
+  const isLoaded = auth?.isLoaded || false;
+  const role = auth?.role || null;
   const router = useRouter();
 
   useEffect(() => {
@@ -45,7 +49,7 @@ export default function Neighborhoods() {
 
   const fetchGovernorates = async () => {
     try {
-      const response = await fetch("/api/governorate");
+      const response = await fetch("/v2/api/governorate");
       const data = await response.json();
       setGovernorates(data);
     } catch (error) {
@@ -55,7 +59,7 @@ export default function Neighborhoods() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch("/api/governorate/neighborhood");
+      const response = await fetch("/v2/api/governorate/neighborhood");
       const data = await response.json();
       setNeighborhoods(data);
     } catch (error) {
@@ -68,7 +72,7 @@ export default function Neighborhoods() {
   const fetchNeighborhoodsByGovernorate = async (governorateID) => {
     try {
       const response = await fetch(
-        `/api/governorate/neighborhood/governorate/${governorateID}`
+        `/v2/api/governorate/neighborhood/governorate/${governorateID}`
       );
       const data = await response.json();
       setNeighborhoods(data);
@@ -109,7 +113,7 @@ export default function Neighborhoods() {
     try {
       let response;
       if (modalMode === "add") {
-        response = await fetch("/api/governorate/neighborhood", {
+        response = await fetch("/v2/api/governorate/neighborhood", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -120,7 +124,7 @@ export default function Neighborhoods() {
         });
       } else if (modalMode === "edit") {
         response = await fetch(
-          `/api/governorate/neighborhood/${selectedNeighborhood._id}`,
+          `/v2/api/governorate/neighborhood/${selectedNeighborhood._id}`,
           {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -156,7 +160,7 @@ export default function Neighborhoods() {
     setSubmitLoading(true);
     try {
       const response = await fetch(
-        `/api/governorate/neighborhood/${selectedNeighborhood._id}`,
+        `/v2/api/governorate/neighborhood/${selectedNeighborhood._id}`,
         {
           method: "DELETE",
         }

@@ -76,7 +76,9 @@ export default function SignInModal({ isOpen, onClose, setModalType }) {
         onClick={(e) => e.stopPropagation()}
       >
         <h1 className="text-2xl font-bold mb-4">تسجيل الدخول</h1>
-        {validationError && <p className="text-red-500 mb-4">{validationError}</p>}
+        {validationError && (
+          <p className="text-red-500 mb-4">{validationError}</p>
+        )}
 
         {isLoading ? (
           <LoadingSpinner />
@@ -97,7 +99,10 @@ export default function SignInModal({ isOpen, onClose, setModalType }) {
               />
             </div>
             <div>
-              <label htmlFor="password" className="block text-sm font-medium mb-1">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium mb-1"
+              >
                 كلمة السر
               </label>
               <div className="relative">
@@ -130,7 +135,7 @@ export default function SignInModal({ isOpen, onClose, setModalType }) {
         <div className="mt-4 text-sm text-center">
           لا تمتلك حساب؟{" "}
           <button
-            onClick={() => setModalType('sign-up')}
+            onClick={() => setModalType("sign-up")}
             className="text-blue-500 hover:underline"
           >
             إنشاء حساب
@@ -140,4 +145,3 @@ export default function SignInModal({ isOpen, onClose, setModalType }) {
     </div>
   );
 }
-

@@ -8,7 +8,7 @@ import "slick-carousel/slick/slick-theme.css";
 const V2ProductCardSimple = ({ product, viewMode = "grid" }) => {
   if (viewMode === "list") {
     return (
-      <Link href={`/v2/product/${product._id}`}>
+      <Link href={`/product/${product._id}`}>
         <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl shadow hover:shadow-md transition">
           <div className="w-32 h-36 flex-shrink-0 overflow-hidden rounded-lg">
             <img
@@ -78,7 +78,7 @@ const V2ProductCardSimple = ({ product, viewMode = "grid" }) => {
   };
 
   return (
-    <Link href={`/v2/product/${product._id}`}>
+    <Link href={`/product/${product._id}`}>
       <div className="relative aspect-[3/4] bg-white overflow-hidden shadow-sm flex items-center justify-center group cursor-pointer">
         {/* صورة المنتج مع سلايدر إذا كان هناك أكثر من صورة */}
         <div className="w-full h-full">
@@ -123,7 +123,7 @@ const V2ProductCardSimple = ({ product, viewMode = "grid" }) => {
 
         {/* الخصم */}
         {product.discountPercentage > 0 && (
-          <span className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-md shadow-lg z-10">
+          <span className="absolute top-2 left-2  text-white text-xs font-bold px-2 py-1 rounded-md shadow-lg z-10">
             خصم {Math.round(product.discountPercentage)}%
           </span>
         )}

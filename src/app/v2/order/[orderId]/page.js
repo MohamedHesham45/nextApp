@@ -782,7 +782,7 @@ export default function OrderPage({ params }) {
                     if (newGovernorateId) {
                       try {
                         const response = await fetch(
-                          `/v2/api/governorate/neighborhood/governorate/${newGovernorateId}`
+                          `/api/governorate/neighborhood/governorate/${newGovernorateId}`
                         );
                         const data = await response.json();
                         setNeighborhoods(data);

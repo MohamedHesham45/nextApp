@@ -23,11 +23,7 @@ export default function Neighborhoods() {
   const [errors, setErrors] = useState([]);
   const [selectedGovernorate, setSelectedGovernorate] = useState("");
 
-  const auth = useAuth();
-  const isLoggedIn = auth?.isLoggedIn || false;
-  const token = auth?.token || null;
-  const isLoaded = auth?.isLoaded || false;
-  const role = auth?.role || null;
+  const { isLoggedIn, isLoaded, token, role } = useAuth();
   const router = useRouter();
 
   useEffect(() => {

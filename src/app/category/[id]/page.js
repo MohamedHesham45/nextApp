@@ -9,7 +9,7 @@ export async function generateMetadata({ params }) {
     
     if (!data || !data.category) {
       return {
-        title: "فئة المنتجات - سيتار مول",
+        title: "فئة المنتجات - ستارة مول",
         description: "اكتشف مجموعتنا الواسعة من المنتجات المميزة بأفضل الأسعار",
       };
     }
@@ -54,7 +54,7 @@ export async function generateMetadata({ params }) {
   } catch (error) {
     console.error("Error generating metadata:", error);
     return {
-      title: "فئة المنتجات - سيتار مول",
+      title: "فئة المنتجات - ستارة مول",
       description: "اكتشف مجموعتنا الواسعة من المنتجات المميزة بأفضل الأسعار",
     };
   }
