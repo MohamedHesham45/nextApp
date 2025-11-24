@@ -143,11 +143,6 @@ export default function ProductCard({
               }`}
               >
                 <Heart className="w-5 h-5" />
-                {isFavorite && (
-                  <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full animate-pulse">
-                    ♥
-                  </span>
-                )}
               </button>
 
               {/* Cart */}
