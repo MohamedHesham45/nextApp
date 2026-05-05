@@ -19,10 +19,10 @@ export default function AdminPage() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [loadingDelete, setLoadingDelete] = useState(false);
   const [categories, setCategories] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
-  const [loadingDelete, setLoadingDelete] = useState(false);
   const [errorSubmit, setErrorSubmit] = useState(null);
 
   const fetchProducts = useCallback(async () => {

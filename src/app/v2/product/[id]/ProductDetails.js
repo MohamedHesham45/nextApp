@@ -389,6 +389,29 @@ export default function ProductDetails() {
                     ))}
                   </div>
                 )}
+
+                {product.video && (
+                  <div className="mt-2">
+                    <p className="text-sm font-semibold text-gray-600 mb-2 flex items-center gap-1">
+                      <svg className="w-4 h-4 text-amazon-orange" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                      فيديو المنتج
+                    </p>
+                    <video
+                      controls
+                      playsInline
+                      className="w-full rounded-xl shadow-lg"
+                      src={
+                        product.video.startsWith("/")
+                          ? product.video
+                          : `/${product.video}`
+                      }
+                    >
+                      متصفحك لا يدعم تشغيل الفيديو
+                    </video>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-4 md:space-y-6 bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-lg">

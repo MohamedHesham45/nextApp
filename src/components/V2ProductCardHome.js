@@ -2,7 +2,7 @@
 
 import { Heart, ShoppingBag, Send, Copy, Check } from "lucide-react";
 import { useCartFavorite } from "@/app/context/cartFavoriteContext";
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { toast } from "react-hot-toast";
 import Slider from "react-slick";
@@ -17,26 +17,29 @@ import {
   TelegramIcon,
 } from "react-share";
 import Head from "next/head";
+import { useAuth } from "@/app/context/AuthContext";
+import ProductForm from "./ProductForm";
 
-const V2ProductCardHome = ({ product }) => {
+const V2ProductCardHome = ({ product, setProducts }) => {
   const { cart, setCart, favorite, setFavorite } = useCartFavorite();
-  const [cartQuantity, setCartQuantity] = useState(0);
+  const [showMenu, setShowMenu] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
+  const [errorSubmit, setErrorSubmit] = useState(null);
+  const [editingProduct, setEditingProduct] = useState(null);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [loadingDelete, setLoadingDelete] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
   const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    const existingItem = cart.find((item) => item._id === product._id);
-    if (existingItem) {
-      setCartQuantity(existingItem.quantityCart || 0);
-    } else {
-      setCartQuantity(0);
-    }
-  }, [cart, product._id]);
-
+  const auth = useAuth();
+  const isLoggedIn = auth?.isLoggedIn || false;
+  const role = auth?.role || null;
   const handleAddToFavorite = async (e, product) => {
     e.preventDefault();
     const existingItemIndex = favorite.findIndex(
-      (item) => item._id === product._id
+      (item) => item._id === product._id,
     );
 
     let updatedFavorite;
@@ -51,6 +54,168 @@ const V2ProductCardHome = ({ product }) => {
     setFavorite(updatedFavorite);
     localStorage.setItem("favorite", JSON.stringify(updatedFavorite));
   };
+  const handleDelete = async (product) => {
+    try {
+      setLoadingDelete(true);
+      const res = await fetch(`/api/products/${product._id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Failed to delete product");
+
+      await fetch("/remove-images", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ filenames: product.images }),
+      });
+      if (product.video) {
+        await fetch("/remove-videos", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ filenames: [product.video] }),
+        });
+      }
+      setProducts((prev) => prev.filter((item) => item._id !== product._id));
+      toast.success("تم حذف المنتج بنجاح");
+    } catch (err) {
+      console.error(err);
+      toast.error("حدث خطأ أثناء حذف المنتج اعد المحاولة");
+    } finally {
+      setLoadingDelete(false);
+    }
+  };
+  const fetchCategories = useCallback(async () => {
+    try {
+      const res = await fetch("/api/category");
+      if (!res.ok) throw new Error("Failed to fetch categories");
+      const data = await res.json();
+      setCategories(data.categories);
+    } catch (err) {
+      console.error("Error fetching categories:", err);
+      setError("Failed to load categories. Please try again later.");
+    }
+  }, []);
+  useEffect(() => {
+    if (isLoggedIn && role === "admin") {
+      fetchCategories();
+    }
+  }, [isLoggedIn, role]);
+  const handleEdit = (product) => {
+    setEditingProduct(product);
+    setIsModalOpen(true);
+  };
+  const handleSubmit = async (productData) => {
+    try {
+      setLoadingSubmit(true);
+      const imagesProduct = productData.getAll("images");
+      const finalData = {};
+      const imagess = [];
+      const images = new FormData();
+      const checkImages = [];
+
+      const videoFile = productData.get("video");
+      console.log("video file", videoFile);
+      const videoForm = new FormData();
+      let newVideoPath = null;
+      if (videoFile && typeof videoFile !== "string") {
+        videoForm.append("video", videoFile);
+
+        const res = await fetch("/upload-video", {
+          method: "POST",
+          body: videoForm,
+        });
+
+        if (!res.ok) throw new Error("فشل رفع الفيديو");
+
+        const data = await res.json();
+        newVideoPath = data.file;
+
+        finalData.video = newVideoPath;
+      } else {
+        finalData.video = videoFile;
+      }
+
+      productData.forEach((value, key) => {
+        if (key != "images") {
+          finalData[key] = value;
+        } else {
+          if (typeof value === "string") {
+            imagess.push(value);
+          }
+        }
+      });
+      if (imagesProduct.length > 0) {
+        imagesProduct.forEach((image) => {
+          if (typeof image !== "string") {
+            images.append("images", image);
+          }
+        });
+        if (images.getAll("images").length > 0) {
+          const res = await fetch("/upload-images", {
+            method: "POST",
+            body: images,
+          });
+          if (!res.ok) throw new Error("حدث خطأ أثناء رفع الصور حاول مرة أخرى");
+          const data = await res.json();
+          const checkImages = [];
+          data.files.forEach((file) => {
+            checkImages.push(file);
+
+            imagess.push(file);
+          });
+        }
+        finalData.images = imagess;
+      }
+      const method = editingProduct ? "PUT" : "POST";
+      const url = editingProduct
+        ? `/api/products/${editingProduct._id}`
+        : "/api/products";
+
+      const res = await fetch(url, {
+        method,
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(finalData),
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        if (checkImages.length > 0) {
+          await fetch("/remove-images", {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ filenames: checkImages }),
+          });
+          if (newVideoPath) {
+            await fetch("/remove-videos", {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ filenames: [newVideoPath] }),
+            });
+          }
+        }
+        throw new Error(errorData.message || "حدث خطأ أثناء إضافة المنتج");
+      }
+      const data = await res.json();
+      setProducts((prev) => [...prev, data.product]);
+      setIsModalOpen(false);
+      toast.success("تم إضافة المنتج بنجاح");
+    } catch (err) {
+      toast.error(err.message || "حدث خطأ أثناء إضافة المنتج");
+      setErrorSubmit(err.message);
+      throw new Error(err.message);
+    } finally {
+      setLoadingSubmit(false);
+    }
+  };
 
   const handleAddToCart = async (e, product) => {
     e.preventDefault();
@@ -64,12 +229,19 @@ const V2ProductCardHome = ({ product }) => {
       (item) =>
         item._id === product._id &&
         JSON.stringify(item.selectedImages) ===
-          JSON.stringify(itemToAdd.selectedImages)
+          JSON.stringify(itemToAdd.selectedImages),
     );
 
     let updatedCart;
     if (existingItemIndex !== -1) {
       updatedCart = [...cart];
+      if (
+        updatedCart[existingItemIndex].quantityCart + 1 >
+        updatedCart[existingItemIndex].quantity
+      ) {
+        toast.error("الكمية المطلوبة غير متوفرة في المخزون");
+        return;
+      }
       if (!updatedCart[existingItemIndex].quantityCart) {
         updatedCart[existingItemIndex].quantityCart = 1;
       }
@@ -81,7 +253,6 @@ const V2ProductCardHome = ({ product }) => {
     }
 
     setCart(updatedCart);
-    setCartQuantity(1);
     localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
@@ -124,7 +295,7 @@ const V2ProductCardHome = ({ product }) => {
   const sharePrice =
     product.discountPercentage > 0
       ? `السعر: ${Math.round(
-          product.priceAfterDiscount
+          product.priceAfterDiscount,
         )} جنيه (بدلاً من ${Math.round(product.price)} جنيه)`
       : `السعر: ${Math.round(product.price)} جنيه`;
 
@@ -154,6 +325,51 @@ const V2ProductCardHome = ({ product }) => {
       </Head>
       <Link href={`/product/${product._id}`}>
         <div className="relative aspect-[3/4] bg-white overflow-hidden shadow-sm flex items-center justify-center group">
+          {/* Three dots menu */}
+          {isLoggedIn && role === "admin" && (
+            <div className="absolute top-2 right-2 z-20">
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowMenu((prev) => !prev);
+                }}
+                className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/60 transition"
+              >
+                <span className="text-white text-xl leading-none">⋮</span>
+              </button>
+
+              {showMenu && (
+                <div
+                  className="absolute right-0 mt-2 w-24 sm:w-32 bg-white rounded-md shadow-lg overflow-hidden"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleEdit(product);
+                      setShowMenu(false);
+                    }}
+                    className="w-full text-right px-4 py-2 text-sm hover:bg-gray-100"
+                  >
+                    تعديل
+                  </button>
+
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setIsDeleteModalOpen(true);
+                      setShowMenu(false);
+                    }}
+                    className="w-full text-right px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                  >
+                    حذف
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Image carousel if more than one image */}
           <div className="w-full h-full ">
             {product.images && product.images.length > 1 ? (
@@ -182,6 +398,18 @@ const V2ProductCardHome = ({ product }) => {
               />
             )}
           </div>
+          {/* Video indicator badge */}
+          {product.video && (
+            <div className="absolute top-2 left-2 z-10 bg-black/60 rounded-full p-1.5 pointer-events-none">
+              <svg
+                className="w-3 h-3 sm:w-4 sm:h-4 text-white"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </div>
+          )}
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 flex flex-row gap-1 sm:gap-5 z-10">
             {/* Favorite */}
             <button
@@ -204,13 +432,28 @@ const V2ProductCardHome = ({ product }) => {
                 e.preventDefault();
                 handleAddToCart(e, product);
               }}
-              className={`w-7 h-7 sm:w-12 sm:h-12 md:w-14 md:h-14 flex items-center justify-center transition-all duration-300 transform hover:scale-110 `}
+              className="relative w-7 h-7 sm:w-12 sm:h-12 md:w-14 md:h-14 flex items-center justify-center transition-all duration-300 transform hover:scale-110"
               disabled={product.quantity === 0}
             >
-              {cart.some((item) => item._id === product._id) ? (
-                <ShoppingBag className="w-4 h-4 sm:w-6 sm:h-6 md:w-7 md:h-7 text-yellow-500 " />
-              ) : (
-                <ShoppingBag className="w-4 h-4 sm:w-6 sm:h-6 md:w-7 md:h-7 text-white hover:fill-yellow-500" />
+              <ShoppingBag
+                className={`w-4 h-4 sm:w-6 sm:h-6 md:w-7 md:h-7 ${
+                  cart.some((item) => item._id === product._id)
+                    ? "text-yellow-500"
+                    : "text-white hover:fill-yellow-500"
+                }`}
+              />
+
+              {cart.find((item) => item._id === product._id)?.quantityCart >
+                0 && (
+                <span
+                  className="absolute -top-1 -right-1 sm:-top-[-6px] sm:-right-[-6px] 
+                     bg-white text-yellow-500 text-[10px] sm:text-xs 
+                     w-4 h-4 sm:w-5 sm:h-5 
+                     flex items-center justify-center 
+                     rounded-full font-bold"
+                >
+                  {cart.find((item) => item._id === product._id).quantityCart}
+                </span>
               )}
             </button>
 
@@ -241,6 +484,51 @@ const V2ProductCardHome = ({ product }) => {
           )}
         </div>
       </Link>
+      {isModalOpen && (
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+          onClick={() => setIsModalOpen(false)}
+        >
+          <div
+            className="bg-white p-4 rounded-lg shadow-lg w-full max-w-lg max-h-[80vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <ProductForm
+              onSubmit={handleSubmit}
+              initialData={editingProduct}
+              onCancel={() => setIsModalOpen(false)}
+              categories={categories}
+              loadingSubmit={loadingSubmit}
+              errorSubmit={errorSubmit}
+            />
+          </div>
+        </div>
+      )}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded shadow-lg w-full sm:w-1/3">
+            <h3 className="text-xl font-semibold mb-4">
+              هل تريد حذف المنتج:{product.title}؟
+            </h3>
+            <div className="flex justify-end">
+              <button
+                className="px-4 py-2 bg-red-600 text-white rounded"
+                onClick={() => handleDelete(product)}
+                disabled={loadingDelete}
+              >
+                {loadingDelete ? "جاري الحذف..." : "تأكيد"}
+              </button>
+              <button
+                className="px-4 py-2 bg-gray-500 text-white rounded mr-2"
+                onClick={() => setIsDeleteModalOpen(false)}
+              >
+                إلغاء
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Share Modal */}
       {showShareModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -281,7 +569,7 @@ const V2ProductCardHome = ({ product }) => {
                   <p className="text-sm font-semibold text-green-600 mt-1">
                     {product.discountPercentage > 0
                       ? `السعر: ${Math.round(
-                          product.priceAfterDiscount
+                          product.priceAfterDiscount,
                         )} جنيه (بدلاً من ${Math.round(product.price)} جنيه)`
                       : `السعر: ${Math.round(product.price)} جنيه`}
                   </p>
@@ -295,7 +583,7 @@ const V2ProductCardHome = ({ product }) => {
                 quote={`${product.title}\n\n${product.description
                   .replace(/<[^>]*>/g, "")
                   .substring(0, 150)}\n\nالسعر: ${Math.round(
-                  product.priceAfterDiscount || product.price
+                  product.priceAfterDiscount || product.price,
                 )} جنيه\n\n🛒 اضغط على الرابط للمشاهدة والطلب الآن!`}
                 hashtag="#سيتار_مول #عروض #تسوق_اونلاين"
                 className="w-full"
@@ -310,7 +598,7 @@ const V2ProductCardHome = ({ product }) => {
                 title={`🛍️ ${product.title}\n\n📝 ${product.description
                   .replace(/<[^>]*>/g, "")
                   .substring(0, 150)}\n\n💰 السعر: ${Math.round(
-                  product.priceAfterDiscount || product.price
+                  product.priceAfterDiscount || product.price,
                 )} جنيه\n\n✨ ${
                   product?.quantity > 10
                     ? "متوفر الآن"
@@ -329,7 +617,7 @@ const V2ProductCardHome = ({ product }) => {
                 title={`${product.title} - ${product.description
                   .replace(/<[^>]*>/g, "")
                   .substring(0, 150)} - السعر: ${Math.round(
-                  product.priceAfterDiscount || product.price
+                  product.priceAfterDiscount || product.price,
                 )} جنيه - اضغط للمشاهدة والطلب`}
                 hashtags={["سيتار_مول", "تسوق_اونلاين", "عروض"]}
                 className="w-full"
@@ -344,7 +632,7 @@ const V2ProductCardHome = ({ product }) => {
                 title={`${product.title}\n\n${product.description
                   .replace(/<[^>]*>/g, "")
                   .substring(0, 150)}\n\nالسعر: ${Math.round(
-                  product.priceAfterDiscount || product.price
+                  product.priceAfterDiscount || product.price,
                 )} جنيه\n\n🔥 ${
                   product?.quantity > 10
                     ? "متوفر الآن - اطلب من الرابط"

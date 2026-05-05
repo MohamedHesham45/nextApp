@@ -244,11 +244,16 @@ const ProductForm = ({
         requestAnimationFrame(draw);
       }
     };
+
+    video.play();
     draw();
 
     await new Promise((resolve) => (video.onended = resolve));
 
     recorder.stop();
+
+    document.body.removeChild(video);
+    URL.revokeObjectURL(url);
 
     const compressedBlob = await new Promise((resolve) => {
       recorder.onstop = () => resolve(new Blob(chunks, { type: "video/webm" }));
@@ -261,7 +266,6 @@ const ProductForm = ({
     );
 
     setVideo(compressedFile);
-    console.log("compressedFile", compressedFile);
   };
 
   const handleDeleteImage = (index) => {
@@ -269,7 +273,7 @@ const ProductForm = ({
   };
 
   return (
-    <div className="max-h-screen overflow-y-auto ">
+    <div className="">
       <form onSubmit={handleSubmit} className="direction-rtl my-8 mx-4">
         <div className="mb-4 ">
           <label

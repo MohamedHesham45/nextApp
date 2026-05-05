@@ -5,6 +5,9 @@ import LoadingSpinner from "./LoadingSpinner";
 import V2ProductCardHome from "./V2ProductCardHome";
 import { useCartFavorite } from "@/app/context/cartFavoriteContext";
 import ProductCard from "@/components/v2ProductCardSimpleGallery";
+import { useAuth } from "@/app/context/AuthContext";
+import ProductForm from "@/components/ProductForm";
+import { toast } from "react-hot-toast";
 
 const V2FiveProductsPerCategory = ({ viewMode }) => {
   const [categories, setCategories] = useState([]);
@@ -17,6 +20,11 @@ const V2FiveProductsPerCategory = ({ viewMode }) => {
   const { cart, setCart, favorite, setFavorite } = useCartFavorite();
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareProduct, setShareProduct] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
+  const [errorSubmit, setErrorSubmit] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const { isLoggedIn, role } = useAuth();
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -46,7 +54,7 @@ const V2FiveProductsPerCategory = ({ viewMode }) => {
       });
       if (node) observer.current.observe(node);
     },
-    [isLoading, hasMore]
+    [isLoading, hasMore],
   );
 
   useEffect(() => {
@@ -81,7 +89,7 @@ const V2FiveProductsPerCategory = ({ viewMode }) => {
       }
     };
     fetchProducts();
-  }, [page, selectedCategory]);
+  }, [page, selectedCategory, refreshKey]);
 
   useEffect(() => {
     setPage(1);
@@ -121,10 +129,107 @@ const V2FiveProductsPerCategory = ({ viewMode }) => {
   // if (isLoading) return <LoadingSpinner />;
   if (error) return <p className="text-red-500 text-center">{error}</p>;
 
-  // Find products for selected category
-
-  // Get categoryId from the first product in the filtered list
   const categoryId = selectedCategory;
+
+  const handleCreate = () => {
+    setErrorSubmit(null);
+    setIsModalOpen(true);
+  };
+
+  const handleSubmit = async (productData) => {
+    try {
+      setLoadingSubmit(true);
+      const imagesProduct = productData.getAll("images");
+      const finalData = {};
+      const imagess = [];
+      const images = new FormData();
+      const uploadedImages = [];
+
+      const videoFile = productData.get("video");
+      const videoForm = new FormData();
+      let newVideoPath = null;
+      if (videoFile && typeof videoFile !== "string") {
+        videoForm.append("video", videoFile);
+        const res = await fetch("/upload-video", {
+          method: "POST",
+          body: videoForm,
+        });
+        if (!res.ok) throw new Error("فشل رفع الفيديو");
+        const data = await res.json();
+        newVideoPath = data.file;
+        finalData.video = newVideoPath;
+      } else {
+        finalData.video = videoFile;
+      }
+
+      productData.forEach((value, key) => {
+        if (key !== "images") {
+          finalData[key] = value;
+        } else {
+          if (typeof value === "string") {
+            imagess.push(value);
+          }
+        }
+      });
+
+      if (imagesProduct.length > 0) {
+        imagesProduct.forEach((image) => {
+          if (typeof image !== "string") {
+            images.append("images", image);
+          }
+        });
+        if (images.getAll("images").length > 0) {
+          const res = await fetch("/upload-images", {
+            method: "POST",
+            body: images,
+          });
+          if (!res.ok) throw new Error("حدث خطأ أثناء رفع الصور حاول مرة أخرى");
+          const data = await res.json();
+          data.files.forEach((file) => {
+            uploadedImages.push(file);
+            imagess.push(file);
+          });
+        }
+        finalData.images = imagess;
+      }
+
+      const res = await fetch("/api/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(finalData),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        if (uploadedImages.length > 0) {
+          await fetch("/remove-images", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ filenames: uploadedImages }),
+          });
+        }
+        if (newVideoPath) {
+          await fetch("/remove-videos", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ filenames: [newVideoPath] }),
+          });
+        }
+        throw new Error(errorData.message || "حدث خطأ أثناء إضافة المنتج");
+      }
+
+      setIsModalOpen(false);
+      setPage(1);
+      setRefreshKey((prev) => prev + 1);
+      toast.success("تم إضافة المنتج بنجاح");
+    } catch (err) {
+      toast.error(err.message || "حدث خطأ أثناء إضافة المنتج");
+      setErrorSubmit(err.message);
+      throw new Error(err.message);
+    } finally {
+      setLoadingSubmit(false);
+    }
+  };
 
   return (
     <div className="w-full pt-4">
@@ -146,6 +251,14 @@ const V2FiveProductsPerCategory = ({ viewMode }) => {
             ))}
           </div>
         </div>
+        {isLoggedIn && role !== "user" && (
+          <button
+            onClick={handleCreate}
+            className="flex items-center gap-1 px-4 py-2 bg-green-500 hover:bg-green-600 text-white text-sm font-bold rounded-full shadow transition-colors duration-300 whitespace-nowrap"
+          >
+            <span>+ إضافة منتج جديد</span>
+          </button>
+        )}
       </div>
 
       {/* Products */}
@@ -156,12 +269,19 @@ const V2FiveProductsPerCategory = ({ viewMode }) => {
               if (products.length === idx + 1) {
                 return (
                   <div ref={lastProductRef} key={product._id}>
-                    <V2ProductCardHome product={product} />
+                    <V2ProductCardHome
+                      product={product}
+                      setProducts={setProducts}
+                    />
                   </div>
                 );
               } else {
                 return (
-                  <V2ProductCardHome key={product._id} product={product} />
+                  <V2ProductCardHome
+                    key={product._id}
+                    product={product}
+                    setProducts={setProducts}
+                  />
                 );
               }
             })}
@@ -293,9 +413,9 @@ const V2FiveProductsPerCategory = ({ viewMode }) => {
                   <p className="text-sm font-semibold text-green-600 mt-1">
                     {shareProduct.discountPercentage > 0
                       ? `السعر: ${Math.round(
-                          shareProduct.priceAfterDiscount
+                          shareProduct.priceAfterDiscount,
                         )} جنيه (بدلاً من ${Math.round(
-                          shareProduct.price
+                          shareProduct.price,
                         )} جنيه)`
                       : `السعر: ${Math.round(shareProduct.price)} جنيه`}
                   </p>
@@ -309,7 +429,7 @@ const V2FiveProductsPerCategory = ({ viewMode }) => {
                 quote={`${shareProduct.title}\n\n${shareProduct.description
                   .replace(/<[^>]*>/g, "")
                   .substring(0, 150)}\n\nالسعر: ${Math.round(
-                  shareProduct.priceAfterDiscount || shareProduct.price
+                  shareProduct.priceAfterDiscount || shareProduct.price,
                 )} جنيه\n\n🛒 اضغط على الرابط للمشاهدة والطلب الآن!`}
                 hashtag="#سيتار_مول #عروض #تسوق_اونلاين"
                 className="w-full"
@@ -326,7 +446,7 @@ const V2FiveProductsPerCategory = ({ viewMode }) => {
                 }\n\n📝 ${shareProduct.description
                   .replace(/<[^>]*>/g, "")
                   .substring(0, 150)}\n\n💰 السعر: ${Math.round(
-                  shareProduct.priceAfterDiscount || shareProduct.price
+                  shareProduct.priceAfterDiscount || shareProduct.price,
                 )} جنيه\n\n✨ ${
                   shareProduct?.quantity > 10
                     ? "متوفر الآن"
@@ -345,7 +465,7 @@ const V2FiveProductsPerCategory = ({ viewMode }) => {
                 title={`${shareProduct.title} - ${shareProduct.description
                   .replace(/<[^>]*>/g, "")
                   .substring(0, 150)} - السعر: ${Math.round(
-                  shareProduct.priceAfterDiscount || shareProduct.price
+                  shareProduct.priceAfterDiscount || shareProduct.price,
                 )} جنيه - اضغط للمشاهدة والطلب`}
                 hashtags={["سيتار_مول", "تسوق_اونلاين", "عروض"]}
                 className="w-full"
@@ -360,7 +480,7 @@ const V2FiveProductsPerCategory = ({ viewMode }) => {
                 title={`${shareProduct.title}\n\n${shareProduct.description
                   .replace(/<[^>]*>/g, "")
                   .substring(0, 150)}\n\nالسعر: ${Math.round(
-                  shareProduct.priceAfterDiscount || shareProduct.price
+                  shareProduct.priceAfterDiscount || shareProduct.price,
                 )} جنيه\n\n🔥 ${
                   shareProduct?.quantity > 10
                     ? "متوفر الآن - اطلب من الرابط"
@@ -392,6 +512,31 @@ const V2FiveProductsPerCategory = ({ viewMode }) => {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 overflow-y-auto p-4">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-lg my-auto">
+            <div className="flex items-center justify-between px-6 pt-4">
+              <h2 className="text-xl font-bold text-gray-800">
+                إضافة منتج جديد
+              </h2>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="text-gray-500 hover:text-gray-700 text-2xl leading-none"
+              >
+                ×
+              </button>
+            </div>
+            <ProductForm
+              onSubmit={handleSubmit}
+              initialData={null}
+              onCancel={() => setIsModalOpen(false)}
+              categories={categories.filter((c) => c._id !== "all")}
+              loadingSubmit={loadingSubmit}
+              errorSubmit={errorSubmit}
+            />
           </div>
         </div>
       )}
