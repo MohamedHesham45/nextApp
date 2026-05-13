@@ -3,6 +3,7 @@ import { useCartFavorite } from "@/app/context/cartFavoriteContext";
 import { useAuth } from "@/app/context/AuthContext";
 import { toast } from 'react-hot-toast';
 import useMetaConversion from "./SendMetaConversion";
+import { trackFbq } from "@/lib/fbq";
 import { useRouter } from "next/navigation";
 export default function ShoppingCartPage({ isVisible, setIsVisible }) {
   const { cart, setCart } = useCartFavorite();
@@ -328,39 +329,12 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
         // Clear the cart or perform any other necessary actions
         // You might want to add a function to clear the cart and update the parent component
         var userAgent = navigator.userAgent;
-
-        // fetch('https://api.ipify.org?format=json')
-        //   .then(response => response.json())
-        //   .then(async (data) => {
-        //     var ipAddress = data.ip;
-        //     fbq('track', 'Purchase', {
-        //       order_products_data: orderData,
-        //       order_total_price: totalAmount + shippingCost,
-        //       currency: 'EGP',
-        //       user_name: customerDetails.name || "",
-        //       user_email: customerDetails.email || "",
-        //       user_phone: customerDetails.phone || "",
-        //       user_governorate: customerDetails.governorate || "",
-        //       user_neighborhood: customerDetails.neighborhood || "",
-        //       user_center_area: customerDetails.centerArea || "",
-        //       value: totalAmount + shippingCost,
-        //       ip_address: ipAddress,
-        //       user_agent: userAgent
-        //     });
-        //     await sendMetaConversion('Purchase', {
-        //       order_products_data: orderData,
-        //       order_total_price: totalAmount + shippingCost,
-        //       currency: 'EGP',
-        //       user_name: customerDetails.name || "",
-        //       user_email: customerDetails.email || "",
-        //       user_phone: customerDetails.phone || "",
-        //       user_governorate: customerDetails.governorate || "",
-        //       user_neighborhood: customerDetails.neighborhood || "",
-        //       user_center_area: customerDetails.centerArea || "",
-        //       value: totalAmount + shippingCost,
-        //     }, ipAddress, userAgent);
-        //   })
-        //   .catch(error => console.error('Error fetching IP address:', error));
+        trackFbq("Purchase", {
+          value: totalAmount + calculateShippingCost(),
+          currency: "EGP",
+          content_ids: cart.map((item) => item._id),
+          num_items: cart.reduce((sum, item) => sum + (item.quantityCart || 1), 0),
+        });
 
         if (saveToProfile) {
           setProfile({
@@ -445,6 +419,12 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
     if (isVisible) {
       // Prevent scrolling on the main body when cart is open
       document.body.style.overflow = 'hidden';
+      if (cart.length > 0) {
+        trackFbq("InitiateCheckout", {
+          num_items: cart.reduce((sum, item) => sum + (item.quantityCart || 1), 0),
+          currency: "EGP",
+        });
+      }
     } else {
       // Re-enable scrolling when cart is closed
       document.body.style.overflow = 'unset';
@@ -1023,6 +1003,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
                       buyType: "",
                     });
                     setSelectedBuyType(e.target.value);
+                    trackFbq("AddPaymentInfo", {});
                     setCustomerDetails({
                       ...customerDetails,
                       buyType: selectedType.name,

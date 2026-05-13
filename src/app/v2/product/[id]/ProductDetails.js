@@ -7,6 +7,7 @@ import { Heart, ShoppingCart, Share2, Copy, Check } from "lucide-react";
 import { sanitizeHTML } from "@/components/ProductCard";
 import { useCartFavorite } from "@/app/context/cartFavoriteContext";
 import { toast } from "react-hot-toast";
+import { trackFbq } from "@/lib/fbq";
 import ShoppingCartPage from "@/components/ShoppingCart";
 import useMetaConversion from "@/components/SendMetaConversion";
 import {
@@ -79,6 +80,12 @@ export default function ProductDetails() {
     } else {
       updatedFavorite = [...favorite, product];
       toast.success("تم إضافة المنتج إلى المفضلة");
+      trackFbq("AddToWishlist", {
+        content_ids: [product._id],
+        content_name: product.title,
+        value: parseInt(product.price || 0),
+        currency: "EGP",
+      });
     }
 
     setFavorite(updatedFavorite);
@@ -114,6 +121,12 @@ export default function ProductDetails() {
     setCart(updatedCart);
     localStorage.setItem("cart", JSON.stringify(updatedCart));
     toast.success("تم إضافة المنتج إلى السلة");
+    trackFbq("AddToCart", {
+      content_ids: [product._id],
+      content_name: product.title,
+      value: parseInt(product.price || 0),
+      currency: "EGP",
+    });
   };
 
   const handleBuyNow = (e, product) => {
@@ -154,6 +167,13 @@ export default function ProductDetails() {
         const data = await response.json();
         setProduct(data);
         console.log(data);
+        trackFbq("ViewContent", {
+          content_ids: [data._id],
+          content_name: data.title,
+          content_type: "product",
+          value: parseInt(data.price || 0),
+          currency: "EGP",
+        });
       } catch (err) {
         setError(err.message);
         console.error("Error fetching product:", err);

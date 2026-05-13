@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import emailjs from "emailjs-com";
+import { trackFbq } from "@/lib/fbq";
 import { Phone, MapPin, Mail } from "lucide-react";
 import useMetaConversion from "@/components/SendMetaConversion";
 
@@ -65,14 +66,8 @@ export default function Contact() {
 
       var userAgent = navigator.userAgent;
 
-      // fetch('https://api.ipify.org?format=json')
-      //   .then(response => response.json())
-      //   .then(async (data) => {
-      //     var ipAddress = data.ip;
-      //     await sendMetaConversion('Contact', {}, ipAddress, userAgent);
-      //   })
-      //   .catch(error => console.error('Error fetching IP address:', error));
-
+      trackFbq("Contact", {});
+      trackFbq("Lead", {});
       setSubmitResult({ success: true, message: result.message });
     } catch (error) {
       setSubmitResult({ success: false, message: "Error sending message" });

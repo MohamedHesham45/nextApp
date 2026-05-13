@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { trackFbq } from "@/lib/fbq";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function SignUpModal({ isOpen, onClose, setModalType }) {
@@ -46,6 +47,7 @@ export default function SignUpModal({ isOpen, onClose, setModalType }) {
       }
 
       if (response.ok) {
+        trackFbq("CompleteRegistration", {});
         setModalType("sign-in");
       }
 

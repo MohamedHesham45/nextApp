@@ -5,6 +5,7 @@ import { useCartFavorite } from "@/app/context/cartFavoriteContext";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { toast } from "react-hot-toast";
+import { trackFbq } from "@/lib/fbq";
 import Slider from "react-slick";
 import {
   FacebookShareButton,
@@ -49,6 +50,12 @@ const V2ProductCardHome = ({ product, setProducts }) => {
     } else {
       updatedFavorite = [...favorite, product];
       toast.success("تم إضافة المنتج إلى المفضلة");
+      trackFbq("AddToWishlist", {
+        content_ids: [product._id],
+        content_name: product.title,
+        value: parseInt(product.price || 0),
+        currency: "EGP",
+      });
     }
 
     setFavorite(updatedFavorite);
@@ -254,6 +261,12 @@ const V2ProductCardHome = ({ product, setProducts }) => {
 
     setCart(updatedCart);
     localStorage.setItem("cart", JSON.stringify(updatedCart));
+    trackFbq("AddToCart", {
+      content_ids: [product._id],
+      content_name: product.title,
+      value: parseInt(product.price || 0),
+      currency: "EGP",
+    });
   };
 
   // Share Modal (simple version)

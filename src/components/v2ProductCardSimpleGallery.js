@@ -1,6 +1,7 @@
 import React from "react";
 import { Heart, ShoppingBag, Send } from "lucide-react";
 import toast from "react-hot-toast";
+import { trackFbq } from "@/lib/fbq";
 import Link from "next/link";
 
 export default function ProductCard({
@@ -32,6 +33,12 @@ export default function ProductCard({
     } else {
       updatedFavorite = [...favorite, product];
       toast.success("تم إضافة المنتج إلى المفضلة");
+      trackFbq("AddToWishlist", {
+        content_ids: [product._id],
+        content_name: product.title,
+        value: parseInt(product.price || 0),
+        currency: "EGP",
+      });
     }
     setFavorite(updatedFavorite);
     localStorage.setItem("favorite", JSON.stringify(updatedFavorite));
@@ -67,6 +74,12 @@ export default function ProductCard({
 
     setCart(updatedCart);
     localStorage.setItem("cart", JSON.stringify(updatedCart));
+    trackFbq("AddToCart", {
+      content_ids: [product._id],
+      content_name: product.title,
+      value: parseInt(product.price || 0),
+      currency: "EGP",
+    });
   };
 
   return (
