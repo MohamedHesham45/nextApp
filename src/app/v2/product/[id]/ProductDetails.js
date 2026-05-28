@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { Heart, ShoppingCart, Share2, Copy, Check } from "lucide-react";
@@ -20,11 +20,14 @@ import {
   TwitterIcon,
   TelegramIcon,
 } from "react-share";
+import { usePageCache } from "@/app/context/PageCacheContext";
 
 export default function ProductDetails() {
   const { id } = useParams();
-  const [product, setProduct] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { cache, saveCache } = usePageCache(`v2-product-${id}`);
+
+  const [product, setProduct] = useState(() => cache?.product || null);
+  const [isLoading, setIsLoading] = useState(!cache);
   const [error, setError] = useState(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isCartVisible, setIsCartVisible] = useState(false);
@@ -166,6 +169,7 @@ export default function ProductDetails() {
         }
         const data = await response.json();
         setProduct(data);
+        saveCache({ product: data });
         console.log(data);
         trackFbq("ViewContent", {
           content_ids: [data._id],
@@ -182,7 +186,7 @@ export default function ProductDetails() {
       }
     };
 
-    if (id) {
+    if (id && !cache) {
       fetchProduct();
     }
   }, [id]);

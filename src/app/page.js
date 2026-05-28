@@ -6,13 +6,16 @@ import { ChevronUp, Grid, List } from "lucide-react";
 import MapLocation from "@/components/MapLocation";
 import V2FiveProductsPerCategory from "@/components/V2FiveProductsPerCategory";
 import { useAuth } from "@/app/context/AuthContext";
+import { usePageCache } from "@/app/context/PageCacheContext";
 
 export default function LandingPage() {
+  const { cache: homeCache, saveCache: saveHomeCache } = usePageCache('home-ui');
+
   const [mounted, setMounted] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [mainImage, setMainImage] = useState("/1736196830699.jpg");
   const [whatsappNumber, setWhatsappNumber] = useState("");
-  const [viewMode, setViewMode] = useState("grid"); // grid | list
+  const [viewMode, setViewMode] = useState(() => homeCache?.viewMode || "grid"); // grid | list
   const [defaultViewId, setDefaultViewId] = useState(null);
   const [pendingMode, setPendingMode] = useState(null); // mode waiting for admin decision
   const [showViewModal, setShowViewModal] = useState(false);
@@ -139,6 +142,7 @@ export default function LandingPage() {
                   setShowViewModal(true);
                 } else {
                   setViewMode(newMode);
+                  saveHomeCache({ viewMode: newMode });
                 }
               }}
               className="p-2 rounded-md bg-amazon-light-gray text-amazon hover:bg-amazon-yellow flex-shrink-0 transition"
@@ -235,6 +239,7 @@ export default function LandingPage() {
                 onClick={() => {
                   setViewMode(pendingMode);
                   saveDefaultView(pendingMode);
+                  saveHomeCache({ viewMode: pendingMode });
                   setShowViewModal(false);
                   setPendingMode(null);
                 }}
@@ -245,6 +250,7 @@ export default function LandingPage() {
               <button
                 onClick={() => {
                   setViewMode(pendingMode);
+                  saveHomeCache({ viewMode: pendingMode });
                   setShowViewModal(false);
                   setPendingMode(null);
                 }}
