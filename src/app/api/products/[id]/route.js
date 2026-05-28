@@ -30,6 +30,9 @@ export async function PUT(request, { params }) {
     if(updateData.priceAfterDiscount){
       updateData.priceAfterDiscount=parseInt(updateData.priceAfterDiscount)
     }
+    if(updateData.hidden !== undefined){
+      updateData.hidden = updateData.hidden === true || updateData.hidden === "true";
+    }
   
     const existingProduct=await db.collection("products").findOne({_id:new ObjectId(params.id)})
     if(!existingProduct){

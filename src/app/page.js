@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ChevronUp, Grid, List } from "lucide-react";
 import MapLocation from "@/components/MapLocation";
 import V2FiveProductsPerCategory from "@/components/V2FiveProductsPerCategory";
+import { useAuth } from "@/app/context/AuthContext";
 
 export default function LandingPage() {
   const [mounted, setMounted] = useState(false);
@@ -12,6 +13,12 @@ export default function LandingPage() {
   const [mainImage, setMainImage] = useState("/1736196830699.jpg");
   const [whatsappNumber, setWhatsappNumber] = useState("");
   const [viewMode, setViewMode] = useState("grid"); // grid | list
+  const [defaultViewId, setDefaultViewId] = useState(null);
+  const [pendingMode, setPendingMode] = useState(null); // mode waiting for admin decision
+  const [showViewModal, setShowViewModal] = useState(false);
+  const auth = useAuth();
+  const isLoggedIn = auth?.isLoggedIn || false;
+  const role = auth?.role || null;
 
   useEffect(() => {
     setMounted(true);
@@ -21,6 +28,7 @@ export default function LandingPage() {
     if (!mounted) return;
     fetchCustomFields();
     fetchMainImage();
+    fetchDefaultView();
   }, [mounted]);
 
   const fetchCustomFields = async () => {
@@ -41,6 +49,41 @@ export default function LandingPage() {
       const data = await res.json();
       const value = data.length > 0 ? data[0].value : "/123.jpg";
       setMainImage(value);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const fetchDefaultView = async () => {
+    try {
+      const res = await fetch("/api/customize?name=وضع العرض");
+      const data = await res.json();
+      if (data.length > 0) {
+        setViewMode(data[0].value || "grid");
+        setDefaultViewId(data[0]._id);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const saveDefaultView = async (mode) => {
+    try {
+      if (defaultViewId) {
+        await fetch(`/api/customize/${defaultViewId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ value: mode }),
+        });
+      } else {
+        const res = await fetch("/api/customize", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: "وضع العرض", value: mode }),
+        });
+        const data = await res.json();
+        if (data.customize?._id) setDefaultViewId(data.customize._id);
+      }
     } catch (err) {
       console.error(err);
     }
@@ -89,10 +132,17 @@ export default function LandingPage() {
           </p>
           <div className="flex flex-row gap-4 justify-center">
             <button
-              onClick={() =>
-                setViewMode((prev) => (prev === "grid" ? "list" : "grid"))
-              }
+              onClick={() => {
+                const newMode = viewMode === "grid" ? "list" : "grid";
+                if (isLoggedIn && role !== "user") {
+                  setPendingMode(newMode);
+                  setShowViewModal(true);
+                } else {
+                  setViewMode(newMode);
+                }
+              }}
               className="p-2 rounded-md bg-amazon-light-gray text-amazon hover:bg-amazon-yellow flex-shrink-0 transition"
+              title={isLoggedIn && role !== "user" ? "تغيير العرض (يُحفظ كافتراضي)" : "تغيير العرض"}
             >
               {viewMode === "grid" ? <List size={18} /> : <Grid size={18} />}
             </button>
@@ -170,6 +220,50 @@ export default function LandingPage() {
         >
           <ChevronUp size={24} />
         </button>
+      )}
+
+      {/* Admin view-mode modal */}
+      {showViewModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-2xl p-6 w-80 text-center" dir="rtl">
+            <h2 className="text-lg font-bold text-amazon mb-2">تغيير طريقة العرض</h2>
+            <p className="text-gray-600 text-sm mb-6">
+              هل تريد تطبيق هذا التغيير على جميع الزوار أم فقط لك؟
+            </p>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => {
+                  setViewMode(pendingMode);
+                  saveDefaultView(pendingMode);
+                  setShowViewModal(false);
+                  setPendingMode(null);
+                }}
+                className="bg-amazon-orange hover:bg-amazon-orange-dark text-white py-2 px-4 rounded-lg font-semibold transition"
+              >
+                تغيير للجميع (الزوار والأدمن)
+              </button>
+              <button
+                onClick={() => {
+                  setViewMode(pendingMode);
+                  setShowViewModal(false);
+                  setPendingMode(null);
+                }}
+                className="bg-amazon-light-gray hover:bg-amazon-yellow text-amazon py-2 px-4 rounded-lg font-semibold transition"
+              >
+                تغيير فقط لي
+              </button>
+              <button
+                onClick={() => {
+                  setShowViewModal(false);
+                  setPendingMode(null);
+                }}
+                className="text-gray-400 hover:text-gray-600 text-sm transition"
+              >
+                إلغاء
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

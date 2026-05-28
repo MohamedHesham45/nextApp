@@ -33,6 +33,13 @@ export default function ProductDetails() {
   const [cartQuantity, setCartQuantity] = useState(0);
   const sendMetaConversion = useMetaConversion();
 
+  const getYoutubeEmbedUrl = (url) => {
+    if (!url) return null;
+    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+    const match = url.match(regex);
+    return match ? `https://www.youtube.com/embed/${match[1]}` : null;
+  };
+
   const handleQuantityChange = (e, change) => {
     e.preventDefault();
     const existingItemIndex = cart.findIndex(
@@ -550,6 +557,24 @@ export default function ProductDetails() {
             </div>
           </div>
         </div>
+
+        {/* YouTube Video */}
+        {product.youtubeLink && getYoutubeEmbedUrl(product.youtubeLink) && (
+          <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-16 py-8 direction-rtl">
+            <div className="max-w-3xl mx-auto">
+              <h2 className="text-xl font-bold text-gray-800 mb-4">فيديو المنتج</h2>
+              <iframe
+                src={getYoutubeEmbedUrl(product.youtubeLink)}
+                className="w-full rounded-xl shadow-lg border-0"
+                style={{ aspectRatio: "16/9" }}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                title="فيديو المنتج"
+              />
+            </div>
+          </div>
+        )}
+
         <ShoppingCartPage
           isVisible={isCartVisible}
           setIsVisible={setIsCartVisible}

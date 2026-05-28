@@ -59,11 +59,13 @@ const ProductForm = ({
   const [errors, setErrors] = useState({});
   const [video, setVideo] = useState(null);
   const [videoError, setVideoError] = useState("");
+  const [youtubeLink, setYoutubeLink] = useState("");
+  const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
     if (initialData) {
       const category = categories.find(
-        (cat) => cat._id === initialData.categoryId._id
+        (cat) => cat._id === initialData.categoryId._id,
       );
       setTitle(initialData.title);
       setDescription(initialData.description);
@@ -72,6 +74,8 @@ const ProductForm = ({
       setPrice(initialData.price || "");
       setPriceAfterDiscount(initialData.priceAfterDiscount || "");
       setQuantity(initialData.quantity || 1);
+      setYoutubeLink(initialData.youtubeLink || "");
+      setHidden(initialData.hidden || false);
     } else {
       setTitle("");
       setDescription("");
@@ -80,6 +84,8 @@ const ProductForm = ({
       setPrice("");
       setPriceAfterDiscount("");
       setQuantity(1);
+      setYoutubeLink("");
+      setHidden(false);
     }
   }, [initialData]);
 
@@ -115,6 +121,8 @@ const ProductForm = ({
     if (video) {
       formData.append("video", video);
     }
+    formData.append("youtubeLink", youtubeLink || "");
+    formData.append("hidden", hidden ? "true" : "false");
 
     try {
       await onSubmit(formData);
@@ -135,7 +143,7 @@ const ProductForm = ({
               formData.priceAfterDiscount || formData.price,
             product_quantity: formData.quantity,
             product_images: formData.images.map(
-              (image) => "https://sitaramall.com/" + image
+              (image) => "https://sitaramall.com/" + image,
             ),
             value: formData.priceAfterDiscount || formData.price,
             currency: "EGP",
@@ -163,13 +171,13 @@ const ProductForm = ({
         if (file.size > compressionOptions.maxSizeMB * 1024 * 1024) {
           const compressedFile = await imageCompression(
             file,
-            compressionOptions
+            compressionOptions,
           );
 
           const renamedFile = new File(
             [compressedFile],
             "updated_image_" + new Date().getTime() + ".jpg",
-            { type: compressedFile.type }
+            { type: compressedFile.type },
           );
 
           processedFiles.push(renamedFile);
@@ -262,7 +270,7 @@ const ProductForm = ({
     const compressedFile = new File(
       [compressedBlob],
       "compressed_" + Date.now() + ".webm",
-      { type: "video/webm" }
+      { type: "video/webm" },
     );
 
     setVideo(compressedFile);
@@ -451,33 +459,38 @@ const ProductForm = ({
             </div>
           </div>
         )}
+
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            إضافة فيديو (اختياري)
+          <label
+            className="block text-gray-700 text-sm font-bold mb-2"
+            htmlFor="youtubeLink"
+          >
+            رابط يوتيوب (اختياري)
           </label>
-
           <input
-            type="file"
-            accept="video/*"
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
-            onChange={handleVideoUpload}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="youtubeLink"
+            type="url"
+            placeholder="https://www.youtube.com/watch?v=..."
+            value={youtubeLink}
+            onChange={(e) => setYoutubeLink(e.target.value)}
           />
+        </div>
 
-          {videoError && <p className="text-red-500">{videoError}</p>}
-
-          {/* {video && (
-            <video
-              controls
-              src={
-                typeof video === "string"
-                  ? video?.startsWith("/")
-                    ? video
-                    : `/${video}`
-                  : URL.createObjectURL(video)
-              }
-              className="mt-2 w-40 rounded"
-            />
-          )} */}
+        <div className="mb-4 flex items-center gap-2 direction-rtl">
+          <input
+            id="hidden"
+            type="checkbox"
+            checked={hidden}
+            onChange={(e) => setHidden(e.target.checked)}
+            className="w-4 h-4 cursor-pointer"
+          />
+          <label
+            className="text-gray-700 text-sm font-bold cursor-pointer"
+            htmlFor="hidden"
+          >
+            إخفاء المنتج (مخفي عن الزوار)
+          </label>
         </div>
 
         <div className="flex justify-end gap-2">
@@ -489,8 +502,8 @@ const ProductForm = ({
             {loadingSubmit
               ? "جاري التحديث..."
               : initialData
-              ? "تحديث المنتج"
-              : "إضافة المنتج"}
+                ? "تحديث المنتج"
+                : "إضافة المنتج"}
           </button>
 
           <button

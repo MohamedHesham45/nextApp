@@ -37,8 +37,8 @@ const V2ProductCardHome = ({ product, setProducts }) => {
   const auth = useAuth();
   const isLoggedIn = auth?.isLoggedIn || false;
   const role = auth?.role || null;
+
   const handleAddToFavorite = async (e, product) => {
-    e.preventDefault();
     const existingItemIndex = favorite.findIndex(
       (item) => item._id === product._id,
     );
@@ -154,6 +154,10 @@ const V2ProductCardHome = ({ product, setProducts }) => {
           }
         }
       });
+      if (finalData.hidden !== undefined) {
+        finalData.hidden =
+          finalData.hidden === "true" || finalData.hidden === true;
+      }
       if (imagesProduct.length > 0) {
         imagesProduct.forEach((image) => {
           if (typeof image !== "string") {
@@ -312,6 +316,8 @@ const V2ProductCardHome = ({ product, setProducts }) => {
         )} جنيه (بدلاً من ${Math.round(product.price)} جنيه)`
       : `السعر: ${Math.round(product.price)} جنيه`;
 
+  if (product.hidden && role !== "admin") return null;
+
   return (
     <>
       <Head>
@@ -340,21 +346,21 @@ const V2ProductCardHome = ({ product, setProducts }) => {
         <div className="relative aspect-[3/4] bg-white overflow-hidden shadow-sm flex items-center justify-center group">
           {/* Three dots menu */}
           {isLoggedIn && role === "admin" && (
-            <div className="absolute top-2 right-2 z-20">
+            <div className="absolute bottom-2 right-2 z-20">
               <button
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                   setShowMenu((prev) => !prev);
                 }}
-                className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/60 transition"
+                className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/60 transition z-20"
               >
                 <span className="text-white text-xl leading-none">⋮</span>
               </button>
 
               {showMenu && (
                 <div
-                  className="absolute right-0 mt-2 w-24 sm:w-32 bg-white rounded-md shadow-lg overflow-hidden"
+                  className="absolute bottom-10 right-0 mt-2 w-24 sm:w-32 bg-white rounded-md shadow-lg overflow-hidden"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <button
@@ -423,75 +429,25 @@ const V2ProductCardHome = ({ product, setProducts }) => {
               </svg>
             </div>
           )}
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 flex flex-row gap-1 sm:gap-5 z-10">
-            {/* Favorite */}
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                handleAddToFavorite(e, product);
-              }}
-              className={`relative w-7 h-7 sm:w-12 sm:h-12 md:w-14 md:h-14 flex items-center justify-center  transition-all duration-300 transform hover:scale-110`}
-            >
-              {favorite.some((item) => item._id === product._id) ? (
-                <Heart className="w-4 h-4 sm:w-6 sm:h-6 md:w-7 md:h-7  text-red-500" />
-              ) : (
-                <Heart className="w-4 h-4 sm:w-6 sm:h-6 md:w-7 md:h-7 text-white hover:fill-red-500 hover:text-red-500" />
-              )}
-            </button>
 
-            {/* Cart */}
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                handleAddToCart(e, product);
-              }}
-              className="relative w-7 h-7 sm:w-12 sm:h-12 md:w-14 md:h-14 flex items-center justify-center transition-all duration-300 transform hover:scale-110"
-              disabled={product.quantity === 0}
-            >
-              <ShoppingBag
-                className={`w-4 h-4 sm:w-6 sm:h-6 md:w-7 md:h-7 ${
-                  cart.some((item) => item._id === product._id)
-                    ? "text-yellow-500"
-                    : "text-white hover:fill-yellow-500"
-                }`}
-              />
-
-              {cart.find((item) => item._id === product._id)?.quantityCart >
-                0 && (
-                <span
-                  className="absolute -top-1 -right-1 sm:-top-[-6px] sm:-right-[-6px] 
-                     bg-white text-yellow-500 text-[10px] sm:text-xs 
-                     w-4 h-4 sm:w-5 sm:h-5 
-                     flex items-center justify-center 
-                     rounded-full font-bold"
-                >
-                  {cart.find((item) => item._id === product._id).quantityCart}
-                </span>
-              )}
-            </button>
-
-            {/* Share */}
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                setShowShareModal(true);
-              }}
-              className="w-7 h-7 sm:w-12 sm:h-12 md:w-14 md:h-14 flex items-center justify-center  transition-all duration-300 transform hover:scale-110 "
-            >
-              <Send className="w-4 h-4 sm:w-6 sm:h-6 md:w-7 md:h-7 text-white hover:text-blue-600" />
-            </button>
-          </div>
           {/* Out of stock overlay */}
-          {product.quantity === 0 && (
-            <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center z-20">
-              <span className="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-md shadow-lg">
+          {product.quantity <= 0 && (
+            <div className="absolute inset-0 bg-black/65 flex items-center justify-center z-10">
+              <span className="text-white text-2xl font-bold drop-shadow-lg text-center">
                 نفذت الكمية
+              </span>
+            </div>
+          )}
+          {product.hidden && role === "admin" && (
+            <div className="absolute inset-0 bg-black/65 flex items-center justify-center z-10">
+              <span className="text-white text-2xl font-bold drop-shadow-lg text-center">
+                مخفي
               </span>
             </div>
           )}
           {/* Discount badge */}
           {product.discountPercentage > 0 && (
-            <span className="absolute top-2 left-2  text-red-700 text-sm md:text-lg font-bold px-2 py-1  z-10">
+            <span className="absolute bottom-2 left-2  text-red-700 text-sm md:text-lg font-bold px-2 py-1  z-10">
               خصم {Math.round(product.discountPercentage)}%
             </span>
           )}

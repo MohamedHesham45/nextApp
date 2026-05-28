@@ -3,6 +3,7 @@ import { Heart, ShoppingBag, Send } from "lucide-react";
 import toast from "react-hot-toast";
 import { trackFbq } from "@/lib/fbq";
 import Link from "next/link";
+import { useAuth } from "@/app/context/AuthContext";
 
 export default function ProductCard({
   product,
@@ -16,6 +17,11 @@ export default function ProductCard({
   setShareProduct,
   setShowShareModal,
 }) {
+  const auth = useAuth();
+  const role = auth?.role || null;
+
+  if (product.hidden && role !== "admin") return null;
+
   const cartQuantity =
     cart.find((item) => item._id === product._id)?.quantityCart || 0;
 
@@ -24,7 +30,7 @@ export default function ProductCard({
   const handleAddToFavorite = (e) => {
     e.preventDefault();
     const existingItemIndex = favorite.findIndex(
-      (item) => item._id === product._id
+      (item) => item._id === product._id,
     );
     let updatedFavorite;
     if (existingItemIndex !== -1) {
@@ -56,7 +62,7 @@ export default function ProductCard({
       (item) =>
         item._id === product._id &&
         JSON.stringify(item.selectedImages) ===
-          JSON.stringify(itemToAdd.selectedImages)
+          JSON.stringify(itemToAdd.selectedImages),
     );
 
     let updatedCart;
@@ -90,7 +96,7 @@ export default function ProductCard({
       >
         <div className="flex items-center">
           {/* صورة المنتج */}
-          <div className="w-44 h-52 flex-shrink-0 overflow-hidden bg-amazon-light-gray flex items-center justify-center">
+          <div className="w-44 h-52 flex-shrink-0 overflow-hidden bg-amazon-light-gray flex items-center justify-center relative">
             <img
               src={
                 product.images && product.images[0]
@@ -102,6 +108,20 @@ export default function ProductCard({
               alt={product.title}
               className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
             />
+            {product.quantity <= 0 && (
+              <div className="absolute inset-0 bg-black/65 flex items-center justify-center">
+                <span className="text-white text-2xl font-bold drop-shadow-lg text-center">
+                  نفذت الكمية
+                </span>
+              </div>
+            )}
+            {product.hidden && role === "admin" && (
+              <div className="absolute inset-0 bg-black/65 flex items-center justify-center">
+                <span className="text-white text-2xl font-bold drop-shadow-lg text-center">
+                  مخفي
+                </span>
+              </div>
+            )}
           </div>
 
           {/* تفاصيل المنتج */}

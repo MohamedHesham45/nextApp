@@ -4,13 +4,19 @@ import Link from "next/link";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { useAuth } from "@/app/context/AuthContext";
 
 const V2ProductCardSimple = ({ product, viewMode = "grid" }) => {
+  const auth = useAuth();
+  const role = auth?.role || null;
+
+  if (product.hidden && role !== "admin") return null;
+
   if (viewMode === "list") {
     return (
       <Link href={`/product/${product._id}`}>
         <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl shadow hover:shadow-md transition">
-          <div className="w-32 h-36 flex-shrink-0 overflow-hidden rounded-lg">
+          <div className="w-32 h-36 flex-shrink-0 overflow-hidden rounded-lg relative">
             <img
               src={
                 product.images && product.images.length > 0
@@ -22,6 +28,13 @@ const V2ProductCardSimple = ({ product, viewMode = "grid" }) => {
               alt={product.title}
               className="object-cover w-full h-full"
             />
+            {product.hidden && role !== "admin" && (
+              <div className="absolute inset-0 bg-black/65 flex items-center justify-center">
+                <span className="text-white text-2xl font-bold drop-shadow-lg text-center">
+                  مخفي
+                </span>
+              </div>
+            )}
           </div>
 
           {/* تفاصيل المنتج */}
@@ -113,10 +126,19 @@ const V2ProductCardSimple = ({ product, viewMode = "grid" }) => {
         </div>
 
         {/* لو خلص المخزون */}
-        {product.quantity === 0 && (
-          <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center z-20">
-            <span className="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-md shadow-lg">
+        {product.quantity <= 0 && (
+          <div className="absolute inset-0 bg-black/65 flex items-center justify-center z-20">
+            <span className="text-white text-2xl font-bold drop-shadow-lg text-center">
               نفذت الكمية
+            </span>
+          </div>
+        )}
+
+        {/* مخفي */}
+        {product.hidden && role === "admin" && (
+          <div className="absolute inset-0 bg-black/65 flex items-center justify-center z-20">
+            <span className="text-white text-2xl font-bold drop-shadow-lg text-center">
+              مخفي
             </span>
           </div>
         )}

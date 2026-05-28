@@ -171,6 +171,10 @@ const V2FiveProductsPerCategory = ({ viewMode }) => {
           }
         }
       });
+      if (finalData.hidden !== undefined) {
+        finalData.hidden =
+          finalData.hidden === "true" || finalData.hidden === true;
+      }
 
       if (imagesProduct.length > 0) {
         imagesProduct.forEach((image) => {

@@ -83,6 +83,8 @@ export async function POST(request) {
       quantity,
       images,
       video,
+      youtubeLink,
+      hidden,
     } = await request.json();
 
     const client = await clientPromise;
@@ -175,6 +177,8 @@ export async function POST(request) {
       priceAfterDiscount,
       quantity,
       video: video || null,
+      youtubeLink: youtubeLink || "",
+      hidden: hidden === true || hidden === "true" ? true : false,
     };
 
     const result = await db.collection("products").insertOne(newProduct);

@@ -51,7 +51,11 @@ const ProductCard = ({
             className="object-cover w-full h-full"
           />
         )}
-        {product.quantity == 0 && <span className="absolute top-2 left-2 bg-blue-600 text-white text-sm font-bold px-2 py-1 rounded-md shadow-lg z-10">نفذت الكمية</span>}
+        {product.quantity == 0 && (
+          <div className="absolute inset-0 bg-black/65 flex items-center justify-center">
+            <span className="text-white text-2xl font-bold drop-shadow-lg text-center">نفذت الكمية</span>
+          </div>
+        )}
         {product.discountPercentage > 0 && <span className="absolute top-2 right-2 bg-red-600 text-white text-sm font-bold px-2 py-1 rounded-md shadow-lg z-10">
           خصم {Math.round(product.discountPercentage)}%
         </span>}
