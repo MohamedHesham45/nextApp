@@ -145,9 +145,9 @@ export default function ProductCard({
               </div>
 
               <p className="text-gray-500 text-xs line-clamp-2 mb-2">
-                {product.description
-                  ?.replace(/<[^>]*>/g, "")
-                  .substring(0, 60) || ""}
+                {String(product.description || "")
+                  .replace(/<[^>]*>/g, "")
+                  .substring(0, 60)}
               </p>
             </div>
 
