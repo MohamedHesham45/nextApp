@@ -1,30 +1,59 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Search, Filter, X } from "lucide-react";
 import { useAuth } from "@/app/context/AuthContext";
 import { useCartFavorite } from "../../context/cartFavoriteContext";
 import ProductCardHome from "@/components/ProductCardHome";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { usePageCache } from "@/app/context/PageCacheContext";
 
 export default function Gallery() {
-  const [products, setProducts] = useState([]);
+  const { cache, saveCache } = usePageCache('v2-gallery');
+
+  const [products, setProducts] = useState(() => cache?.products || []);
   const { cart, setCart } = useCartFavorite();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!cache);
   const [error, setError] = useState(null);
   const { email, userId } = useAuth();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [searchTerm, setSearchTerm] = useState(() => cache?.searchTerm || "");
+  const [selectedCategory, setSelectedCategory] = useState(() => cache?.selectedCategory || "all");
   const [showFilters, setShowFilters] = useState(false);
 
+  const stateRef = useRef({});
+  const scrollYRef = useRef(0);
+
   useEffect(() => {
-    fetchProducts();
+    stateRef.current = { products, searchTerm, selectedCategory };
+  });
+
+  useEffect(() => {
+    const onScroll = () => { scrollYRef.current = window.scrollY; };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    return () => { saveCache({ ...stateRef.current, scrollY: scrollYRef.current }); };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!cache?.scrollY) return;
+    const timeout = setTimeout(() => {
+      window.scrollTo({ top: cache.scrollY, behavior: "instant" });
+    }, 80);
+    return () => clearTimeout(timeout);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (cache) return; // skip fetch if restoring from cache
+    fetchProducts();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/v2/api/products", {
+      const res = await fetch(cache ? "/v2/api/products?noshuffle=1" : "/v2/api/products", {
         headers: {
           "Cache-Control": "no-cache, no-store, must-revalidate",
           Pragma: "no-cache",

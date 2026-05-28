@@ -19,6 +19,7 @@ export async function GET(request) {
     headers.append("Expires", "0");
     headers.append("Surrogate-Control", "no-store");
     const { searchParams } = new URL(request.url);
+    const noshuffle = searchParams.get("noshuffle") === "1";
     // const featured = searchParams.get("featured");
     const categoryId = searchParams.get("categoryId");
     const client = await clientPromise;
@@ -41,7 +42,7 @@ export async function GET(request) {
       .sort({ _id: -1 })
       .toArray();
 
-    const shuffledProducts = shuffleArray(products);
+    const shuffledProducts = noshuffle ? products : shuffleArray(products);
 
     const productsWithDefaults = await Promise.all(
       shuffledProducts.map(async (product) => {

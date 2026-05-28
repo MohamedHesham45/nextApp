@@ -29,6 +29,7 @@ export async function GET(request) {
       query.title = { $regex: searchTerm, $options: "i" };
     }
     const totalProducts = await db.collection("products").countDocuments(query);
+    const noshuffle = searchParams.get("noshuffle") === "1";
 
     let products = await db
       .collection("products")
@@ -38,7 +39,7 @@ export async function GET(request) {
       .limit(limit)
       .toArray();
 
-    products = shuffleArray(products);
+    products = noshuffle ? products : shuffleArray(products);
 
     const productsWithDefaults = await Promise.all(
       products.map(async (product) => {

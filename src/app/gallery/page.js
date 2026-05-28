@@ -28,23 +28,81 @@ import {
 } from "react-share";
 import Link from "next/link";
 import ProductCard from "@/components/v2ProductCardSimpleGallery";
+import { usePageCache } from "@/app/context/PageCacheContext";
 
 export default function Gallery() {
-  const [products, setProducts] = useState([]);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
+  const { cache, saveCache } = usePageCache('gallery');
+
+  const [products, setProducts] = useState(() => cache?.products || []);
+  const [page, setPage] = useState(() => cache?.page || 1);
+  const [hasMore, setHasMore] = useState(() => cache?.hasMore ?? true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [searchTerm, setSearchTerm] = useState(() => cache?.searchTerm || "");
+  const [debouncedSearch, setDebouncedSearch] = useState(
+    () => cache?.debouncedSearch || ""
+  );
 
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedCategory, setSelectedCategory] = useState(
+    () => cache?.selectedCategory || "all"
+  );
   const [showFilters, setShowFilters] = useState(false);
 
-  const [viewMode, setViewMode] = useState("grid"); // "grid" or "list"
+  const [viewMode, setViewMode] = useState(() => cache?.viewMode || "grid");
 
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState(
+    () => cache?.categories || []
+  );
+
+  // Refs for tracking state on unmount and scroll position
+  const stateRef = useRef({});
+  const scrollYRef = useRef(0);
+  // Per-effect skip-on-first-render refs (false = skip first run when restoring from cache)
+  const debounceMountedRef = useRef(!cache);
+  const fetchMountedRef = useRef(!cache);
+  const pageResetMountedRef = useRef(!cache);
+
+  // Keep stateRef in sync with latest state every render
+  useEffect(() => {
+    stateRef.current = {
+      products,
+      page,
+      hasMore,
+      searchTerm,
+      debouncedSearch,
+      selectedCategory,
+      viewMode,
+      categories,
+    };
+  });
+
+  // Track scroll position
+  useEffect(() => {
+    const onScroll = () => {
+      scrollYRef.current = window.scrollY;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Save state to cache when navigating away
+  useEffect(() => {
+    return () => {
+      saveCache({ ...stateRef.current, scrollY: scrollYRef.current });
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Restore scroll position on mount (if coming back from a product page)
+  useEffect(() => {
+    if (cache?.scrollY) {
+      const timeout = setTimeout(() => {
+        window.scrollTo({ top: cache.scrollY, behavior: "instant" });
+      }, 80);
+      return () => clearTimeout(timeout);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -63,6 +121,7 @@ export default function Gallery() {
   }, []);
 
   useEffect(() => {
+    if (!debounceMountedRef.current) { debounceMountedRef.current = true; return; }
     const handler = setTimeout(() => {
       setDebouncedSearch(searchTerm);
     }, 500);
@@ -95,6 +154,7 @@ export default function Gallery() {
           limit: "12",
           search: debouncedSearch,
           categoryId: selectedCategory !== "all" ? selectedCategory : "",
+          ...(cache ? { noshuffle: "1" } : {}),
         });
         const res = await fetch(`/api/products?${query.toString()}`, {
           cache: "no-store",
@@ -116,10 +176,14 @@ export default function Gallery() {
         setLoading(false);
       }
     };
+
+    if (!fetchMountedRef.current) { fetchMountedRef.current = true; return; }
+
     fetchProducts();
   }, [page, debouncedSearch, selectedCategory]);
 
   useEffect(() => {
+    if (!pageResetMountedRef.current) { pageResetMountedRef.current = true; return; }
     setPage(1);
     setHasMore(true);
   }, [debouncedSearch, selectedCategory]);

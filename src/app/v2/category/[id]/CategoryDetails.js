@@ -1,7 +1,7 @@
 "use client";
 
 import ProductCardHome from "@/components/ProductCardHome";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Search, Share2, Copy, Check } from "lucide-react";
 import { useParams } from "next/navigation";
 import {
@@ -15,19 +15,50 @@ import {
   TelegramIcon,
 } from "react-share";
 import { toast } from "react-hot-toast";
+import { usePageCache } from "@/app/context/PageCacheContext";
 
 export default function CategoryDetails() {
   const { id } = useParams();
-  const [displayCategory, setDisplayCategory] = useState("");
-  const [products, setProducts] = useState([]);
-  const [category, setCategory] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
+  const { cache, saveCache } = usePageCache(`v2-category-${id}`);
+
+  const [displayCategory, setDisplayCategory] = useState(() => cache?.displayCategory || "");
+  const [products, setProducts] = useState(() => cache?.products || []);
+  const [category, setCategory] = useState(() => cache?.category || null);
+  const [searchTerm, setSearchTerm] = useState(() => cache?.searchTerm || "");
   const [showShareModal, setShowShareModal] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!cache);
   const [error, setError] = useState(null);
 
+  const stateRef = useRef({});
+  const scrollYRef = useRef(0);
+  const fetchMountedRef = useRef(!cache);
+
   useEffect(() => {
+    stateRef.current = { products, category, displayCategory, searchTerm };
+  });
+
+  useEffect(() => {
+    const onScroll = () => { scrollYRef.current = window.scrollY; };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    return () => { saveCache({ ...stateRef.current, scrollY: scrollYRef.current }); };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!cache?.scrollY) return;
+    const timeout = setTimeout(() => {
+      window.scrollTo({ top: cache.scrollY, behavior: "instant" });
+    }, 80);
+    return () => clearTimeout(timeout);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!fetchMountedRef.current) { fetchMountedRef.current = true; return; }
+
     const fetchCategoryData = async () => {
       try {
         setIsLoading(true);
@@ -65,9 +96,9 @@ export default function CategoryDetails() {
   }, [id]);
 
   useEffect(() => {
-    // Scroll to top on page load
+    if (cache) return; // skip scroll-to-top when restoring from cache
     window.scrollTo(0, 0);
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // If loading, show loading state
   if (isLoading) {

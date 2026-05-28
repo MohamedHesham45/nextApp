@@ -1,7 +1,7 @@
 "use client";
 
 import V2ProductCardHome from "@/components/V2ProductCardHome";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Search, Share2, Copy, Check, Heart, ShoppingBag, Send } from "lucide-react";
 import { useParams } from "next/navigation";
 import {
@@ -17,30 +17,70 @@ import {
 import { toast } from "react-hot-toast";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { useCartFavorite } from "@/app/context/cartFavoriteContext";
+import { usePageCache } from "@/app/context/PageCacheContext";
 
 export default function CategoryDetails() {
   const { id } = useParams();
-  const [displayCategory, setDisplayCategory] = useState("");
-  const [products, setProducts] = useState([]);
-  const [category, setCategory] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const { cache, saveCache } = usePageCache(`category-${id}`);
+
+  const [displayCategory, setDisplayCategory] = useState(() => cache?.displayCategory || "");
+  const [products, setProducts] = useState(() => cache?.products || []);
+  const [category, setCategory] = useState(() => cache?.category || null);
+  const [searchTerm, setSearchTerm] = useState(() => cache?.searchTerm || "");
+  const [debouncedSearch, setDebouncedSearch] = useState(() => cache?.debouncedSearch || "");
   const [showShareModal, setShowShareModal] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!cache);
   const [error, setError] = useState(null);
   const { cart, setCart, favorite, setFavorite } = useCartFavorite();
   const [shareProduct, setShareProduct] = useState(null);
 
   // pagination states
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(() => cache?.page || 1);
+  const [hasMore, setHasMore] = useState(() => cache?.hasMore ?? true);
 
   // view mode state
-  const [viewMode, setViewMode] = useState("grid"); // "grid" or "list"
+  const [viewMode, setViewMode] = useState(() => cache?.viewMode || "grid");
+
+  // Refs for state tracking, scroll position, and per-effect first-run guards
+  const stateRef = useRef({});
+  const scrollYRef = useRef(0);
+  const debounceMountedRef = useRef(!cache);
+  const idSearchFetchMountedRef = useRef(!cache);
+  const pageLoadMoreMountedRef = useRef(!cache);
+
+  // Keep stateRef up to date on every render
+  useEffect(() => {
+    stateRef.current = {
+      products, page, hasMore, searchTerm, debouncedSearch,
+      category, displayCategory, viewMode,
+    };
+  });
+
+  // Track scroll position
+  useEffect(() => {
+    const onScroll = () => { scrollYRef.current = window.scrollY; };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Save state to cache when navigating away
+  useEffect(() => {
+    return () => { saveCache({ ...stateRef.current, scrollY: scrollYRef.current }); };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Restore scroll position on mount (only when coming back from cache)
+  useEffect(() => {
+    if (!cache?.scrollY) return;
+    const timeout = setTimeout(() => {
+      window.scrollTo({ top: cache.scrollY, behavior: "instant" });
+    }, 80);
+    return () => clearTimeout(timeout);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // debounce search
   useEffect(() => {
+    if (!debounceMountedRef.current) { debounceMountedRef.current = true; return; }
     const handler = setTimeout(() => {
       setDebouncedSearch(searchTerm);
     }, 500);
@@ -85,6 +125,7 @@ export default function CategoryDetails() {
 
   // refetch on id/search change
   useEffect(() => {
+    if (!idSearchFetchMountedRef.current) { idSearchFetchMountedRef.current = true; return; }
     if (id) {
       setPage(1);
       fetchCategoryData(true);
@@ -109,12 +150,14 @@ export default function CategoryDetails() {
   }, [hasMore, isLoading]);
 
   useEffect(() => {
+    if (!pageLoadMoreMountedRef.current) { pageLoadMoreMountedRef.current = true; return; }
     if (page > 1) fetchCategoryData();
   }, [page]);
 
   useEffect(() => {
+    if (cache) return; // skip scroll-to-top when restoring from cache
     window.scrollTo(0, 0);
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (isLoading && products.length === 0) {
     return (

@@ -8,15 +8,18 @@ import ProductCard from "@/components/v2ProductCardSimpleGallery";
 import { useAuth } from "@/app/context/AuthContext";
 import ProductForm from "@/components/ProductForm";
 import { toast } from "react-hot-toast";
+import { usePageCache } from "@/app/context/PageCacheContext";
 
 const V2FiveProductsPerCategory = ({ viewMode }) => {
-  const [categories, setCategories] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { cache, saveCache } = usePageCache('home-products');
+
+  const [categories, setCategories] = useState(() => cache?.categories || []);
+  const [isLoading, setIsLoading] = useState(!cache);
   const [error, setError] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const [products, setProducts] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(() => cache?.selectedCategory || "all");
+  const [page, setPage] = useState(() => cache?.page || 1);
+  const [hasMore, setHasMore] = useState(() => cache?.hasMore ?? true);
+  const [products, setProducts] = useState(() => cache?.products || []);
   const { cart, setCart, favorite, setFavorite } = useCartFavorite();
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareProduct, setShareProduct] = useState(null);
@@ -25,7 +28,36 @@ const V2FiveProductsPerCategory = ({ viewMode }) => {
   const [errorSubmit, setErrorSubmit] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const { isLoggedIn, role } = useAuth();
+
+  const stateRef = useRef({});
+  const scrollYRef = useRef(0);
+  const fetchMountedRef = useRef(!cache);
+  const pageResetMountedRef = useRef(!cache);
+
   useEffect(() => {
+    stateRef.current = { products, page, hasMore, selectedCategory, categories };
+  });
+
+  useEffect(() => {
+    const onScroll = () => { scrollYRef.current = window.scrollY; };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    return () => { saveCache({ ...stateRef.current, scrollY: scrollYRef.current }); };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!cache?.scrollY) return;
+    const timeout = setTimeout(() => {
+      window.scrollTo({ top: cache.scrollY, behavior: "instant" });
+    }, 80);
+    return () => clearTimeout(timeout);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (cache?.categories?.length) return; // already have categories from cache
     const fetchCategories = async () => {
       try {
         const res = await fetch("/api/category");
@@ -65,6 +97,7 @@ const V2FiveProductsPerCategory = ({ viewMode }) => {
           page: page.toString(),
           limit: "12",
           categoryId: selectedCategory !== "all" ? selectedCategory : "",
+          ...(cache ? { noshuffle: "1" } : {}),
         });
         const res = await fetch(`/api/products?${query.toString()}`, {
           cache: "no-store",
@@ -88,10 +121,12 @@ const V2FiveProductsPerCategory = ({ viewMode }) => {
         setIsLoading(false);
       }
     };
+    if (!fetchMountedRef.current) { fetchMountedRef.current = true; return; }
     fetchProducts();
   }, [page, selectedCategory, refreshKey]);
 
   useEffect(() => {
+    if (!pageResetMountedRef.current) { pageResetMountedRef.current = true; return; }
     setPage(1);
     setHasMore(true);
   }, [selectedCategory]);

@@ -7,6 +7,7 @@ import "swiper/css/pagination";
 import "swiper/swiper-bundle.css";
 import "react-quill/dist/quill.snow.css";
 import { CartFavoriteProvider } from "./context/cartFavoriteContext";
+import { PageCacheProvider } from "./context/PageCacheContext";
 import { Toaster } from "react-hot-toast";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -77,6 +78,7 @@ export default function RootLayout({ children }) {
   return (
     <AuthProvider>
       <CartFavoriteProvider>
+        <PageCacheProvider>
         <html lang="ar">
           <head>
             {/* <Head> */}
@@ -135,6 +137,7 @@ export default function RootLayout({ children }) {
             </main>
           </body>
         </html>
+      </PageCacheProvider>
       </CartFavoriteProvider>
     </AuthProvider>
   );
