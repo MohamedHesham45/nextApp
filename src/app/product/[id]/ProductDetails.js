@@ -21,10 +21,12 @@ import {
   TelegramIcon,
 } from "react-share";
 import { usePageCache } from "@/app/context/PageCacheContext";
+import { useScrollCache } from "@/app/context/PageCacheContext";
 
 export default function ProductDetails() {
   const { id } = useParams();
   const { cache, saveCache } = usePageCache(`product-${id}`);
+  useScrollCache(`product-${id}`);
 
   const [product, setProduct] = useState(() => cache?.product || null);
   const [isLoading, setIsLoading] = useState(!cache);

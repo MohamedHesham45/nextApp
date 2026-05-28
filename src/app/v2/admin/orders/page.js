@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { toast } from "react-hot-toast";
+import { useScrollCache } from "@/app/context/PageCacheContext";
 export default function OrdersPage() {
+  useScrollCache("v2-admin-orders");
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

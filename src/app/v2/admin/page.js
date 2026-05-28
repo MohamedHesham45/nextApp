@@ -7,6 +7,7 @@ import ProductForm from "@/components/ProductForm";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { useAuth } from "@/app/context/AuthContext";
 import { toast } from "react-hot-toast";
+import { useProductCacheSync } from "@/app/context/PageCacheContext";
 
 export default function AdminPage() {
   const { token, isLoaded, role, isLoggedIn } = useAuth();
@@ -20,6 +21,7 @@ export default function AdminPage() {
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [errorSubmit, setErrorSubmit] = useState(null);
+  const { updateProductInCache, removeProductFromCache } = useProductCacheSync();
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -84,22 +86,19 @@ export default function AdminPage() {
 
       await fetch("/remove-images", {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ filenames: product.images }),
       });
       if (product.video) {
         await fetch("/remove-videos", {
           method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ filenames: [product.video] }),
         });
       }
 
-      fetchProducts();
+      setProducts((prev) => prev.filter((p) => p._id !== product._id));
+      removeProductFromCache(product._id);
       toast.success("تم حذف المنتج بنجاح");
     } catch (err) {
       console.error(err);
@@ -178,38 +177,39 @@ export default function AdminPage() {
 
       const res = await fetch(url, {
         method,
-
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(finalData),
       });
+      const responseData = await res.json();
       if (!res.ok) {
-        const errorData = await res.json();
         if (checkImages.length > 0) {
           await fetch("/remove-images", {
             method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ filenames: checkImages }),
           });
           if (newVideoPath) {
             await fetch("/remove-videos", {
               method: "DELETE",
-              headers: {
-                "Content-Type": "application/json",
-              },
+              headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ filenames: [newVideoPath] }),
             });
           }
         }
-        throw new Error(errorData.message || "حدث خطأ أثناء إضافة المنتج");
+        throw new Error(responseData.message || "حدث خطأ أثناء إضافة المنتج");
       }
 
-      fetchProducts();
+      if (editingProduct && responseData.product) {
+        setProducts((prev) =>
+          prev.map((p) => p._id === editingProduct._id ? responseData.product : p)
+        );
+        updateProductInCache(responseData.product);
+        toast.success("تم تحديث المنتج بنجاح");
+      } else {
+        fetchProducts();
+        toast.success("تم إضافة المنتج بنجاح");
+      }
       setIsModalOpen(false);
-      toast.success("تم إضافة المنتج بنجاح");
     } catch (err) {
       toast.error(err.message || "حدث خطأ أثناء إضافة المنتج");
       setErrorSubmit(err.message);

@@ -4,15 +4,11 @@ import { useCartFavorite } from "@/app/context/cartFavoriteContext";
 import ProductCardHome from "@/components/ProductCardHome";
 import V2ProductCardHome from "@/components/V2ProductCardHome";
 import { Heart } from "lucide-react";
-import { useEffect } from "react";
+import { useScrollCache } from "@/app/context/PageCacheContext";
 
 const FavoritesPage = () => {
   const { favorite } = useCartFavorite();
-
-  useEffect(() => {
-    // Scroll to top on page load
-    window.scrollTo(0, 0);
-  }, []);
+  useScrollCache("favorites");
 
   return (
     <div className="min-h-screen bg-gray-50 direction-rtl">

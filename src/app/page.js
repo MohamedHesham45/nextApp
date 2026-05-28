@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { ChevronUp, Grid, List } from "lucide-react";
 import MapLocation from "@/components/MapLocation";
@@ -16,6 +16,8 @@ export default function LandingPage() {
   const [mainImage, setMainImage] = useState("/1736196830699.jpg");
   const [whatsappNumber, setWhatsappNumber] = useState("");
   const [viewMode, setViewMode] = useState(() => homeCache?.viewMode || "grid"); // grid | list
+  const scrollYRef = useRef(0);
+  const viewModeRef = useRef(viewMode);
   const [defaultViewId, setDefaultViewId] = useState(null);
   const [pendingMode, setPendingMode] = useState(null); // mode waiting for admin decision
   const [showViewModal, setShowViewModal] = useState(false);
@@ -65,6 +67,7 @@ export default function LandingPage() {
         setDefaultViewId(data[0]._id);
         if (!homeCache?.viewMode) {
           setViewMode(data[0].value || "grid");
+          viewModeRef.current = data[0].value || "grid";
         }
       }
     } catch (err) {
@@ -108,10 +111,27 @@ export default function LandingPage() {
 
   useEffect(() => {
     if (!mounted) return;
-    const handleScroll = () => setShowScrollTop(window.pageYOffset > 300);
+    const handleScroll = () => {
+      setShowScrollTop(window.pageYOffset > 300);
+      scrollYRef.current = window.scrollY;
+    };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [mounted]);
+
+  // Save scroll + viewMode on unmount
+  useEffect(() => {
+    return () => { saveHomeCache({ viewMode: viewModeRef.current, scrollY: scrollYRef.current }); };
+  }, []);
+
+  // Restore scroll position on mount
+  useEffect(() => {
+    if (!homeCache?.scrollY) return;
+    const t = setTimeout(() => {
+      window.scrollTo({ top: homeCache.scrollY, behavior: "instant" });
+    }, 80);
+    return () => clearTimeout(t);
+  }, []);
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
@@ -144,6 +164,7 @@ export default function LandingPage() {
                   setShowViewModal(true);
                 } else {
                   setViewMode(newMode);
+                  viewModeRef.current = newMode;
                   saveHomeCache({ viewMode: newMode });
                 }
               }}
@@ -240,6 +261,7 @@ export default function LandingPage() {
               <button
                 onClick={() => {
                   setViewMode(pendingMode);
+                  viewModeRef.current = pendingMode;
                   saveDefaultView(pendingMode);
                   saveHomeCache({ viewMode: pendingMode });
                   setShowViewModal(false);
@@ -252,6 +274,7 @@ export default function LandingPage() {
               <button
                 onClick={() => {
                   setViewMode(pendingMode);
+                  viewModeRef.current = pendingMode;
                   saveHomeCache({ viewMode: pendingMode });
                   setShowViewModal(false);
                   setPendingMode(null);

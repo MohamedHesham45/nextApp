@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { toast } from "react-hot-toast";
 import { trackFbq } from "@/lib/fbq";
+import { useProductCacheSync } from "@/app/context/PageCacheContext";
 import Slider from "react-slick";
 import {
   FacebookShareButton,
@@ -24,6 +25,7 @@ import ProductForm from "./ProductForm";
 
 const V2ProductCardHome = ({ product, setProducts }) => {
   const { cart, setCart, favorite, setFavorite } = useCartFavorite();
+  const { updateProductInCache, removeProductFromCache } = useProductCacheSync();
   const [showMenu, setShowMenu] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
@@ -87,6 +89,7 @@ const V2ProductCardHome = ({ product, setProducts }) => {
         });
       }
       setProducts((prev) => prev.filter((item) => item._id !== product._id));
+      removeProductFromCache(product._id);
       toast.success("تم حذف المنتج بنجاح");
     } catch (err) {
       console.error(err);
@@ -217,9 +220,17 @@ const V2ProductCardHome = ({ product, setProducts }) => {
         throw new Error(errorData.message || "حدث خطأ أثناء إضافة المنتج");
       }
       const data = await res.json();
-      setProducts((prev) => [...prev, data.product]);
+      if (editingProduct) {
+        setProducts((prev) =>
+          prev.map((p) => (p._id === editingProduct._id ? data.product : p))
+        );
+        updateProductInCache(data.product);
+        toast.success("تم تحديث المنتج بنجاح");
+      } else {
+        setProducts((prev) => [...prev, data.product]);
+        toast.success("تم إضافة المنتج بنجاح");
+      }
       setIsModalOpen(false);
-      toast.success("تم إضافة المنتج بنجاح");
     } catch (err) {
       toast.error(err.message || "حدث خطأ أثناء إضافة المنتج");
       setErrorSubmit(err.message);

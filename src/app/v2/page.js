@@ -6,8 +6,10 @@ import { ChevronUp } from "lucide-react";
 import FeaturedProducts from "@/components/FeaturedProducts";
 import MapLocation from "@/components/MapLocation";
 import FiveProductsPerCategory from "@/components/FiveProductsPerCategory";
+import { useScrollCache } from "@/app/context/PageCacheContext";
 
 export default function LandingPage() {
+  useScrollCache("v2-home");
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [activePanel, setActivePanel] = useState(0);
   const [panels, setPanels] = useState([]);

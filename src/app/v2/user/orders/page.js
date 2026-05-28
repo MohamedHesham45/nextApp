@@ -5,8 +5,10 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
 import toast from "react-hot-toast";
 import useMetaConversion from "@/components/SendMetaConversion";
+import { useScrollCache } from "@/app/context/PageCacheContext";
 
 export default function UserOrdersPage() {
+  useScrollCache("v2-user-orders");
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

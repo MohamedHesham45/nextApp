@@ -5,8 +5,10 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { Edit, Plus } from "lucide-react";
+import { useScrollCache } from "@/app/context/PageCacheContext";
 
 export default function PanelsPage() {
+  useScrollCache("panels");
   const [panels, setPanels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
