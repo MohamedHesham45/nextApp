@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import ProductDetails from "./ProductDetails";
 import { fetchProductById } from "@/lib/products";
+import { stripHtml } from "@/lib/stripHtml";
 
 export async function generateMetadata({ params }) {
   const product = await fetchProductById(params.id);
@@ -15,7 +16,7 @@ export async function generateMetadata({ params }) {
 
   const shareUrl = `https://sitaramall.com/product/${product._id}`;
   const shareTitle = `${product.title} - سيتار مول`;
-  const shareDescription = product.description.replace(/<[^>]*>/g, '').substring(0, 150) + '...';
+  const shareDescription = stripHtml(product.description).substring(0, 150) + '...';
   const shareImage = product.images && product.images[0]
     ? `https://sitaramall.com/${product.images[0].replace(/^\//, '')}`
     : 'https://sitaramall.com/default-product.jpg';

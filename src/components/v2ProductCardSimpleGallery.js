@@ -1,4 +1,5 @@
 import React from "react";
+import { stripHtml } from "@/lib/stripHtml";
 import { Heart, ShoppingBag, Send } from "lucide-react";
 import toast from "react-hot-toast";
 import { trackFbq } from "@/lib/fbq";
@@ -145,9 +146,7 @@ export default function ProductCard({
               </div>
 
               <p className="text-gray-500 text-xs line-clamp-2 mb-2">
-                {String(product.description || "")
-                  .replace(/<[^>]*>/g, "")
-                  .substring(0, 60)}
+                {stripHtml(product.description).substring(0, 60)}
               </p>
             </div>
 

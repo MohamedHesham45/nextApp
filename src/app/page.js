@@ -62,8 +62,10 @@ export default function LandingPage() {
       const res = await fetch("/api/customize?name=وضع العرض");
       const data = await res.json();
       if (data.length > 0) {
-        setViewMode(data[0].value || "grid");
         setDefaultViewId(data[0]._id);
+        if (!homeCache?.viewMode) {
+          setViewMode(data[0].value || "grid");
+        }
       }
     } catch (err) {
       console.error(err);

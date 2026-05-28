@@ -1,6 +1,7 @@
 "use client";
 
 import V2ProductCardHome from "@/components/V2ProductCardHome";
+import { stripHtml } from "@/lib/stripHtml";
 import { useEffect, useState, useRef } from "react";
 import { Search, Share2, Copy, Check, Heart, ShoppingBag, Send } from "lucide-react";
 import { useParams } from "next/navigation";
@@ -436,7 +437,7 @@ export default function CategoryDetails() {
                           )}
                         </div>
                         <p className="text-gray-500 text-xs line-clamp-2 mb-2">
-                          {String(product.description || "").replace(/<[^>]*>/g, "").substring(0, 60)}
+                          {stripHtml(product.description).substring(0, 60)}
                         </p>
                       </div>
                       <div className="flex flex-col items-end gap-1">
@@ -542,7 +543,7 @@ export default function CategoryDetails() {
                     {shareProduct.title}
                   </h4>
                   <p className="text-xs text-gray-600 line-clamp-2">
-                    {shareProduct.description.replace(/<[^>]*>/g, "").substring(0, 150) + "..."}
+                    {stripHtml(shareProduct.description).substring(0, 150) + "..."}
                   </p>
                   <p className="text-sm font-semibold text-green-600 mt-1">
                     {shareProduct.discountPercentage > 0
@@ -556,7 +557,7 @@ export default function CategoryDetails() {
             <div className="grid grid-cols-2 gap-3 mb-4">
               <FacebookShareButton
                 url={`https://sitaramall.com/product/${shareProduct._id}`}
-                quote={`${shareProduct.title}\n\n${shareProduct.description.replace(/<[^>]*>/g, "").substring(0, 150)}\n\nالسعر: ${Math.round(shareProduct.priceAfterDiscount || shareProduct.price)} جنيه\n\n🛒 اضغط على الرابط للمشاهدة والطلب الآن!`}
+                quote={`${shareProduct.title}\n\n${stripHtml(shareProduct.description).substring(0, 150)}\n\nالسعر: ${Math.round(shareProduct.priceAfterDiscount || shareProduct.price)} جنيه\n\n🛒 اضغط على الرابط للمشاهدة والطلب الآن!`}
                 hashtag="#سيتار_مول #عروض #تسوق_اونلاين"
                 className="w-full"
               >
@@ -567,7 +568,7 @@ export default function CategoryDetails() {
               </FacebookShareButton>
               <WhatsappShareButton
                 url={`https://sitaramall.com/product/${shareProduct._id}`}
-                title={`🛍️ ${shareProduct.title}\n\n📝 ${shareProduct.description.replace(/<[^>]*>/g, "").substring(0, 150)}\n\n💰 السعر: ${Math.round(shareProduct.priceAfterDiscount || shareProduct.price)} جنيه\n\n✨ ${shareProduct?.quantity > 10 ? 'متوفر الآن' : 'كمية محدودة - اطلب الآن'}\n\n👆 اضغط على الرابط لعرض المنتج وإتمام الطلب:`}
+                title={`🛍️ ${shareProduct.title}\n\n📝 ${stripHtml(shareProduct.description).substring(0, 150)}\n\n💰 السعر: ${Math.round(shareProduct.priceAfterDiscount || shareProduct.price)} جنيه\n\n✨ ${shareProduct?.quantity > 10 ? 'متوفر الآن' : 'كمية محدودة - اطلب الآن'}\n\n👆 اضغط على الرابط لعرض المنتج وإتمام الطلب:`}
                 separator=" "
                 className="w-full"
               >
@@ -578,7 +579,7 @@ export default function CategoryDetails() {
               </WhatsappShareButton>
               <TwitterShareButton
                 url={`https://sitaramall.com/product/${shareProduct._id}`}
-                title={`${shareProduct.title} - ${shareProduct.description.replace(/<[^>]*>/g, "").substring(0, 150)} - السعر: ${Math.round(shareProduct.priceAfterDiscount || shareProduct.price)} جنيه - اضغط للمشاهدة والطلب`}
+                title={`${shareProduct.title} - ${stripHtml(shareProduct.description).substring(0, 150)} - السعر: ${Math.round(shareProduct.priceAfterDiscount || shareProduct.price)} جنيه - اضغط للمشاهدة والطلب`}
                 hashtags={["سيتار_مول", "تسوق_اونلاين", "عروض"]}
                 className="w-full"
               >
@@ -589,7 +590,7 @@ export default function CategoryDetails() {
               </TwitterShareButton>
               <TelegramShareButton
                 url={`https://sitaramall.com/product/${shareProduct._id}`}
-                title={`${shareProduct.title}\n\n${shareProduct.description.replace(/<[^>]*>/g, "").substring(0, 150)}\n\nالسعر: ${Math.round(shareProduct.priceAfterDiscount || shareProduct.price)} جنيه\n\n🔥 ${shareProduct?.quantity > 10 ? 'متوفر الآن - اطلب من الرابط' : 'كمية محدودة - اطلب الآن من الرابط'}`}
+                title={`${shareProduct.title}\n\n${stripHtml(shareProduct.description).substring(0, 150)}\n\nالسعر: ${Math.round(shareProduct.priceAfterDiscount || shareProduct.price)} جنيه\n\n🔥 ${shareProduct?.quantity > 10 ? 'متوفر الآن - اطلب من الرابط' : 'كمية محدودة - اطلب الآن من الرابط'}`}
                 className="w-full"
               >
                 <div className="flex items-center justify-center gap-2 p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">

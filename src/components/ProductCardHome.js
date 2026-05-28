@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Head from "next/head";
+import { stripHtml } from "@/lib/stripHtml";
 import { Heart, ShoppingCart, Share2, Copy, Check } from "lucide-react";
 import { useCartFavorite } from "@/app/context/cartFavoriteContext";
 import { sanitizeHTML } from "./ProductCard";
@@ -133,7 +134,7 @@ const ProductCardHome = ({ product }) => {
   const shareUrl = `https://sitaramall.com/product/${product._id}`;
   const shareTitle = `${product.title} - سيتار مول`;
   const shareDescription =
-    product.description.replace(/<[^>]*>/g, "").substring(0, 150) + "...";
+    stripHtml(product.description).substring(0, 150) + "...";
   const shareImage =
     product && product.images[0]
       ? product.images[0].startsWith("/")

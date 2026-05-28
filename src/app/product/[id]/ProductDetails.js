@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { Heart, ShoppingCart, Share2, Copy, Check } from "lucide-react";
 import { sanitizeHTML } from "@/components/ProductCard";
+import { stripHtml } from "@/lib/stripHtml";
 import { useCartFavorite } from "@/app/context/cartFavoriteContext";
 import { toast } from "react-hot-toast";
 import ShoppingCartPage from "@/components/ShoppingCart";
@@ -184,7 +185,7 @@ export default function ProductDetails() {
     : "";
   const shareTitle = product ? `${product.title} - سيتار مول` : "";
   const shareDescription = product
-    ? product.description.replace(/<[^>]*>/g, "").substring(0, 150) + "..."
+    ? stripHtml(product.description).substring(0, 150) + "..."
     : "";
 
   const getAbsoluteImageUrl = (imageUrl) => {

@@ -1,6 +1,7 @@
 "use client";
 
 import { Heart, ShoppingBag, Send, Copy, Check } from "lucide-react";
+import { stripHtml } from "@/lib/stripHtml";
 import { useCartFavorite } from "@/app/context/cartFavoriteContext";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
@@ -302,7 +303,7 @@ const V2ProductCardHome = ({ product, setProducts }) => {
 
   const shareTitle = `${product.title} - سيتار مول`;
   const shareDescription =
-    product.description.replace(/<[^>]*>/g, "").substring(0, 150) + "...";
+    stripHtml(product.description).substring(0, 150) + "...";
   const shareImage =
     product && product.images[0]
       ? product.images[0].startsWith("/")
