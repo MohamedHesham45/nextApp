@@ -41,10 +41,31 @@ export default function ProductDetails() {
 
   const getYoutubeEmbedUrl = (url) => {
     if (!url) return null;
-    const regex =
-      /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
-    const match = url.match(regex);
-    return match ? `https://www.youtube.com/embed/${match[1]}` : null;
+    try {
+      const parsedUrl = new URL(url);
+      const hostname = parsedUrl.hostname.replace("www.", "");
+      let videoId = null;
+
+      if (hostname === "youtu.be") {
+        videoId = parsedUrl.pathname.split("/").filter(Boolean)[0] || null;
+      } else if (hostname === "youtube.com" || hostname === "m.youtube.com") {
+        const pathParts = parsedUrl.pathname.split("/").filter(Boolean);
+        if (pathParts[0] === "watch") {
+          videoId = parsedUrl.searchParams.get("v");
+        } else if (
+          pathParts[0] === "shorts" ||
+          pathParts[0] === "embed" ||
+          pathParts[0] === "live"
+        ) {
+          videoId = pathParts[1] || null;
+        }
+      }
+
+      if (!videoId || videoId.length !== 11) return null;
+      return `https://www.youtube.com/embed/${videoId}`;
+    } catch {
+      return null;
+    }
   };
 
   const handleQuantityChange = (e, change) => {
