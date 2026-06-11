@@ -64,13 +64,15 @@ const ProductForm = ({
 
   useEffect(() => {
     if (initialData) {
-      const category = categories.find(
-        (cat) => cat._id === initialData.categoryId._id,
-      );
+      const initialCategoryId =
+        typeof initialData.categoryId === "string"
+          ? initialData.categoryId
+          : initialData.categoryId?._id;
+      const category = categories.find((cat) => cat._id === initialCategoryId);
       setTitle(initialData.title);
       setDescription(initialData.description);
       setImages(initialData.images || []);
-      setCategory(category || {});
+      setCategory(category || initialData.categoryId || {});
       setPrice(initialData.price || "");
       setPriceAfterDiscount(initialData.priceAfterDiscount || "");
       setQuantity(initialData.quantity || 1);
@@ -87,7 +89,7 @@ const ProductForm = ({
       setYoutubeLink("");
       setHidden(false);
     }
-  }, [initialData]);
+  }, [initialData, categories]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -337,15 +339,18 @@ const ProductForm = ({
             <select
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               id="category"
-              value={JSON.stringify(category)}
+              value={category?._id || ""}
               onChange={(e) => {
-                setCategory(JSON.parse(e.target.value));
+                const selectedCategory = categories.find(
+                  (cat) => cat._id === e.target.value,
+                );
+                setCategory(selectedCategory || {});
                 setErrors({ ...errors, category: null, backend: null });
               }}
             >
               <option value="">حدد الفئة</option>
-              {categories.map((cat, index) => (
-                <option key={index} value={JSON.stringify(cat)}>
+              {categories.map((cat) => (
+                <option key={cat._id} value={cat._id}>
                   {cat.name}
                 </option>
               ))}
