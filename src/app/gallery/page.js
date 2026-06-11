@@ -31,7 +31,7 @@ import ProductCard from "@/components/v2ProductCardSimpleGallery";
 import { usePageCache } from "@/app/context/PageCacheContext";
 
 export default function Gallery() {
-  const { cache, saveCache } = usePageCache('gallery');
+  const { cache, saveCache } = usePageCache("gallery");
 
   const [products, setProducts] = useState(() => cache?.products || []);
   const [page, setPage] = useState(() => cache?.page || 1);
@@ -41,19 +41,17 @@ export default function Gallery() {
 
   const [searchTerm, setSearchTerm] = useState(() => cache?.searchTerm || "");
   const [debouncedSearch, setDebouncedSearch] = useState(
-    () => cache?.debouncedSearch || ""
+    () => cache?.debouncedSearch || "",
   );
 
   const [selectedCategory, setSelectedCategory] = useState(
-    () => cache?.selectedCategory || "all"
+    () => cache?.selectedCategory || "all",
   );
   const [showFilters, setShowFilters] = useState(false);
 
   const [viewMode, setViewMode] = useState(() => cache?.viewMode || "grid");
 
-  const [categories, setCategories] = useState(
-    () => cache?.categories || []
-  );
+  const [categories, setCategories] = useState(() => cache?.categories || []);
 
   // Refs for tracking state on unmount and scroll position
   const stateRef = useRef({});
@@ -121,7 +119,10 @@ export default function Gallery() {
   }, []);
 
   useEffect(() => {
-    if (!debounceMountedRef.current) { debounceMountedRef.current = true; return; }
+    if (!debounceMountedRef.current) {
+      debounceMountedRef.current = true;
+      return;
+    }
     const handler = setTimeout(() => {
       setDebouncedSearch(searchTerm);
     }, 500);
@@ -142,7 +143,7 @@ export default function Gallery() {
       });
       if (node) observer.current.observe(node);
     },
-    [loading, hasMore]
+    [loading, hasMore],
   );
 
   useEffect(() => {
@@ -177,13 +178,19 @@ export default function Gallery() {
       }
     };
 
-    if (!fetchMountedRef.current) { fetchMountedRef.current = true; return; }
+    if (!fetchMountedRef.current) {
+      fetchMountedRef.current = true;
+      return;
+    }
 
     fetchProducts();
   }, [page, debouncedSearch, selectedCategory]);
 
   useEffect(() => {
-    if (!pageResetMountedRef.current) { pageResetMountedRef.current = true; return; }
+    if (!pageResetMountedRef.current) {
+      pageResetMountedRef.current = true;
+      return;
+    }
     setPage(1);
     setHasMore(true);
   }, [debouncedSearch, selectedCategory]);
@@ -411,9 +418,9 @@ export default function Gallery() {
                     <p className="text-sm font-semibold text-green-600 mt-1">
                       {shareProduct.discountPercentage > 0
                         ? `السعر: ${Math.round(
-                            shareProduct.priceAfterDiscount
+                            shareProduct.priceAfterDiscount,
                           )} جنيه (بدلاً من ${Math.round(
-                            shareProduct.price
+                            shareProduct.price,
                           )} جنيه)`
                         : `السعر: ${Math.round(shareProduct.price)} جنيه`}
                     </p>
@@ -427,9 +434,9 @@ export default function Gallery() {
                   quote={`${shareProduct.title}\n\n${shareProduct.description
                     .replace(/<[^>]*>/g, "")
                     .substring(0, 150)}\n\nالسعر: ${Math.round(
-                    shareProduct.priceAfterDiscount || shareProduct.price
+                    shareProduct.priceAfterDiscount || shareProduct.price,
                   )} جنيه\n\n🛒 اضغط على الرابط للمشاهدة والطلب الآن!`}
-                  hashtag="#سيتار_مول #عروض #تسوق_اونلاين"
+                  hashtag="#ستارة_مول #عروض #تسوق_اونلاين"
                   className="w-full"
                 >
                   <div className="flex items-center justify-center gap-2 p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
@@ -444,7 +451,7 @@ export default function Gallery() {
                   }\n\n📝 ${shareProduct.description
                     .replace(/<[^>]*>/g, "")
                     .substring(0, 150)}\n\n💰 السعر: ${Math.round(
-                    shareProduct.priceAfterDiscount || shareProduct.price
+                    shareProduct.priceAfterDiscount || shareProduct.price,
                   )} جنيه\n\n✨ ${
                     shareProduct?.quantity > 10
                       ? "متوفر الآن"
@@ -463,9 +470,9 @@ export default function Gallery() {
                   title={`${shareProduct.title} - ${shareProduct.description
                     .replace(/<[^>]*>/g, "")
                     .substring(0, 150)} - السعر: ${Math.round(
-                    shareProduct.priceAfterDiscount || shareProduct.price
+                    shareProduct.priceAfterDiscount || shareProduct.price,
                   )} جنيه - اضغط للمشاهدة والطلب`}
-                  hashtags={["سيتار_مول", "تسوق_اونلاين", "عروض"]}
+                  hashtags={["ستارة_مول", "تسوق_اونلاين", "عروض"]}
                   className="w-full"
                 >
                   <div className="flex items-center justify-center gap-2 p-3 bg-blue-400 text-white rounded-lg hover:bg-blue-500 transition-colors">
@@ -478,7 +485,7 @@ export default function Gallery() {
                   title={`${shareProduct.title}\n\n${shareProduct.description
                     .replace(/<[^>]*>/g, "")
                     .substring(0, 150)}\n\nالسعر: ${Math.round(
-                    shareProduct.priceAfterDiscount || shareProduct.price
+                    shareProduct.priceAfterDiscount || shareProduct.price,
                   )} جنيه\n\n🔥 ${
                     shareProduct?.quantity > 10
                       ? "متوفر الآن - اطلب من الرابط"

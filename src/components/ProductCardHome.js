@@ -29,7 +29,7 @@ const ProductCardHome = ({ product }) => {
   const handleAddToFavorite = async (e, product) => {
     e.preventDefault();
     const existingItemIndex = favorite.findIndex(
-      (item) => item._id === product._id
+      (item) => item._id === product._id,
     );
 
     let updatedFavorite;
@@ -57,7 +57,7 @@ const ProductCardHome = ({ product }) => {
       (item) =>
         item._id === product._id &&
         JSON.stringify(item.selectedImages) ===
-          JSON.stringify(itemToAdd.selectedImages)
+          JSON.stringify(itemToAdd.selectedImages),
     );
 
     let updatedCart;
@@ -84,7 +84,7 @@ const ProductCardHome = ({ product }) => {
     const existingItemIndex = cart.findIndex(
       (item) =>
         item._id === product._id &&
-        JSON.stringify(item.selectedImages) === JSON.stringify(product.images)
+        JSON.stringify(item.selectedImages) === JSON.stringify(product.images),
     );
 
     if (existingItemIndex !== -1) {
@@ -132,7 +132,7 @@ const ProductCardHome = ({ product }) => {
 
   // Enhanced sharing data
   const shareUrl = `https://sitaramall.com/product/${product._id}`;
-  const shareTitle = `${product.title} - سيتار مول`;
+  const shareTitle = `${product.title} - ستارة مول`;
   const shareDescription =
     stripHtml(product.description).substring(0, 150) + "...";
   const shareImage =
@@ -145,7 +145,7 @@ const ProductCardHome = ({ product }) => {
   const sharePrice =
     product.discountPercentage > 0
       ? `السعر: ${Math.round(
-          product.priceAfterDiscount
+          product.priceAfterDiscount,
         )} جنيه (بدلاً من ${Math.round(product.price)} جنيه)`
       : `السعر: ${Math.round(product.price)} جنيه`;
 
@@ -207,7 +207,7 @@ const ProductCardHome = ({ product }) => {
           <FacebookShareButton
             url={shareUrl}
             quote={`${shareTitle}\n\n${shareDescription}\n\n${sharePrice}\n\n🛒 اضغط على الرابط للمشاهدة والطلب الآن!`}
-            hashtag="#سيتار_مول #عروض #تسوق_اونلاين"
+            hashtag="#ستارة_مول #عروض #تسوق_اونلاين"
             className="w-full"
           >
             <div className="flex items-center justify-center gap-2 p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
@@ -231,7 +231,7 @@ const ProductCardHome = ({ product }) => {
           <TwitterShareButton
             url={shareUrl}
             title={`${shareTitle} - ${shareDescription} - ${sharePrice} - اضغط للمشاهدة والطلب`}
-            hashtags={["سيتار_مول", "تسوق_اونلاين", "عروض"]}
+            hashtags={["ستارة_مول", "تسوق_اونلاين", "عروض"]}
             className="w-full"
           >
             <div className="flex items-center justify-center gap-2 p-3 bg-blue-400 text-white rounded-lg hover:bg-blue-500 transition-colors">
@@ -288,7 +288,7 @@ const ProductCardHome = ({ product }) => {
         <meta property="icon" content={shareImage} />
         <meta property="og:url" content={shareUrl} />
         <meta property="og:type" content="product" />
-        <meta property="og:site_name" content="سيتار مول" />
+        <meta property="og:site_name" content="ستارة مول" />
         <meta
           property="product:price:amount"
           content={product.priceAfterDiscount || product.price}
@@ -432,8 +432,8 @@ const ProductCardHome = ({ product }) => {
                   {product.quantity === 0
                     ? "نفذت الكمية"
                     : cartQuantity >= product.quantity
-                    ? "انتهت الكمية المتاحة"
-                    : "اضف الى العربة"}
+                      ? "انتهت الكمية المتاحة"
+                      : "اضف الى العربة"}
                 </button>
 
                 <button

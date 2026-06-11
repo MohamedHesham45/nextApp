@@ -25,7 +25,8 @@ import ProductForm from "./ProductForm";
 
 const V2ProductCardHome = ({ product, setProducts }) => {
   const { cart, setCart, favorite, setFavorite } = useCartFavorite();
-  const { updateProductInCache, removeProductFromCache } = useProductCacheSync();
+  const { updateProductInCache, removeProductFromCache } =
+    useProductCacheSync();
   const [showMenu, setShowMenu] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
@@ -222,7 +223,7 @@ const V2ProductCardHome = ({ product, setProducts }) => {
       const data = await res.json();
       if (editingProduct) {
         setProducts((prev) =>
-          prev.map((p) => (p._id === editingProduct._id ? data.product : p))
+          prev.map((p) => (p._id === editingProduct._id ? data.product : p)),
         );
         updateProductInCache(data.product);
         toast.success("تم تحديث المنتج بنجاح");
@@ -312,7 +313,7 @@ const V2ProductCardHome = ({ product, setProducts }) => {
     swipe: true,
   };
 
-  const shareTitle = `${product.title} - سيتار مول`;
+  const shareTitle = `${product.title} - ستارة مول`;
   const shareDescription =
     stripHtml(product.description).substring(0, 150) + "...";
   const shareImage =
@@ -339,7 +340,7 @@ const V2ProductCardHome = ({ product, setProducts }) => {
         <meta property="icon" content={shareImage} />
         <meta property="og:url" content={shareUrl} />
         <meta property="og:type" content="product" />
-        <meta property="og:site_name" content="سيتار مول" />
+        <meta property="og:site_name" content="ستارة مول" />
         <meta
           property="product:price:amount"
           content={product.priceAfterDiscount || product.price}
@@ -566,7 +567,7 @@ const V2ProductCardHome = ({ product, setProducts }) => {
                   .substring(0, 150)}\n\nالسعر: ${Math.round(
                   product.priceAfterDiscount || product.price,
                 )} جنيه\n\n🛒 اضغط على الرابط للمشاهدة والطلب الآن!`}
-                hashtag="#سيتار_مول #عروض #تسوق_اونلاين"
+                hashtag="#ستارة_مول #عروض #تسوق_اونلاين"
                 className="w-full"
               >
                 <div className="flex items-center justify-center gap-2 p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
@@ -600,7 +601,7 @@ const V2ProductCardHome = ({ product, setProducts }) => {
                   .substring(0, 150)} - السعر: ${Math.round(
                   product.priceAfterDiscount || product.price,
                 )} جنيه - اضغط للمشاهدة والطلب`}
-                hashtags={["سيتار_مول", "تسوق_اونلاين", "عروض"]}
+                hashtags={["ستارة_مول", "تسوق_اونلاين", "عروض"]}
                 className="w-full"
               >
                 <div className="flex items-center justify-center gap-2 p-3 bg-blue-400 text-white rounded-lg hover:bg-blue-500 transition-colors">

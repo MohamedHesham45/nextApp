@@ -41,7 +41,8 @@ export default function ProductDetails() {
 
   const getYoutubeEmbedUrl = (url) => {
     if (!url) return null;
-    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+    const regex =
+      /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
     const match = url.match(regex);
     return match ? `https://www.youtube.com/embed/${match[1]}` : null;
   };
@@ -49,7 +50,7 @@ export default function ProductDetails() {
   const handleQuantityChange = (e, change) => {
     e.preventDefault();
     const existingItemIndex = cart.findIndex(
-      (item) => item._id === product._id
+      (item) => item._id === product._id,
     );
 
     if (existingItemIndex !== -1) {
@@ -82,7 +83,7 @@ export default function ProductDetails() {
   const handleAddToFavorite = (e, product) => {
     e.preventDefault();
     const existingItemIndex = favorite.findIndex(
-      (item) => item._id === product._id
+      (item) => item._id === product._id,
     );
 
     let updatedFavorite;
@@ -110,7 +111,7 @@ export default function ProductDetails() {
       (item) =>
         item._id === product._id &&
         JSON.stringify(item.selectedImages) ===
-          JSON.stringify(itemToAdd.selectedImages)
+          JSON.stringify(itemToAdd.selectedImages),
     );
 
     let updatedCart;
@@ -141,7 +142,7 @@ export default function ProductDetails() {
       (item) =>
         item._id === product._id &&
         JSON.stringify(item.selectedImages) ===
-          JSON.stringify(itemToAdd.selectedImages)
+          JSON.stringify(itemToAdd.selectedImages),
     );
 
     let updatedCart;
@@ -185,7 +186,7 @@ export default function ProductDetails() {
   const shareUrl = product
     ? `https://sitaramall.com/product/${product._id}`
     : "";
-  const shareTitle = product ? `${product.title} - سيتار مول` : "";
+  const shareTitle = product ? `${product.title} - ستارة مول` : "";
   const shareDescription = product
     ? stripHtml(product.description).substring(0, 150) + "..."
     : "";
@@ -206,7 +207,7 @@ export default function ProductDetails() {
   const sharePrice = product
     ? product.discountPercentage > 0
       ? `السعر: ${Math.round(
-          product.priceAfterDiscount
+          product.priceAfterDiscount,
         )} جنيه (بدلاً من ${Math.round(product.price)} جنيه)`
       : `السعر: ${Math.round(product.price)} جنيه`
     : "";
@@ -270,7 +271,7 @@ export default function ProductDetails() {
           <FacebookShareButton
             url={shareUrl}
             quote={`${shareTitle}\n\n${shareDescription}\n\n${sharePrice}\n\n🛒 اضغط على الرابط للمشاهدة والطلب الآن!`}
-            hashtag="#سيتار_مول #عروض #تسوق_اونلاين"
+            hashtag="#ستارة_مول #عروض #تسوق_اونلاين"
             className="w-full"
           >
             <div className="flex items-center justify-center gap-2 p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
@@ -294,7 +295,7 @@ export default function ProductDetails() {
           <TwitterShareButton
             url={shareUrl}
             title={`${shareTitle} - ${shareDescription} - ${sharePrice} - اضغط للمشاهدة والطلب`}
-            hashtags={["سيتار_مول", "تسوق_اونلاين", "عروض"]}
+            hashtags={["ستارة_مول", "تسوق_اونلاين", "عروض"]}
             className="w-full"
           >
             <div className="flex items-center justify-center gap-2 p-3 bg-blue-400 text-white rounded-lg hover:bg-blue-500 transition-colors">
@@ -569,7 +570,9 @@ export default function ProductDetails() {
         {product.youtubeLink && getYoutubeEmbedUrl(product.youtubeLink) && (
           <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-16 py-8 direction-rtl">
             <div className="max-w-3xl mx-auto">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">فيديو المنتج</h2>
+              <h2 className="text-xl font-bold text-gray-800 mb-4">
+                فيديو المنتج
+              </h2>
               <iframe
                 src={getYoutubeEmbedUrl(product.youtubeLink)}
                 className="w-full rounded-xl shadow-lg border-0"

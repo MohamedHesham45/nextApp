@@ -9,17 +9,19 @@ export async function generateMetadata({ params }) {
 
   if (!product) {
     return {
-      title: "المنتج غير موجود - سيتار مول",
+      title: "المنتج غير موجود - ستارة مول",
       description: "هذا المنتج غير متوفر حالياً.",
     };
   }
 
   const shareUrl = `https://sitaramall.com/product/${product._id}`;
-  const shareTitle = `${product.title} - سيتار مول`;
-  const shareDescription = stripHtml(product.description).substring(0, 150) + '...';
-  const shareImage = product.images && product.images[0]
-    ? `https://sitaramall.com/${product.images[0].replace(/^\//, '')}`
-    : 'https://sitaramall.com/default-product.jpg';
+  const shareTitle = `${product.title} - ستارة مول`;
+  const shareDescription =
+    stripHtml(product.description).substring(0, 150) + "...";
+  const shareImage =
+    product.images && product.images[0]
+      ? `https://sitaramall.com/${product.images[0].replace(/^\//, "")}`
+      : "https://sitaramall.com/default-product.jpg";
 
   return {
     title: shareTitle,
@@ -36,10 +38,10 @@ export async function generateMetadata({ params }) {
           alt: product.title,
         },
       ],
-      type: 'website',
+      type: "website",
     },
     twitter: {
-      card: 'summary_large_image',
+      card: "summary_large_image",
       title: shareTitle,
       description: shareDescription,
       images: [shareImage],
@@ -48,11 +50,9 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function Page() {
-  
-
   return (
     <Suspense fallback={<LoadingSpinner />}>
-      <ProductDetails/>
+      <ProductDetails />
     </Suspense>
   );
 }

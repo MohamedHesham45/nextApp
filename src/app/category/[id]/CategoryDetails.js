@@ -3,7 +3,15 @@
 import V2ProductCardHome from "@/components/V2ProductCardHome";
 import { stripHtml } from "@/lib/stripHtml";
 import { useEffect, useState, useRef } from "react";
-import { Search, Share2, Copy, Check, Heart, ShoppingBag, Send } from "lucide-react";
+import {
+  Search,
+  Share2,
+  Copy,
+  Check,
+  Heart,
+  ShoppingBag,
+  Send,
+} from "lucide-react";
 import { useParams } from "next/navigation";
 import {
   FacebookShareButton,
@@ -24,11 +32,15 @@ export default function CategoryDetails() {
   const { id } = useParams();
   const { cache, saveCache } = usePageCache(`category-${id}`);
 
-  const [displayCategory, setDisplayCategory] = useState(() => cache?.displayCategory || "");
+  const [displayCategory, setDisplayCategory] = useState(
+    () => cache?.displayCategory || "",
+  );
   const [products, setProducts] = useState(() => cache?.products || []);
   const [category, setCategory] = useState(() => cache?.category || null);
   const [searchTerm, setSearchTerm] = useState(() => cache?.searchTerm || "");
-  const [debouncedSearch, setDebouncedSearch] = useState(() => cache?.debouncedSearch || "");
+  const [debouncedSearch, setDebouncedSearch] = useState(
+    () => cache?.debouncedSearch || "",
+  );
   const [showShareModal, setShowShareModal] = useState(false);
   const [copied, setCopied] = useState(false);
   const [isLoading, setIsLoading] = useState(!cache);
@@ -53,21 +65,31 @@ export default function CategoryDetails() {
   // Keep stateRef up to date on every render
   useEffect(() => {
     stateRef.current = {
-      products, page, hasMore, searchTerm, debouncedSearch,
-      category, displayCategory, viewMode,
+      products,
+      page,
+      hasMore,
+      searchTerm,
+      debouncedSearch,
+      category,
+      displayCategory,
+      viewMode,
     };
   });
 
   // Track scroll position
   useEffect(() => {
-    const onScroll = () => { scrollYRef.current = window.scrollY; };
+    const onScroll = () => {
+      scrollYRef.current = window.scrollY;
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   // Save state to cache when navigating away
   useEffect(() => {
-    return () => { saveCache({ ...stateRef.current, scrollY: scrollYRef.current }); };
+    return () => {
+      saveCache({ ...stateRef.current, scrollY: scrollYRef.current });
+    };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Restore scroll position on mount (only when coming back from cache)
@@ -81,7 +103,10 @@ export default function CategoryDetails() {
 
   // debounce search
   useEffect(() => {
-    if (!debounceMountedRef.current) { debounceMountedRef.current = true; return; }
+    if (!debounceMountedRef.current) {
+      debounceMountedRef.current = true;
+      return;
+    }
     const handler = setTimeout(() => {
       setDebouncedSearch(searchTerm);
     }, 500);
@@ -93,8 +118,9 @@ export default function CategoryDetails() {
     try {
       setIsLoading(true);
       const response = await fetch(
-        `/api/category/${id}?search=${debouncedSearch}&limit=12&page=${reset ? 1 : page
-        }`
+        `/api/category/${id}?search=${debouncedSearch}&limit=12&page=${
+          reset ? 1 : page
+        }`,
       );
       if (!response.ok) throw new Error("Failed to fetch category data");
       const data = await response.json();
@@ -108,11 +134,11 @@ export default function CategoryDetails() {
       setDisplayCategory(
         data.category.name.startsWith("ال")
           ? data.category.name
-          : `ال${data.category.name}`
+          : `ال${data.category.name}`,
       );
 
       setProducts((prev) =>
-        reset ? data.products : [...prev, ...data.products]
+        reset ? data.products : [...prev, ...data.products],
       );
       setHasMore(data.hasMore);
     } catch (error) {
@@ -126,7 +152,10 @@ export default function CategoryDetails() {
 
   // refetch on id/search change
   useEffect(() => {
-    if (!idSearchFetchMountedRef.current) { idSearchFetchMountedRef.current = true; return; }
+    if (!idSearchFetchMountedRef.current) {
+      idSearchFetchMountedRef.current = true;
+      return;
+    }
     if (id) {
       setPage(1);
       fetchCategoryData(true);
@@ -138,7 +167,7 @@ export default function CategoryDetails() {
     const handleScroll = () => {
       if (
         window.innerHeight + window.scrollY >=
-        document.body.offsetHeight - 300 &&
+          document.body.offsetHeight - 300 &&
         hasMore &&
         !isLoading
       ) {
@@ -151,7 +180,10 @@ export default function CategoryDetails() {
   }, [hasMore, isLoading]);
 
   useEffect(() => {
-    if (!pageLoadMoreMountedRef.current) { pageLoadMoreMountedRef.current = true; return; }
+    if (!pageLoadMoreMountedRef.current) {
+      pageLoadMoreMountedRef.current = true;
+      return;
+    }
     if (page > 1) fetchCategoryData();
   }, [page]);
 
@@ -172,7 +204,9 @@ export default function CategoryDetails() {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
         <h1 className="text-2xl font-bold text-gray-800">الفئة غير موجودة</h1>
-        <p className="text-gray-600 mt-2">عذراً، هذه الفئة غير متوفرة حالياً.</p>
+        <p className="text-gray-600 mt-2">
+          عذراً، هذه الفئة غير متوفرة حالياً.
+        </p>
       </div>
     );
   }
@@ -283,7 +317,6 @@ export default function CategoryDetails() {
             {/* زر تبديل العرض */}
             <div className="flex items-center justify-center gap-3 max-w-3xl mx-auto mt-6">
               {/* Toggle View */}
-              
 
               {/* Search */}
               <div className="relative flex-1">
@@ -307,18 +340,30 @@ export default function CategoryDetails() {
               </button>
 
               <button
-                onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
+                onClick={() =>
+                  setViewMode(viewMode === "grid" ? "list" : "grid")
+                }
                 className="bg-amazon-yellow text-amazon p-3 rounded-full shadow hover:bg-amazon-orange transition-all flex items-center justify-center w-12 h-12 flex-shrink-0"
                 title={viewMode === "grid" ? "عرض قائمة" : "عرض شبكة"}
               >
                 {viewMode === "grid" ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-6 h-6"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <rect x="4" y="6" width="16" height="2" rx="1" />
                     <rect x="4" y="11" width="16" height="2" rx="1" />
                     <rect x="4" y="16" width="16" height="2" rx="1" />
                   </svg>
                 ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-6 h-6"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <rect x="4" y="4" width="7" height="7" rx="1" />
                     <rect x="13" y="4" width="7" height="7" rx="1" />
                     <rect x="4" y="13" width="7" height="7" rx="1" />
@@ -327,7 +372,6 @@ export default function CategoryDetails() {
                 )}
               </button>
             </div>
-
           </div>
         </div>
       </div>
@@ -351,24 +395,32 @@ export default function CategoryDetails() {
           <div className="flex flex-col gap-3">
             {products.map((product) => {
               const cartQuantity =
-                cart.find((item) => item._id === product._id)?.quantityCart || 0;
-              const isFavorite = favorite.some((item) => item._id === product._id);
+                cart.find((item) => item._id === product._id)?.quantityCart ||
+                0;
+              const isFavorite = favorite.some(
+                (item) => item._id === product._id,
+              );
 
               const handleAddToFavorite = (e) => {
                 e.preventDefault();
                 const existingItemIndex = favorite.findIndex(
-                  (item) => item._id === product._id
+                  (item) => item._id === product._id,
                 );
                 let updatedFavorite;
                 if (existingItemIndex !== -1) {
-                  updatedFavorite = favorite.filter((item) => item._id !== product._id);
+                  updatedFavorite = favorite.filter(
+                    (item) => item._id !== product._id,
+                  );
                   toast.success("تم إزالة المنتج من المفضلة");
                 } else {
                   updatedFavorite = [...favorite, product];
                   toast.success("تم إضافة المنتج إلى المفضلة");
                 }
                 setFavorite(updatedFavorite);
-                localStorage.setItem("favorite", JSON.stringify(updatedFavorite));
+                localStorage.setItem(
+                  "favorite",
+                  JSON.stringify(updatedFavorite),
+                );
               };
 
               const handleAddToCart = (e) => {
@@ -382,7 +434,7 @@ export default function CategoryDetails() {
                   (item) =>
                     item._id === product._id &&
                     JSON.stringify(item.selectedImages) ===
-                    JSON.stringify(itemToAdd.selectedImages)
+                      JSON.stringify(itemToAdd.selectedImages),
                 );
                 let updatedCart;
                 if (existingItemIndex !== -1) {
@@ -423,7 +475,9 @@ export default function CategoryDetails() {
                     {/* تفاصيل المنتج */}
                     <div className="flex flex-col justify-between flex-1 p-4 text-right">
                       <div>
-                        <h3 className="text-base font-bold text-amazon line-clamp-2 mb-1">{product.title}</h3>
+                        <h3 className="text-base font-bold text-amazon line-clamp-2 mb-1">
+                          {product.title}
+                        </h3>
                         <div className="flex flex-wrap gap-2 items-center mb-2">
                           {product.discountPercentage > 0 && (
                             <span className="bg-red-100 text-red-600 text-xs font-bold px-2 py-0.5 rounded-full">
@@ -457,9 +511,10 @@ export default function CategoryDetails() {
                         <button
                           onClick={handleAddToFavorite}
                           className={`relative w-8 h-8 flex items-center justify-center rounded-full transition-all duration-300 hover:scale-110
-                            ${isFavorite
-                              ? "bg-gradient-to-tr from-pink-500 to-red-500 text-white shadow-lg shadow-pink-400/40"
-                              : "bg-white/90 text-gray-700 shadow-md hover:bg-gradient-to-tr hover:from-pink-400 hover:to-red-400 hover:text-white"
+                            ${
+                              isFavorite
+                                ? "bg-gradient-to-tr from-pink-500 to-red-500 text-white shadow-lg shadow-pink-400/40"
+                                : "bg-white/90 text-gray-700 shadow-md hover:bg-gradient-to-tr hover:from-pink-400 hover:to-red-400 hover:text-white"
                             }`}
                         >
                           <Heart className="w-5 h-5" />
@@ -473,9 +528,10 @@ export default function CategoryDetails() {
                         <button
                           onClick={handleAddToCart}
                           className={`w-8 h-8 flex items-center justify-center rounded-full transition-all duration-300 hover:scale-110
-                            ${cartQuantity > 0
-                              ? "bg-gradient-to-tr from-amazon-orange to-amazon-orange-dark text-white shadow-lg shadow-orange-400/40"
-                              : "bg-white/90 text-gray-700 shadow-md hover:bg-gradient-to-tr hover:from-amazon-orange hover:to-amazon-orange-dark hover:text-white"
+                            ${
+                              cartQuantity > 0
+                                ? "bg-gradient-to-tr from-amazon-orange to-amazon-orange-dark text-white shadow-lg shadow-orange-400/40"
+                                : "bg-white/90 text-gray-700 shadow-md hover:bg-gradient-to-tr hover:from-amazon-orange hover:to-amazon-orange-dark hover:text-white"
                             }`}
                           disabled={product.quantity === 0}
                         >
@@ -543,7 +599,8 @@ export default function CategoryDetails() {
                     {shareProduct.title}
                   </h4>
                   <p className="text-xs text-gray-600 line-clamp-2">
-                    {stripHtml(shareProduct.description).substring(0, 150) + "..."}
+                    {stripHtml(shareProduct.description).substring(0, 150) +
+                      "..."}
                   </p>
                   <p className="text-sm font-semibold text-green-600 mt-1">
                     {shareProduct.discountPercentage > 0
@@ -558,7 +615,7 @@ export default function CategoryDetails() {
               <FacebookShareButton
                 url={`https://sitaramall.com/product/${shareProduct._id}`}
                 quote={`${shareProduct.title}\n\n${stripHtml(shareProduct.description).substring(0, 150)}\n\nالسعر: ${Math.round(shareProduct.priceAfterDiscount || shareProduct.price)} جنيه\n\n🛒 اضغط على الرابط للمشاهدة والطلب الآن!`}
-                hashtag="#سيتار_مول #عروض #تسوق_اونلاين"
+                hashtag="#ستارة_مول #عروض #تسوق_اونلاين"
                 className="w-full"
               >
                 <div className="flex items-center justify-center gap-2 p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
@@ -568,7 +625,7 @@ export default function CategoryDetails() {
               </FacebookShareButton>
               <WhatsappShareButton
                 url={`https://sitaramall.com/product/${shareProduct._id}`}
-                title={`🛍️ ${shareProduct.title}\n\n📝 ${stripHtml(shareProduct.description).substring(0, 150)}\n\n💰 السعر: ${Math.round(shareProduct.priceAfterDiscount || shareProduct.price)} جنيه\n\n✨ ${shareProduct?.quantity > 10 ? 'متوفر الآن' : 'كمية محدودة - اطلب الآن'}\n\n👆 اضغط على الرابط لعرض المنتج وإتمام الطلب:`}
+                title={`🛍️ ${shareProduct.title}\n\n📝 ${stripHtml(shareProduct.description).substring(0, 150)}\n\n💰 السعر: ${Math.round(shareProduct.priceAfterDiscount || shareProduct.price)} جنيه\n\n✨ ${shareProduct?.quantity > 10 ? "متوفر الآن" : "كمية محدودة - اطلب الآن"}\n\n👆 اضغط على الرابط لعرض المنتج وإتمام الطلب:`}
                 separator=" "
                 className="w-full"
               >
@@ -580,7 +637,7 @@ export default function CategoryDetails() {
               <TwitterShareButton
                 url={`https://sitaramall.com/product/${shareProduct._id}`}
                 title={`${shareProduct.title} - ${stripHtml(shareProduct.description).substring(0, 150)} - السعر: ${Math.round(shareProduct.priceAfterDiscount || shareProduct.price)} جنيه - اضغط للمشاهدة والطلب`}
-                hashtags={["سيتار_مول", "تسوق_اونلاين", "عروض"]}
+                hashtags={["ستارة_مول", "تسوق_اونلاين", "عروض"]}
                 className="w-full"
               >
                 <div className="flex items-center justify-center gap-2 p-3 bg-blue-400 text-white rounded-lg hover:bg-blue-500 transition-colors">
@@ -590,7 +647,7 @@ export default function CategoryDetails() {
               </TwitterShareButton>
               <TelegramShareButton
                 url={`https://sitaramall.com/product/${shareProduct._id}`}
-                title={`${shareProduct.title}\n\n${stripHtml(shareProduct.description).substring(0, 150)}\n\nالسعر: ${Math.round(shareProduct.priceAfterDiscount || shareProduct.price)} جنيه\n\n🔥 ${shareProduct?.quantity > 10 ? 'متوفر الآن - اطلب من الرابط' : 'كمية محدودة - اطلب الآن من الرابط'}`}
+                title={`${shareProduct.title}\n\n${stripHtml(shareProduct.description).substring(0, 150)}\n\nالسعر: ${Math.round(shareProduct.priceAfterDiscount || shareProduct.price)} جنيه\n\n🔥 ${shareProduct?.quantity > 10 ? "متوفر الآن - اطلب من الرابط" : "كمية محدودة - اطلب الآن من الرابط"}`}
                 className="w-full"
               >
                 <div className="flex items-center justify-center gap-2 p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
@@ -611,7 +668,9 @@ export default function CategoryDetails() {
                 <button
                   onClick={async () => {
                     try {
-                      await navigator.clipboard.writeText(`https://sitaramall.com/product/${shareProduct._id}`);
+                      await navigator.clipboard.writeText(
+                        `https://sitaramall.com/product/${shareProduct._id}`,
+                      );
                       setCopied(true);
                       toast.success("تم نسخ الرابط");
                       setTimeout(() => setCopied(false), 2000);

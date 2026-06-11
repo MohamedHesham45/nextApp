@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import Link from "next/link";
 import LoadingSpinner from "./LoadingSpinner";
 import V2ProductCardHome from "./V2ProductCardHome";
 import { useCartFavorite } from "@/app/context/cartFavoriteContext";
@@ -11,12 +12,14 @@ import { toast } from "react-hot-toast";
 import { usePageCache } from "@/app/context/PageCacheContext";
 
 const V2FiveProductsPerCategory = ({ viewMode }) => {
-  const { cache, saveCache } = usePageCache('home-products');
+  const { cache, saveCache } = usePageCache("home-products");
 
   const [categories, setCategories] = useState(() => cache?.categories || []);
   const [isLoading, setIsLoading] = useState(!cache);
   const [error, setError] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState(() => cache?.selectedCategory || "all");
+  const [selectedCategory, setSelectedCategory] = useState(
+    () => cache?.selectedCategory || "all",
+  );
   const [page, setPage] = useState(() => cache?.page || 1);
   const [hasMore, setHasMore] = useState(() => cache?.hasMore ?? true);
   const [products, setProducts] = useState(() => cache?.products || []);
@@ -35,17 +38,27 @@ const V2FiveProductsPerCategory = ({ viewMode }) => {
   const pageResetMountedRef = useRef(!cache);
 
   useEffect(() => {
-    stateRef.current = { products, page, hasMore, selectedCategory, categories };
+    stateRef.current = {
+      products,
+      page,
+      hasMore,
+      selectedCategory,
+      categories,
+    };
   });
 
   useEffect(() => {
-    const onScroll = () => { scrollYRef.current = window.scrollY; };
+    const onScroll = () => {
+      scrollYRef.current = window.scrollY;
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   useEffect(() => {
-    return () => { saveCache({ ...stateRef.current, scrollY: scrollYRef.current }); };
+    return () => {
+      saveCache({ ...stateRef.current, scrollY: scrollYRef.current });
+    };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -121,12 +134,18 @@ const V2FiveProductsPerCategory = ({ viewMode }) => {
         setIsLoading(false);
       }
     };
-    if (!fetchMountedRef.current) { fetchMountedRef.current = true; return; }
+    if (!fetchMountedRef.current) {
+      fetchMountedRef.current = true;
+      return;
+    }
     fetchProducts();
   }, [page, selectedCategory, refreshKey]);
 
   useEffect(() => {
-    if (!pageResetMountedRef.current) { pageResetMountedRef.current = true; return; }
+    if (!pageResetMountedRef.current) {
+      pageResetMountedRef.current = true;
+      return;
+    }
     setPage(1);
     setHasMore(true);
   }, [selectedCategory]);
@@ -165,6 +184,10 @@ const V2FiveProductsPerCategory = ({ viewMode }) => {
   if (error) return <p className="text-red-500 text-center">{error}</p>;
 
   const categoryId = selectedCategory;
+  const hasSelectedCategory = categoryId && categoryId !== "all";
+  const selectedCategoryName =
+    categories.find((category) => category._id === categoryId)?.name ||
+    "المنتجات";
 
   const handleCreate = () => {
     setErrorSubmit(null);
@@ -326,20 +349,16 @@ const V2FiveProductsPerCategory = ({ viewMode }) => {
             })}
           </div>
           {/* View All Button */}
-          {/* {categoryId && (
+          {hasSelectedCategory && (
             <div className="flex justify-center mt-8">
               <Link
-                href={`/v2/category/${encodeURIComponent(categoryId)}`}
+                href={`/category/${encodeURIComponent(categoryId)}`}
                 className="group inline-flex items-center gap-2 px-6 py-3 rounded-full 
                  bg-amazon-orange text-white font-semibold text-base 
                  shadow-md transition-all duration-300 
                  hover:bg-amazon-orange-dark hover:shadow-lg hover:scale-105"
               >
-                <span>
-                  عرض كل منتجات ال
-                  {categories.find((c) => c.category === selectedCategory)
-                    ?.category || "المنتجات"}
-                </span>
+                <span>عرض كل منتجات {selectedCategoryName}</span>
                 <svg
                   className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
                   fill="none"
@@ -355,7 +374,7 @@ const V2FiveProductsPerCategory = ({ viewMode }) => {
                 </svg>
               </Link>
             </div>
-          )} */}
+          )}
         </>
       ) : (
         <>
@@ -376,20 +395,16 @@ const V2FiveProductsPerCategory = ({ viewMode }) => {
             ))}
           </div>
           {/* View All Button */}
-          {/* {categoryId && (
+          {hasSelectedCategory && (
             <div className="flex justify-center mt-8">
               <Link
-                href={`/v2/category/${encodeURIComponent(categoryId)}`}
+                href={`/category/${encodeURIComponent(categoryId)}`}
                 className="group inline-flex items-center gap-2 px-6 py-3 rounded-full 
                  bg-amazon-orange text-white font-semibold text-base 
                  shadow-md transition-all duration-300 
                  hover:bg-amazon-orange-dark hover:shadow-lg hover:scale-105"
               >
-                <span>
-                  عرض كل منتجات ال&nbsp;
-                  {categories.find((c) => c.category === selectedCategory)
-                    ?.category || "المنتجات"}
-                </span>
+                <span>عرض كل منتجات {selectedCategoryName}</span>
                 <svg
                   className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
                   fill="none"
@@ -405,7 +420,7 @@ const V2FiveProductsPerCategory = ({ viewMode }) => {
                 </svg>
               </Link>
             </div>
-          )} */}
+          )}
         </>
       )}
       {isLoading && (
@@ -470,7 +485,7 @@ const V2FiveProductsPerCategory = ({ viewMode }) => {
                   .substring(0, 150)}\n\nالسعر: ${Math.round(
                   shareProduct.priceAfterDiscount || shareProduct.price,
                 )} جنيه\n\n🛒 اضغط على الرابط للمشاهدة والطلب الآن!`}
-                hashtag="#سيتار_مول #عروض #تسوق_اونلاين"
+                hashtag="#ستارة_مول #عروض #تسوق_اونلاين"
                 className="w-full"
               >
                 <div className="flex items-center justify-center gap-2 p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
@@ -506,7 +521,7 @@ const V2FiveProductsPerCategory = ({ viewMode }) => {
                   .substring(0, 150)} - السعر: ${Math.round(
                   shareProduct.priceAfterDiscount || shareProduct.price,
                 )} جنيه - اضغط للمشاهدة والطلب`}
-                hashtags={["سيتار_مول", "تسوق_اونلاين", "عروض"]}
+                hashtags={["ستارة_مول", "تسوق_اونلاين", "عروض"]}
                 className="w-full"
               >
                 <div className="flex items-center justify-center gap-2 p-3 bg-blue-400 text-white rounded-lg hover:bg-blue-500 transition-colors">

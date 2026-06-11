@@ -21,7 +21,9 @@ export default function CategoryDetails() {
   const { id } = useParams();
   const { cache, saveCache } = usePageCache(`v2-category-${id}`);
 
-  const [displayCategory, setDisplayCategory] = useState(() => cache?.displayCategory || "");
+  const [displayCategory, setDisplayCategory] = useState(
+    () => cache?.displayCategory || "",
+  );
   const [products, setProducts] = useState(() => cache?.products || []);
   const [category, setCategory] = useState(() => cache?.category || null);
   const [searchTerm, setSearchTerm] = useState(() => cache?.searchTerm || "");
@@ -39,13 +41,17 @@ export default function CategoryDetails() {
   });
 
   useEffect(() => {
-    const onScroll = () => { scrollYRef.current = window.scrollY; };
+    const onScroll = () => {
+      scrollYRef.current = window.scrollY;
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   useEffect(() => {
-    return () => { saveCache({ ...stateRef.current, scrollY: scrollYRef.current }); };
+    return () => {
+      saveCache({ ...stateRef.current, scrollY: scrollYRef.current });
+    };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -57,7 +63,10 @@ export default function CategoryDetails() {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (!fetchMountedRef.current) { fetchMountedRef.current = true; return; }
+    if (!fetchMountedRef.current) {
+      fetchMountedRef.current = true;
+      return;
+    }
 
     const fetchCategoryData = async () => {
       try {
@@ -78,7 +87,7 @@ export default function CategoryDetails() {
         setDisplayCategory(
           data.category.name.startsWith("ال")
             ? data.category.name
-            : `ال${data.category.name}`
+            : `ال${data.category.name}`,
         );
         setProducts(data.products || []);
       } catch (error) {
@@ -132,7 +141,7 @@ export default function CategoryDetails() {
 
   // Share functionality
   const shareUrl = `https://sitaramall.com/category/${id}`;
-  const shareTitle = `${displayCategory} - سيتار مول`;
+  const shareTitle = `${displayCategory} - ستارة مول`;
   const shareDescription = `تسوق ${displayCategory} - اكتشف مجموعتنا الواسعة من المنتجات المميزة بأفضل الأسعار`;
 
   const whatsappText = `🛍️ ${shareTitle}\n\n📝 ${shareDescription}\n\n✨ ${products.length} منتج متوفر\n\n👆 اضغط على الرابط لعرض المنتجات وإتمام الطلب:`;
@@ -181,7 +190,7 @@ export default function CategoryDetails() {
           <FacebookShareButton
             url={shareUrl}
             quote={`${shareTitle}\n\n${shareDescription}\n\n🛒 اضغط على الرابط للمشاهدة والطلب الآن!`}
-            hashtag="#سيتار_مول #عروض #تسوق_اونلاين"
+            hashtag="#ستارة_مول #عروض #تسوق_اونلاين"
             className="w-full"
           >
             <div className="flex items-center justify-center gap-2 p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
@@ -205,7 +214,7 @@ export default function CategoryDetails() {
           <TwitterShareButton
             url={shareUrl}
             title={`${shareTitle} - ${shareDescription}`}
-            hashtags={["سيتار_مول", "تسوق_اونلاين", "عروض"]}
+            hashtags={["ستارة_مول", "تسوق_اونلاين", "عروض"]}
             className="w-full"
           >
             <div className="flex items-center justify-center gap-2 p-3 bg-blue-400 text-white rounded-lg hover:bg-blue-500 transition-colors">
