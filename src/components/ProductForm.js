@@ -57,10 +57,24 @@ const ProductForm = ({
   const [priceAfterDiscount, setPriceAfterDiscount] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState(false);
   const [video, setVideo] = useState(null);
   const [videoError, setVideoError] = useState("");
   const [youtubeLink, setYoutubeLink] = useState("");
   const [hidden, setHidden] = useState(false);
+
+  const getValidationErrors = () => {
+    const errs = [];
+    if (!title) errs.push("العنوان مطلوب");
+    if (!description || description === "<p><br></p>") errs.push("الوصف مطلوب");
+    if (!category._id) errs.push("الفئة مطلوبة");
+    if (!price) errs.push("السعر مطلوب");
+    if (images.length === 0) errs.push("الصور مطلوبة");
+    return errs;
+  };
+
+  const validationErrors = getValidationErrors();
+  const isFormValid = validationErrors.length === 0;
 
   useEffect(() => {
     if (initialData) {
@@ -282,8 +296,20 @@ const ProductForm = ({
     setImages((prevImages) => prevImages.filter((_, i) => i !== index));
   };
 
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
   return (
-    <div className="">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+      onClick={(e) => e.stopPropagation()}
+      onMouseDown={(e) => e.stopPropagation()}
+    >
+      <div className="bg-white rounded-lg shadow-lg w-full max-w-lg max-h-[90vh] overflow-y-auto mx-4">
       <form onSubmit={handleSubmit} className="direction-rtl my-8 mx-4">
         <div className="mb-4 ">
           <label
@@ -299,7 +325,8 @@ const ProductForm = ({
             value={title}
             onChange={(e) => {
               setTitle(e.target.value);
-              setErrors({ ...errors, title: null, backend: null });
+              setTouched(true);
+              setErrors((prev) => ({ ...prev, title: null, backend: null }));
             }}
           />
           {errors.title && <p className="text-red-500">{errors.title}</p>}
@@ -317,7 +344,7 @@ const ProductForm = ({
               value={description}
               onChange={(content) => {
                 setDescription(content);
-                setErrors({ ...errors, description: null, backend: null });
+                setErrors((prev) => ({ ...prev, description: null, backend: null }));
               }}
               modules={modules}
               formats={formats}
@@ -345,7 +372,7 @@ const ProductForm = ({
                   (cat) => cat._id === e.target.value,
                 );
                 setCategory(selectedCategory || {});
-                setErrors({ ...errors, category: null, backend: null });
+                setErrors((prev) => ({ ...prev, category: null, backend: null }));
               }}
             >
               <option value="">حدد الفئة</option>
@@ -392,7 +419,7 @@ const ProductForm = ({
               value={price}
               onChange={(e) => {
                 setPrice(e.target.value);
-                setErrors({ ...errors, price: null, backend: null });
+                setErrors((prev) => ({ ...prev, price: null, backend: null }));
               }}
             />
             {errors.price && <p className="text-red-500">{errors.price}</p>}
@@ -428,7 +455,7 @@ const ProductForm = ({
             multiple
             onChange={(e) => {
               handleImageUpload(e);
-              setErrors({ ...errors, images: null, backend: null });
+              setErrors((prev) => ({ ...prev, images: null, backend: null }));
             }}
           />
           {errors.images && <p className="text-red-500">{errors.images}</p>}
@@ -498,11 +525,26 @@ const ProductForm = ({
           </label>
         </div>
 
+        {!isFormValid && (
+          <div className="mb-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-800 direction-rtl">
+            <p className="font-bold mb-1">لا يمكن الحفظ:</p>
+            <ul className="list-disc list-inside">
+              {validationErrors.map((err, i) => (
+                <li key={i}>{err}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         <div className="flex justify-end gap-2">
           <button
-            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            className={`font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline text-white ${
+              !isFormValid || loadingSubmit
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-green-500 hover:bg-green-700"
+            }`}
             type="submit"
-            disabled={loadingSubmit}
+            disabled={!isFormValid || loadingSubmit}
           >
             {loadingSubmit
               ? "جاري التحديث..."
@@ -521,6 +563,7 @@ const ProductForm = ({
         </div>
         {errors.backend && <p className="text-red-500">{errors.backend}</p>}
       </form>
+      </div>
     </div>
   );
 };

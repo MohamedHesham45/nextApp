@@ -570,19 +570,6 @@ const V2FiveProductsPerCategory = ({ viewMode }) => {
         </div>
       )}
       {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 overflow-y-auto p-4">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-lg my-auto">
-            <div className="flex items-center justify-between px-6 pt-4">
-              <h2 className="text-xl font-bold text-gray-800">
-                إضافة منتج جديد
-              </h2>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="text-gray-500 hover:text-gray-700 text-2xl leading-none"
-              >
-                ×
-              </button>
-            </div>
             <ProductForm
               onSubmit={handleSubmit}
               initialData={null}
@@ -591,8 +578,6 @@ const V2FiveProductsPerCategory = ({ viewMode }) => {
               loadingSubmit={loadingSubmit}
               errorSubmit={errorSubmit}
             />
-          </div>
-        </div>
       )}
     </div>
   );

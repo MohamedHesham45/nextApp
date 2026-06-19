@@ -264,8 +264,6 @@ export default function AdminPage() {
           loadingDelete={loadingDelete}
         />
         {isModalOpen && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
               <ProductForm
                 onSubmit={handleSubmit}
                 initialData={editingProduct}
@@ -274,8 +272,6 @@ export default function AdminPage() {
                 loadingSubmit={loadingSubmit}
                 errorSubmit={errorSubmit}
               />
-            </div>
-          </div>
         )}
       </div>
     </div>

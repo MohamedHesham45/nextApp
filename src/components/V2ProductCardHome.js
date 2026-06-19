@@ -467,14 +467,6 @@ const V2ProductCardHome = ({ product, setProducts }) => {
         </div>
       </Link>
       {isModalOpen && (
-        <div
-          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-          onClick={() => setIsModalOpen(false)}
-        >
-          <div
-            className="bg-white p-4 rounded-lg shadow-lg w-full max-w-lg max-h-[80vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
             <ProductForm
               onSubmit={handleSubmit}
               initialData={editingProduct}
@@ -483,8 +475,6 @@ const V2ProductCardHome = ({ product, setProducts }) => {
               loadingSubmit={loadingSubmit}
               errorSubmit={errorSubmit}
             />
-          </div>
-        </div>
       )}
       {isDeleteModalOpen && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
