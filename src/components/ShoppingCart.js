@@ -177,6 +177,18 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
     return Math.round( parseInt(item.price) * (1 - parseInt(item.discountPercentage) / 100));
   };
 
+  // The category object can live on `categoryId` (added from the product page)
+  // or on `category` (added from the home page cards), and the other field is a
+  // plain string in each case. Normalize so grouping / minCount work the same
+  // no matter where the item was added.
+  const getItemCategory = (item) => {
+    if (item?.categoryId && typeof item.categoryId === "object")
+      return item.categoryId;
+    if (item?.category && typeof item.category === "object")
+      return item.category;
+    return { _id: "uncategorized", name: "", minCount: 1 };
+  };
+
   const calculateShippingCost = () => {
     const selectedType = selectedGovernorate?.shippingPrices?.find(
       (type) => type.shippingTypeId == selectedShippingType
@@ -194,11 +206,12 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
   );
 
   const groupedCartItems = cart.reduce((acc, item) => {
-    const categoryId = item.categoryId._id;
+    const itemCategory = getItemCategory(item);
+    const categoryId = itemCategory._id;
     if (!acc[categoryId]) {
       acc[categoryId] = {
         items: [],
-        category: item.categoryId,
+        category: itemCategory,
         totalQuantity: 0,
       };
     }
@@ -210,7 +223,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
   const validateMinimumQuantities = () => {
     const errors = {};
     Object.values(groupedCartItems).forEach((group) => {
-      if (group.totalQuantity < group.category.minCount) {
+      if (group.totalQuantity < (group.category.minCount || 1)) {
         errors[
           group.category._id
         ] = `الحد الأدنى للطلب في فئة ${group.category.name} هو ${group.category.minCount} قطع`;
@@ -233,6 +246,8 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
     // Required field validation
     if (!customerDetails.name) errors.name = "الاسم مطلوب";
     if (!customerDetails.phone) errors.phone = "رقم الهاتف مطلوب";
+    else if (!/^01[0125][0-9]{8}$/.test(customerDetails.phone.replace(/\s/g, "")))
+      errors.phone = "رقم هاتف غير صحيح (مثال: 01012345678)";
     if (!selectedShippingType) errors.shippingType = "نوع الشحن مطلوب";
     if (!selectedGovernorate) errors.governorate = "المحافظة مطلوبة";
     if (!customerDetails.neighborhood) errors.neighborhood = "الحي مطلوب";
@@ -300,7 +315,7 @@ export default function ShoppingCartPage({ isVisible, setIsVisible }) {
       orderItems: cart.map((item) => ({
         productId: item._id,
         title: item.title,
-        category:item.categoryId,
+        category: getItemCategory(item),
         productQuantity:item.quantity-item.quantityCart,
         quantity: item.quantityCart,
         price: calculateDiscountedPrice(item),

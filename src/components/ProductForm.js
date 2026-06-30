@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { XCircle } from "lucide-react";
 import dynamic from "next/dynamic";
 import imageCompression from "browser-image-compression";
@@ -62,6 +62,7 @@ const ProductForm = ({
   const [videoError, setVideoError] = useState("");
   const [youtubeLink, setYoutubeLink] = useState("");
   const [hidden, setHidden] = useState(false);
+  const initializedFor = useRef(null);
 
   const getValidationErrors = () => {
     const errs = [];
@@ -77,6 +78,15 @@ const ProductForm = ({
   const isFormValid = validationErrors.length === 0;
 
   useEffect(() => {
+    // Only (re)populate the form when the target product actually changes,
+    // NOT on every re-render or new `categories`/`initialData` reference.
+    // On iOS Safari, pinch-zoom / the address bar / the keyboard trigger
+    // re-renders that pass new prop references; without this guard the effect
+    // would re-run and wipe whatever the user has typed.
+    const currentKey = initialData?._id ?? "__new__";
+    if (initializedFor.current === currentKey) return;
+    initializedFor.current = currentKey;
+
     if (initialData) {
       const initialCategoryId =
         typeof initialData.categoryId === "string"
